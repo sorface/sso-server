@@ -1,0 +1,126 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 2023_09_30_21_44_ADD_TABLE_USERSTORE
+      author: Pavel Talayko
+      comment: Создание таблицы T_USERSTORE
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: T_USERSTORE
+
+      changes:
+        - createTable:
+            tableName: T_USERSTORE
+            columns:
+              - column:
+                  name: C_ID
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: C_CREATEDDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_MODIFIEDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_USERNAME
+                  type: VARCHAR(60)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: C_EMAIL
+                  type: VARCHAR(120)
+                  constraints:
+                    unique: true
+              - column:
+                  name: C_PASSWORD
+                  type: VARCHAR(255)
+              - column:
+                  name: C_FIRSTNAME
+                  type: VARCHAR(50)
+              - column:
+                  name: C_LASTNAME
+                  type: VARCHAR(80)
+              - column:
+                  name: C_MIDDLENAME
+                  type: VARCHAR(80)
+              - column:
+                  name: C_BIRTHDAY
+                  type: DATE
+              - column:
+                  name: C_AVATARURL
+                  type: VARCHAR(1000)
+  - changeSet:
+      id: 2023_09_30_21_44_ADD_TABLE_ROLESTORE
+      author: Pavel Talayko
+      comment: Создание таблицы T_ROLESTORE
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: T_ROLESTORE
+
+      changes:
+        - createTable:
+            tableName: T_ROLESTORE
+            columns:
+              - column:
+                  name: C_ID
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: C_CREATEDDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_MODIFIEDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_VALUE
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+  - changeSet:
+      id: 2023_09_30_21_44_ADD_TABLE_LT_USER_ROLE
+      author: Pavel Talayko
+      comment: Создание таблицы LT_USER_ROLE_STORE
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: LT_USER_ROLE_STORE
+
+      changes:
+        - createTable:
+            tableName: LT_USER_ROLE_STORE
+            columns:
+              - column:
+                  name: C_FK_USER
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: T_USERSTORE
+                    referencedColumnNames: C_ID
+                    foreignKeyName: C_FK_USER_T_USERSTORE_C_ID
+              - column:
+                  name: C_FK_ROLE
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: T_ROLESTORE
+                    referencedColumnNames: C_ID
+                    foreignKeyName: C_FK_ROLE_T_ROLESTORE_C_ID
+          addUniqueConstraint:
+            tableName: LT_USER_ROLE_STORE
+            columnNames: C_FK_USER, C_FK_ROLE
+            constraintName: COMPLEX_LT_USER_ROLE_STORE_KEY
