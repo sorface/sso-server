@@ -1,0 +1,65 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 2023_10_12_22_11_ADD_TABLE_OAUTH2CLIENT
+      author: Pavel Talayko
+      comment: Создание таблицы T_OAUTH2CLIENT
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: T_OAUTH2CLIENT
+
+      changes:
+        - createTable:
+            tableName: T_OAUTH2CLIENT
+            columns:
+              - column:
+                  name: C_ID
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: C_CREATEDDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_MODIFIEDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_CLIENTID
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: C_CLIENTIDISSUEDAT
+                  type: TIMESTAMP
+              - column:
+                  name: C_CLIENTSECRET
+                  type: VARCHAR(120)
+              - column:
+                  name: C_CLIENTSECRETEXPIRESAT
+                  type: TIMESTAMP
+              - column:
+                  name: C_CLIENTNAME
+                  type: VARCHAR(50)
+              - column:
+                  name: C_CLIENTAUTHENTICATIONMETHODS
+                  type: VARCHAR(200)
+              - column:
+                  name: C_AUTHORIZATIONGRANTTYPES
+                  type: VARCHAR(100)
+              - column:
+                  name: C_REDIRECTURIS
+                  type: VARCHAR(1000)
+              - column:
+                  name: C_SCOPES
+                  type: VARCHAR(100)
+              - column:
+                  name: C_CLIENTSETTINGS
+                  type: VARCHAR(400)
+              - column:
+                  name: C_TOKENSETTINGS
+                  type: VARCHAR(400)

@@ -1,0 +1,37 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 2023_10_12_22_13_ADD_TABLE_LT_USER_ROLE
+      author: Pavel Talayko
+      comment: Создание таблицы LT_USER_ROLE_STORE
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: LT_USER_ROLE_STORE
+
+      changes:
+        - createTable:
+            tableName: LT_USER_ROLE_STORE
+            columns:
+              - column:
+                  name: C_FK_USER
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: T_USERSTORE
+                    referencedColumnNames: C_ID
+                    foreignKeyName: C_FK_USER_T_USERSTORE_C_ID
+              - column:
+                  name: C_FK_ROLE
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: T_ROLESTORE
+                    referencedColumnNames: C_ID
+                    foreignKeyName: C_FK_ROLE_T_ROLESTORE_C_ID
+          addUniqueConstraint:
+            tableName: LT_USER_ROLE_STORE
+            columnNames: C_FK_USER, C_FK_ROLE
+            constraintName: COMPLEX_LT_USER_ROLE_STORE_KEY

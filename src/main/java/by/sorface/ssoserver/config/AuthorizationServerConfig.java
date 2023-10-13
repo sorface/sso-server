@@ -29,6 +29,8 @@ public class AuthorizationServerConfig {
 
     private final AuthorizationServerProperties authorizationServerProperties;
 
+    private final SorfaceTokenProperties sorfaceTokenProperties;
+
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -37,7 +39,6 @@ public class AuthorizationServerConfig {
         return http
                 .exceptionHandling(exceptions -> {
                     final var authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/login");
-
                     exceptions.authenticationEntryPoint(authenticationEntryPoint);
                 })
                 .build();
@@ -46,11 +47,11 @@ public class AuthorizationServerConfig {
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         final var tokenSettings = TokenSettings.builder()
-                .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
-                .accessTokenTimeToLive(Duration.of(30, ChronoUnit.MINUTES))
-                .refreshTokenTimeToLive(Duration.of(120, ChronoUnit.MINUTES))
-                .reuseRefreshTokens(false)
-                .authorizationCodeTimeToLive(Duration.of(30, ChronoUnit.SECONDS))
+                .accessTokenFormat(new OAuth2TokenFormat(sorfaceTokenProperties.getFormat()))
+                .accessTokenTimeToLive(Duration.of(sorfaceTokenProperties.getAccessTimeLive(), ChronoUnit.MINUTES))
+                .refreshTokenTimeToLive(Duration.of(sorfaceTokenProperties.getRefreshTimeLive(), ChronoUnit.MINUTES))
+                .reuseRefreshTokens(sorfaceTokenProperties.isReuseRefreshToken())
+                .authorizationCodeTimeToLive(Duration.of(sorfaceTokenProperties.getAuthorizationCodeTimeLive(), ChronoUnit.SECONDS))
                 .build();
 
         final var defaultClient = RegisteredClient.withId("test-client-id")

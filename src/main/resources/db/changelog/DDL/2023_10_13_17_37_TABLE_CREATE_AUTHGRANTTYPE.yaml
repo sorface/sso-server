@@ -1,0 +1,35 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 2023_10_13_17_45_ADD_TABLE_AUTHGRANTTYPE
+      author: Pavel Talayko
+      comment: Создание таблицы T_AUTHGRANTTYPE
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: T_AUTHGRANTTYPE
+
+      changes:
+        - createTable:
+            tableName: T_AUTHGRANTTYPE
+            columns:
+              - column:
+                  name: C_ID
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: C_CREATEDDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_MODIFIEDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_NAME
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true

@@ -55,6 +55,15 @@ spring:
     password: sa
     driver-class-name: org.h2.Driver
 
+sorface:
+  sso:
+    token:
+      format: REFERENCE
+      access-time-live: 30
+      refresh-time-live: 120
+      reuse-refresh-token: false
+      authorization-code-time-live: 30
+
 logging:
   level:
     org.springframework.security.oauth2: debug

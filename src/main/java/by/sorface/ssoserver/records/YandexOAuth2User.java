@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Getter
 @Builder
@@ -29,15 +30,20 @@ public class YandexOAuth2User implements SocialOAuth2User {
     public static YandexOAuth2User build(final OAuth2User oAuth2User) {
         final var id = String.valueOf(oAuth2User.getAttributes().get("id"));
         final var login = String.valueOf(oAuth2User.getAttributes().get("login"));
-        final var avatarUrl = String.valueOf("%s".formatted(oAuth2User.getAttributes().get("avatar_url")));
-        final var email = String.valueOf(oAuth2User.getAttributes().get("default_email"));
+        final Object avatarUrlObject = oAuth2User.getAttributes().get("avatar_url");
 
-        return YandexOAuth2User.builder()
+        YandexOAuth2UserBuilder yandexOAuth2UserBuilder = YandexOAuth2User.builder()
                 .id(id)
-                .avatarUrl(avatarUrl)
-                .username(login)
-                .email(email)
-                .build();
+                .username(login);
+
+        if (Objects.nonNull(avatarUrlObject)) {
+            yandexOAuth2UserBuilder.avatarUrl(String.valueOf("%s".formatted(avatarUrlObject)));
+        }
+
+        final var email = String.valueOf(oAuth2User.getAttributes().get("default_email"));
+        yandexOAuth2UserBuilder.email(email);
+
+        return yandexOAuth2UserBuilder.build();
     }
 
 }

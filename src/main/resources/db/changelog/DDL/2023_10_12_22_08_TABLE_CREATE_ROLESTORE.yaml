@@ -1,0 +1,35 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 2023_10_12_22_11_ADD_TABLE_ROLESTORE
+      author: Pavel Talayko
+      comment: Создание таблицы T_ROLESTORE
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: T_ROLESTORE
+
+      changes:
+        - createTable:
+            tableName: T_ROLESTORE
+            columns:
+              - column:
+                  name: C_ID
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: C_CREATEDDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_MODIFIEDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_VALUE
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true

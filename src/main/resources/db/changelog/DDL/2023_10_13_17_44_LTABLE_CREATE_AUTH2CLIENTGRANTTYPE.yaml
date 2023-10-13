@@ -1,0 +1,37 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 2023_10_13_17_46_ADD_LTABLE_OAUTH2CLIENT_GRANTTYPE
+      author: Pavel Talayko
+      comment: Создание таблицы LT_OAUTH2CLIENT_GRANTTYPE
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: LT_OAUTH2CLIENT_GRANTTYPE
+
+      changes:
+        - createTable:
+            tableName: LT_OAUTH2CLIENT_GRANTTYPE
+            columns:
+              - column:
+                  name: C_FK_CLIENT
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: T_OAUTH2CLIENT
+                    referencedColumnNames: C_ID
+                    foreignKeyName: C_FK_CLIENT_T_OAUTH2CLIENT_C_ID
+              - column:
+                  name: C_FK_GRANTTYPE
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: T_AUTHGRANTTYPE
+                    referencedColumnNames: C_ID
+                    foreignKeyName: C_FK_GRANTTYPE_T_AUTHGRANTTYPE_C_ID
+          addUniqueConstraint:
+            tableName: LT_OAUTH2CLIENT_GRANTTYPE
+            columnNames: C_FK_CLIENT, C_FK_GRANTTYPE
+            constraintName: COMPLEX_LT_OAUTH2CLIENT_GRANTTYPE_STORE_KEY
