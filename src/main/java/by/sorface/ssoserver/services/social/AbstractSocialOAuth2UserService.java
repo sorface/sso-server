@@ -1,7 +1,9 @@
-package by.sorface.ssoserver.services;
+package by.sorface.ssoserver.services.social;
 
 import by.sorface.ssoserver.dao.models.UserEntity;
 import by.sorface.ssoserver.records.SocialOAuth2User;
+import by.sorface.ssoserver.services.SocialOAuth2UserService;
+import by.sorface.ssoserver.services.UserService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;

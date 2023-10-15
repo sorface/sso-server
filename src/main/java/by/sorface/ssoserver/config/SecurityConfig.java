@@ -43,7 +43,9 @@ public class SecurityConfig {
                     configurer.failureHandler(authenticationFailureHandler);
                     configurer.successHandler(authenticationSuccessHandler);
                 })
-                .authorizeHttpRequests(new HttpRequestSecurityConfiguration())
+                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+                        authorizationManagerRequestMatcherRegistry.anyRequest().authenticated()
+                )
                 .formLogin(withDefaults())
                 .build();
     }
