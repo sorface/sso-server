@@ -46,20 +46,5 @@ databaseChangeLog:
                   name: C_CLIENTNAME
                   type: VARCHAR(50)
               - column:
-                  name: C_CLIENTAUTHENTICATIONMETHODS
-                  type: VARCHAR(200)
-              - column:
-                  name: C_AUTHORIZATIONGRANTTYPES
-                  type: VARCHAR(100)
-              - column:
                   name: C_REDIRECTURIS
                   type: VARCHAR(1000)
-              - column:
-                  name: C_SCOPES
-                  type: VARCHAR(100)
-              - column:
-                  name: C_CLIENTSETTINGS
-                  type: VARCHAR(400)
-              - column:
-                  name: C_TOKENSETTINGS
-                  type: VARCHAR(400)

@@ -1,6 +1,7 @@
 package by.sorface.ssoserver.services.providers;
 
 import by.sorface.ssoserver.constants.enums.OAuthProvider;
+import by.sorface.ssoserver.dao.models.UserEntity;
 import by.sorface.ssoserver.mappers.SorfaceUserMapper;
 import by.sorface.ssoserver.records.GitHubOAuth2User;
 import by.sorface.ssoserver.records.GoogleOAuth2User;
@@ -14,6 +15,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Сервис получения пользователя из сторонних севисов
+ */
 @Service
 public class OAuth2UserDatabaseProvider extends DefaultOAuth2UserService {
 
@@ -45,27 +49,40 @@ public class OAuth2UserDatabaseProvider extends DefaultOAuth2UserService {
 
         final var provider = OAuthProvider.findByName(providerName);
 
-        final var userEntity = switch (provider) {
+        final var userEntity = getSorfaceUserByProvider(oAuth2User, provider);
+
+        return sorfaceUserMapper.to(userEntity);
+    }
+
+    /**
+     * Получение пользователя из базы дынных
+     *
+     * @param oAuth2User    пользователь стороннего
+     * @param oAuthProvider тип провайдера
+     * @return sorface пользователь
+     */
+    private UserEntity getSorfaceUserByProvider(final OAuth2User oAuth2User, final OAuthProvider oAuthProvider) {
+        return switch (oAuthProvider) {
             case GITHUB -> {
-                final var gitHubOAuth2User = GitHubOAuth2User.build(oAuth2User);
+                final var gitHubOAuth2User = GitHubOAuth2User.parse(oAuth2User);
 
                 yield gitHubSocialOAuth2UserServiceImpl.findOrCreate(gitHubOAuth2User);
             }
             case GOOGLE -> {
-                final var googleOAuth2User = GoogleOAuth2User.build(oAuth2User);
+                final var googleOAuth2User = GoogleOAuth2User.parse(oAuth2User);
 
                 yield googleOAuth2UserSocialOAuth2UserService.findOrCreate(googleOAuth2User);
             }
             case YANDEX -> {
-                final var yandexOAuth2User = YandexOAuth2User.build(oAuth2User);
+                final var yandexOAuth2User = YandexOAuth2User.parse(oAuth2User);
 
                 yield yandexOAuth2UserSocialOAuth2UserService.findOrCreate(yandexOAuth2User);
             }
 
-            case UNKNOWN -> throw new OAuth2AuthenticationException("Provider %s not supported".formatted(providerName));
+            case UNKNOWN -> {
+                throw new OAuth2AuthenticationException("Provider %s not supported".formatted(oAuthProvider));
+            }
         };
-
-        return sorfaceUserMapper.to(userEntity);
     }
 
 }

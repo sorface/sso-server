@@ -44,32 +44,33 @@ public class AuthorizationServerConfig {
                 .build();
     }
 
-    @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        final var tokenSettings = TokenSettings.builder()
-                .accessTokenFormat(new OAuth2TokenFormat(sorfaceTokenProperties.getFormat()))
-                .accessTokenTimeToLive(Duration.of(sorfaceTokenProperties.getAccessTimeLive(), ChronoUnit.MINUTES))
-                .refreshTokenTimeToLive(Duration.of(sorfaceTokenProperties.getRefreshTimeLive(), ChronoUnit.MINUTES))
-                .reuseRefreshTokens(sorfaceTokenProperties.isReuseRefreshToken())
-                .authorizationCodeTimeToLive(Duration.of(sorfaceTokenProperties.getAuthorizationCodeTimeLive(), ChronoUnit.SECONDS))
-                .build();
-
-        final var defaultClient = RegisteredClient.withId("test-client-id")
-                .clientName("Test Client")
-                .clientId("test-client")
-                .clientSecret("{noop}test-client")
-                .redirectUri("http://127.0.0.1:8080/code")
-                .scope("read.scope")
-                .scope("write.scope")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .tokenSettings(tokenSettings)
-                .build();
-
-        return new InMemoryRegisteredClientRepository(defaultClient);
-    }
+//    @Bean
+//    public RegisteredClientRepository registeredClientRepository() {
+//        final var tokenSettings = TokenSettings.builder()
+//                .accessTokenFormat(new OAuth2TokenFormat(sorfaceTokenProperties.getFormat()))
+//                .accessTokenTimeToLive(Duration.of(sorfaceTokenProperties.getAccessTimeLive(), ChronoUnit.MINUTES))
+//                .refreshTokenTimeToLive(Duration.of(sorfaceTokenProperties.getRefreshTimeLive(), ChronoUnit.MINUTES))
+//                .reuseRefreshTokens(sorfaceTokenProperties.isReuseRefreshToken())
+//                .authorizationCodeTimeToLive(Duration.of(sorfaceTokenProperties.getAuthorizationCodeTimeLive(), ChronoUnit.SECONDS))
+//                .build();
+//
+//        final var defaultClient = RegisteredClient
+//                .withId("test-client-id")
+//                .clientName("Test Client")
+//                .clientId("test-client")
+//                .clientSecret("{noop}test-client")
+//                .redirectUri("http://127.0.0.1:8080/code")
+//                .scope("read.scope")
+//                .scope("write.scope")
+//                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+//                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+//                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+//                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+//                .tokenSettings(tokenSettings)
+//                .build();
+//
+//        return new InMemoryRegisteredClientRepository(defaultClient);
+//    }
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
