@@ -63,7 +63,7 @@ public class ClientService implements RegisteredClientRepository {
     }
 
     private RegisteredClient buildClient(final OAuth2Client oAuth2Client) {
-        final var redirectUrls = this.getRedirectUrls(oAuth2Client.getRedirectUris(), REDIRECT_URL_SPLITERATOR);
+        final var redirectUrls = this.getRedirectUrls(oAuth2Client.getRedirectUris());
         final var scopes = Set.of("scope.read", "scope.write");
 
         final var tokenSettings = TokenSettings.builder()
@@ -91,8 +91,8 @@ public class ClientService implements RegisteredClientRepository {
                 .build();
     }
 
-    private List<String> getRedirectUrls(final String value, final String spliterator) {
-        return Arrays.stream(value.split(spliterator)).toList();
+    private List<String> getRedirectUrls(final String value) {
+        return Arrays.stream(value.split(ClientService.REDIRECT_URL_SPLITERATOR)).toList();
     }
 
 }
