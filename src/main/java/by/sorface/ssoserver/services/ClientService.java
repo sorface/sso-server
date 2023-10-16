@@ -21,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ClientService implements RegisteredClientRepository {
 
+    public static final String REDIRECT_URL_SPLITERATOR = ";";
     private final OAuth2ClientService oAuth2ClientService;
 
     @Override
@@ -62,17 +63,31 @@ public class ClientService implements RegisteredClientRepository {
     }
 
     private RegisteredClient buildClient(final OAuth2Client oAuth2Client) {
+        final var redirectUrls = this.getRedirectUrls(oAuth2Client.getRedirectUris(), REDIRECT_URL_SPLITERATOR);
+        final var scopes = Set.of("scope.read", "scope.write");
+
+        final var tokenSettings = TokenSettings.builder()
+                .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
+                .build();
+
+        final var authorizationCodes = Set.of(
+                AuthorizationGrantType.AUTHORIZATION_CODE,
+                AuthorizationGrantType.REFRESH_TOKEN
+        );
+
+        final var clientSecretBasic = ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
+
         return RegisteredClient.withId(oAuth2Client.getId().toString())
                 .clientId(oAuth2Client.getClientId())
                 .clientSecret(oAuth2Client.getClientSecret())
                 .clientIdIssuedAt(oAuth2Client.getClientIdIssueAt().toInstant(ZoneOffset.UTC))
                 .clientSecretExpiresAt(oAuth2Client.getClientSecretExpiresAt().toInstant(ZoneOffset.UTC))
                 .clientName(oAuth2Client.getClientName())
-                .clientAuthenticationMethods(clientAuthenticationMethods -> clientAuthenticationMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC))
-                .authorizationGrantTypes(authorizationGrantTypes -> authorizationGrantTypes.addAll(Set.of(AuthorizationGrantType.AUTHORIZATION_CODE, AuthorizationGrantType.REFRESH_TOKEN)))
-                .redirectUris(redirectUris -> redirectUris.addAll(getRedirectUrls(oAuth2Client.getRedirectUris(), ";")))
-                .scopes(scopes -> scopes.addAll(Set.of("scope.read", "scope.write")))
-                .tokenSettings(TokenSettings.builder().accessTokenFormat(OAuth2TokenFormat.REFERENCE).build())
+                .clientAuthenticationMethods(clientAuthenticationMethods -> clientAuthenticationMethods.add(clientSecretBasic))
+                .authorizationGrantTypes(authorizationGrantTypes -> authorizationGrantTypes.addAll(authorizationCodes))
+                .redirectUris(redirectUris -> redirectUris.addAll(redirectUrls))
+                .scopes(scopeFunc -> scopeFunc.addAll(scopes))
+                .tokenSettings(tokenSettings)
                 .build();
     }
 
