@@ -8,4 +8,6 @@ public interface RegistryTokenRepository extends BaseRepository<RegistryTokenEnt
 
     RegistryTokenEntity findByHashIgnoreCase(final String hash);
 
+    RegistryTokenEntity findByUser_Email(final String email);
+
 }

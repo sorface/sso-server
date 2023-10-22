@@ -6,8 +6,10 @@ import by.sorface.ssoserver.records.responses.UserRegistered;
 
 public interface UserFacadeService {
 
-    UserRegistered executeProcessRegistry(final UserRecord user);
+    UserRegistered registry(final UserRecord user);
 
-    UserConfirm executeProcessConfirmation(final String token);
+    UserConfirm confirmEmail(final String token);
+
+    UserRegistered resendConfirmEmail(final String email);
 
 }

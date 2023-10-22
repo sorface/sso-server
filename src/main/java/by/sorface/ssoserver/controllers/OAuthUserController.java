@@ -17,14 +17,21 @@ public class OAuthUserController {
 
     @PostMapping("/registry")
     public ResponseEntity<UserRegistered> registry(@RequestBody final UserRecord user) {
-        final UserRegistered userRegistered = userFacadeService.executeProcessRegistry(user);
+        final UserRegistered userRegistered = userFacadeService.registry(user);
 
         return ResponseEntity.ok(userRegistered);
     }
 
     @PostMapping("/confirm")
     public ResponseEntity<UserConfirm> registry(@RequestParam("token") final String token) {
-        final UserConfirm userRegistered = userFacadeService.executeProcessConfirmation(token);
+        final UserConfirm userRegistered = userFacadeService.confirmEmail(token);
+
+        return ResponseEntity.ok(userRegistered);
+    }
+
+    @PostMapping("/confirm/{email}/resend")
+    public ResponseEntity<UserRegistered> resendConfirmEmail(@PathVariable(name = "email") final String email) {
+        final UserRegistered userRegistered = userFacadeService.resendConfirmEmail(email);
 
         return ResponseEntity.ok(userRegistered);
     }

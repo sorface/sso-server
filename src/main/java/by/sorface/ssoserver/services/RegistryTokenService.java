@@ -9,4 +9,6 @@ public interface RegistryTokenService {
 
     RegistryTokenEntity saveRandomForUser(final UserEntity user);
 
+    RegistryTokenEntity findRegistryTokenByUserEmail(final String email);
+
 }

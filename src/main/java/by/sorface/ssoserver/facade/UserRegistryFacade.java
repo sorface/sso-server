@@ -3,6 +3,7 @@ package by.sorface.ssoserver.facade;
 import by.sorface.ssoserver.UserRecord;
 import by.sorface.ssoserver.dao.models.RegistryTokenEntity;
 import by.sorface.ssoserver.dao.models.UserEntity;
+import by.sorface.ssoserver.exceptions.NotFoundException;
 import by.sorface.ssoserver.exceptions.ObjectExpiredException;
 import by.sorface.ssoserver.exceptions.ObjectInvalidException;
 import by.sorface.ssoserver.exceptions.UserRequestException;
@@ -11,6 +12,7 @@ import by.sorface.ssoserver.records.responses.UserConfirm;
 import by.sorface.ssoserver.records.responses.UserRegisteredHash;
 import by.sorface.ssoserver.services.RegistryTokenService;
 import by.sorface.ssoserver.services.UserService;
+import by.sorface.ssoserver.utils.HashUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -71,7 +73,7 @@ public class UserRegistryFacade {
 
     @Transactional
     public UserConfirm confirmByToken(final String hash) {
-        log.info("Request for account confirmation using a token {}", hash.substring(0, 5).concat("..."));
+        log.info("Request for account confirmation using a token {}", HashUtils.shortHash(hash));
 
         final var registryToken = registryTokenService.findByHash(hash);
 
@@ -81,7 +83,7 @@ public class UserRegistryFacade {
             throw new ObjectInvalidException("The token is invalid");
         }
 
-        log.info("The token received {}", registryToken.getHash().substring(0, 5).concat("..."));
+        log.info("The token received {}", HashUtils.shortHash(registryToken.getHash()));
 
         final LocalDateTime expiredDate = registryToken.getModifiedDate().plusDays(30);
 
@@ -99,12 +101,42 @@ public class UserRegistryFacade {
         final UserEntity savedUser = userService.save(user);
 
         log.info("Account with ID {} confirmed by token hash {}", registryToken.getUser().getId(),
-                registryToken.getHash().substring(0, 5).concat("..."));
+                HashUtils.shortHash(registryToken.getHash()));
 
         return UserConfirm.builder()
                 .id(savedUser.getId())
                 .email(savedUser.getEmail())
                 .confirm(savedUser.isEnabled())
+                .build();
+    }
+
+    @Transactional
+    public UserRegisteredHash findRegisteredTokenByEmail(final String email) {
+        final var registryToken = registryTokenService.findRegistryTokenByUserEmail(email);
+
+        if (Objects.isNull(registryToken)) {
+            log.warn("User not found by email {}", email);
+
+            throw new NotFoundException("User not found by email");
+        }
+
+        log.info("The token received {}", HashUtils.shortHash(registryToken.getHash()));
+
+        final LocalDateTime expiredDate = registryToken.getModifiedDate().plusDays(30);
+
+        if (expiredDate.isBefore(LocalDateTime.now())) {
+            log.warn("The token's lifetime has expired. Token expired on  {}. The token belongs to the user with the id {}",
+                    expiredDate, registryToken.getUser().getId());
+
+            throw new ObjectExpiredException("The token's lifetime has expired");
+        }
+
+        final UserEntity user = registryToken.getUser();
+
+        return UserRegisteredHash.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .hash(registryToken.getHash())
                 .build();
     }
 

@@ -3,8 +3,8 @@ package by.sorface.ssoserver.services;
 import by.sorface.ssoserver.dao.models.RegistryTokenEntity;
 import by.sorface.ssoserver.dao.models.UserEntity;
 import by.sorface.ssoserver.dao.repository.RegistryTokenRepository;
+import by.sorface.ssoserver.utils.HashUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +20,9 @@ public class RegistryTokenServiceImpl implements RegistryTokenService {
         return registryTokenRepository.findByHashIgnoreCase(hash);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public RegistryTokenEntity saveRandomForUser(final UserEntity user) {
-        final String hash = RandomStringUtils.random(255, true, true);
+        final String hash = HashUtils.generateRegistryHash(55);
 
         final var registryTokenEntity = new RegistryTokenEntity();
         {
@@ -31,6 +31,11 @@ public class RegistryTokenServiceImpl implements RegistryTokenService {
         }
 
         return registryTokenRepository.save(registryTokenEntity);
+    }
+
+    @Override
+    public RegistryTokenEntity findRegistryTokenByUserEmail(final String email) {
+        return registryTokenRepository.findByUser_Email(email);
     }
 
 }

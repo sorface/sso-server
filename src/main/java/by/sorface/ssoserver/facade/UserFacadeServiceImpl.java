@@ -23,7 +23,7 @@ public class UserFacadeServiceImpl implements UserFacadeService {
     private final UserRegistryFacade userRegistryFacade;
 
     @Override
-    public UserRegistered executeProcessRegistry(final UserRecord user) {
+    public UserRegistered registry(final UserRecord user) {
         final UserRegisteredHash registry = userRegistryFacade.registry(user);
 
         log.info("User registration completed. [account id - {}]", registry.getId());
@@ -46,8 +46,23 @@ public class UserFacadeServiceImpl implements UserFacadeService {
     }
 
     @Override
-    public UserConfirm executeProcessConfirmation(final String token) {
+    public UserConfirm confirmEmail(final String token) {
         return userRegistryFacade.confirmByToken(token);
+    }
+
+    public UserRegistered resendConfirmEmail(final String email) {
+        final UserRegisteredHash userRegisteredHash = userRegistryFacade.findRegisteredTokenByEmail(email);
+
+        final var mails = List.of(
+                new EmailServiceImpl.MailRequest(userRegisteredHash.getEmail(), "Подтверждение регистрации", userRegisteredHash.getHash())
+        );
+
+        emailService.send(mails);
+
+        return UserRegistered.builder()
+                .id(userRegisteredHash.getId())
+                .email(userRegisteredHash.getEmail())
+                .build();
     }
 
 }
