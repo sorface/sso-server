@@ -30,3 +30,6 @@ databaseChangeLog:
               - column:
                   name: C_MIDDLENAME
                   value: Дмитриевич
+              - column:
+                  name: C_ISENABLED
+                  value: "true"

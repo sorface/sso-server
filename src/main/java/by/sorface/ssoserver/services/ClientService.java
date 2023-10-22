@@ -22,12 +22,14 @@ import java.util.UUID;
 public class ClientService implements RegisteredClientRepository {
 
     public static final String REDIRECT_URL_SPLITERATOR = ";";
+
     private final OAuth2ClientService oAuth2ClientService;
 
     @Override
     public void save(final RegisteredClient registeredClient) {
         final var oAuth2Client = new OAuth2Client();
         {
+            oAuth2Client.setId(UUID.fromString(registeredClient.getId()));
             oAuth2Client.setClientId(registeredClient.getClientId());
             oAuth2Client.setClientName(registeredClient.getClientName());
             oAuth2Client.setClientSecret(registeredClient.getClientSecret());
@@ -43,6 +45,7 @@ public class ClientService implements RegisteredClientRepository {
                     : null;
 
             oAuth2Client.setClientSecretExpiresAt(clientSecretExpiresAt);
+            oAuth2Client.setRedirectUris(String.join(REDIRECT_URL_SPLITERATOR, registeredClient.getRedirectUris()));
         }
 
         oAuth2ClientService.save(oAuth2Client);
@@ -77,7 +80,8 @@ public class ClientService implements RegisteredClientRepository {
 
         final var clientSecretBasic = ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
 
-        return RegisteredClient.withId(oAuth2Client.getId().toString())
+        return RegisteredClient
+                .withId(oAuth2Client.getId().toString())
                 .clientId(oAuth2Client.getClientId())
                 .clientSecret(oAuth2Client.getClientSecret())
                 .clientIdIssuedAt(oAuth2Client.getClientIdIssueAt().toInstant(ZoneOffset.UTC))

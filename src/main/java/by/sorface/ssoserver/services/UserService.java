@@ -15,10 +15,19 @@ public interface UserService {
     /**
      * Получение пользователя по электронной почте
      *
-     * @param email логин пользователя
+     * @param email электронная почта пользователя
      * @return пользователь
      */
     UserEntity findByEmail(final String email);
+
+    /**
+     * Получение пользователя по логину или электронной почте
+     *
+     * @param username логин пользователя
+     * @param email электронная почта пользователя
+     * @return пользователь
+     */
+    UserEntity findByUsernameOrEmail(final String username, final String email);
 
     /**
      * Создание нового пользователя

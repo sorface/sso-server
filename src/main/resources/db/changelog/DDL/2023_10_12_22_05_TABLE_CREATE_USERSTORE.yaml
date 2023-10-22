@@ -56,3 +56,8 @@ databaseChangeLog:
               - column:
                   name: C_AVATARURL
                   type: VARCHAR(1000)
+              - column:
+                  name: C_ISENABLED
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false

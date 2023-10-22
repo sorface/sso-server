@@ -31,6 +31,17 @@ spring:
             user-name-attribute: default_email
             userInfoUri: https://login.yandex.ru/info
 
+  mail:
+    username: <username_email>
+    password: <email_password>
+    port: 465
+    host: <smtp.host.com>
+    properties:
+      mail.transport.protocol: smtp
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.enable: true
+
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/master.yaml
