@@ -1,5 +1,6 @@
 package by.sorface.ssoserver.config;
 
+import by.sorface.ssoserver.constants.enums.UrlPatterns;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,30 +15,29 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import static by.sorface.ssoserver.config.SecurityConfig.PERMIT_ALL_PATTERNS;
-
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfig {
 
-    private final AuthorizationServerProperties authorizationServerProperties;
-
-    private final SorfaceTokenProperties sorfaceTokenProperties;
-
+    /**
+     * Конфигурация OAuth2 Spring Security
+     *
+     * @param http configuring web based security
+     * @return security chain
+     * @throws Exception исключение ошибки настройки
+     */
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-                new OAuth2AuthorizationServerConfigurer();
-        RequestMatcher endpointsMatcher = authorizationServerConfigurer
-                .getEndpointsMatcher();
+    public SecurityFilterChain authServerSecurityFilterChain(final HttpSecurity http) throws Exception {
+        final var authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+
+        final RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         http
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(authorize -> {
-                    authorize
-                            .requestMatchers("/api/**").permitAll()
-                            .requestMatchers(PERMIT_ALL_PATTERNS).permitAll().anyRequest().authenticated();
+                    authorize.requestMatchers(UrlPatterns.toArray()).permitAll()
+                            .anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptions -> {
                     final var authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/login");
@@ -50,13 +50,18 @@ public class AuthorizationServerConfig {
     }
 
     @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
+    public AuthorizationServerSettings authorizationServerSettings(final AuthorizationServerProperties authorizationServerProperties) {
         return AuthorizationServerSettings.builder()
                 .issuer(authorizationServerProperties.getIssuerUrl())
                 .tokenIntrospectionEndpoint(authorizationServerProperties.getIntrospectionEndpoint())
                 .build();
     }
 
+    /**
+     * Создание компонента кодирования паролей
+     *
+     * @return компонент кодирования паролей
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);

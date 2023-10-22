@@ -67,5 +67,6 @@ public class SorfaceUser extends User implements OAuth2User {
     public String getName() {
         return this.getUsername();
     }
+
 }
 

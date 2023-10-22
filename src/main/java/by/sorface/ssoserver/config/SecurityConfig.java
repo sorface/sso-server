@@ -1,5 +1,6 @@
 package by.sorface.ssoserver.config;
 
+import by.sorface.ssoserver.constants.enums.UrlPatterns;
 import by.sorface.ssoserver.services.providers.OAuth2UserDatabaseProvider;
 import by.sorface.ssoserver.services.providers.SorfaceUserDatabaseProvider;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +35,6 @@ public class SecurityConfig {
 
     private final AuthenticationSuccessHandler authenticationSuccessHandler = new SavedRequestAwareAuthenticationSuccessHandler();
 
-    public static final String[] PERMIT_ALL_PATTERNS = {
-            "/static/**",
-            "/login"
-    };
-
-
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -59,8 +54,7 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     authorizationManagerRequestMatcherRegistry
-                            .requestMatchers("/api/**").permitAll()
-                            .requestMatchers(PERMIT_ALL_PATTERNS).permitAll()
+                            .requestMatchers(UrlPatterns.toArray()).permitAll()
                             .anyRequest().authenticated();
                 })
                 .formLogin(withDefaults())
