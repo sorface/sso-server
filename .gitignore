@@ -30,6 +30,9 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+frontend/node_modules
+frontend/.idea
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
