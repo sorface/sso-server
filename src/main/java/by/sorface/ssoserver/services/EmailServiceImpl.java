@@ -1,7 +1,6 @@
 package by.sorface.ssoserver.services;
 
-import lombok.Builder;
-import lombok.Getter;
+import by.sorface.ssoserver.records.MailRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,16 +20,14 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender emailSender;
 
-    public record MailRequest(String toMail, String subject, String body) {}
-
     public void send(final List<MailRequest> mails) {
         mails.forEach(it -> {
             final var message = new SimpleMailMessage();
             {
                 message.setFrom(sender);
-                message.setTo(it.toMail);
-                message.setSubject(it.subject);
-                message.setText(it.body);
+                message.setTo(it.to());
+                message.setSubject(it.subject());
+                message.setText(it.body());
             }
 
             emailSender.send(message);

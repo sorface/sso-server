@@ -1,9 +1,11 @@
 package by.sorface.ssoserver.services;
 
+import by.sorface.ssoserver.records.MailRequest;
+
 import java.util.List;
 
 public interface EmailService {
 
-    public void send(final List<EmailServiceImpl.MailRequest> mails);
+    void send(final List<MailRequest> mails);
 
 }
