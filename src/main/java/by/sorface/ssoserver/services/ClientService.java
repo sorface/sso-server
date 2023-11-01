@@ -21,12 +21,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ClientService implements RegisteredClientRepository {
 
+    public static final String REDIRECT_URL_SPLITERATOR = ";";
+
     private final OAuth2ClientService oAuth2ClientService;
 
     @Override
     public void save(final RegisteredClient registeredClient) {
         final var oAuth2Client = new OAuth2Client();
         {
+            oAuth2Client.setId(UUID.fromString(registeredClient.getId()));
             oAuth2Client.setClientId(registeredClient.getClientId());
             oAuth2Client.setClientName(registeredClient.getClientName());
             oAuth2Client.setClientSecret(registeredClient.getClientSecret());
@@ -42,6 +45,7 @@ public class ClientService implements RegisteredClientRepository {
                     : null;
 
             oAuth2Client.setClientSecretExpiresAt(clientSecretExpiresAt);
+            oAuth2Client.setRedirectUris(String.join(REDIRECT_URL_SPLITERATOR, registeredClient.getRedirectUris()));
         }
 
         oAuth2ClientService.save(oAuth2Client);
@@ -62,22 +66,37 @@ public class ClientService implements RegisteredClientRepository {
     }
 
     private RegisteredClient buildClient(final OAuth2Client oAuth2Client) {
-        return RegisteredClient.withId(oAuth2Client.getId().toString())
+        final var redirectUrls = this.getRedirectUrls(oAuth2Client.getRedirectUris());
+        final var scopes = Set.of("scope.read", "scope.write");
+
+        final var tokenSettings = TokenSettings.builder()
+                .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
+                .build();
+
+        final var authorizationCodes = Set.of(
+                AuthorizationGrantType.AUTHORIZATION_CODE,
+                AuthorizationGrantType.REFRESH_TOKEN
+        );
+
+        final var clientSecretBasic = ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
+
+        return RegisteredClient
+                .withId(oAuth2Client.getId().toString())
                 .clientId(oAuth2Client.getClientId())
                 .clientSecret(oAuth2Client.getClientSecret())
                 .clientIdIssuedAt(oAuth2Client.getClientIdIssueAt().toInstant(ZoneOffset.UTC))
                 .clientSecretExpiresAt(oAuth2Client.getClientSecretExpiresAt().toInstant(ZoneOffset.UTC))
                 .clientName(oAuth2Client.getClientName())
-                .clientAuthenticationMethods(clientAuthenticationMethods -> clientAuthenticationMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC))
-                .authorizationGrantTypes(authorizationGrantTypes -> authorizationGrantTypes.addAll(Set.of(AuthorizationGrantType.AUTHORIZATION_CODE, AuthorizationGrantType.REFRESH_TOKEN)))
-                .redirectUris(redirectUris -> redirectUris.addAll(getRedirectUrls(oAuth2Client.getRedirectUris(), ";")))
-                .scopes(scopes -> scopes.addAll(Set.of("scope.read", "scope.write")))
-                .tokenSettings(TokenSettings.builder().accessTokenFormat(OAuth2TokenFormat.REFERENCE).build())
+                .clientAuthenticationMethods(clientAuthenticationMethods -> clientAuthenticationMethods.add(clientSecretBasic))
+                .authorizationGrantTypes(authorizationGrantTypes -> authorizationGrantTypes.addAll(authorizationCodes))
+                .redirectUris(redirectUris -> redirectUris.addAll(redirectUrls))
+                .scopes(scopeFunc -> scopeFunc.addAll(scopes))
+                .tokenSettings(tokenSettings)
                 .build();
     }
 
-    private List<String> getRedirectUrls(final String value, final String spliterator) {
-        return Arrays.stream(value.split(spliterator)).toList();
+    private List<String> getRedirectUrls(final String value) {
+        return Arrays.stream(value.split(ClientService.REDIRECT_URL_SPLITERATOR)).toList();
     }
 
 }

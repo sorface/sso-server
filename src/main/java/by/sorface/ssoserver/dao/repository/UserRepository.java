@@ -12,7 +12,7 @@ public interface UserRepository extends BaseRepository<UserEntity> {
      * @param username логин пользователя
      * @return пользователь
      */
-    UserEntity findFirstByUsername(final String username);
+    UserEntity findFirstByUsernameIgnoreCase(final String username);
 
     /**
      * Поиск пользователя по элетронной почте
@@ -20,6 +20,15 @@ public interface UserRepository extends BaseRepository<UserEntity> {
      * @param email элетронная почта
      * @return пользователь
      */
-    UserEntity findFirstByEmail(final String email);
+    UserEntity findFirstByEmailIgnoreCase(final String email);
+
+    /**
+     * Поиск пользователя по логину или электронной почте
+     *
+     * @param username логин пользователя
+     * @param email email пользователя
+     * @return пользователь
+     */
+    UserEntity findFirstByUsernameIgnoreCaseOrEmailIgnoreCase(final String username, final String email);
 
 }

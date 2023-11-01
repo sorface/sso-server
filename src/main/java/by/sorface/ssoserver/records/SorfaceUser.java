@@ -54,8 +54,8 @@ public class SorfaceUser extends User implements OAuth2User {
 
     private Map<String, Object> oauthAttributes;
 
-    public SorfaceUser(final String username, final String password, final Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, authorities);
+    public SorfaceUser(final String username, final String password, final boolean enabled, final Collection<? extends GrantedAuthority> authorities) {
+        super(username, password, enabled, true, true, true, authorities);
     }
 
     @Override
@@ -67,5 +67,6 @@ public class SorfaceUser extends User implements OAuth2User {
     public String getName() {
         return this.getUsername();
     }
+
 }
 

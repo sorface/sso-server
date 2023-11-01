@@ -30,7 +30,7 @@ public enum OAuthProvider {
         Assert.notNull(name, "Name must not is null");
         Assert.hasText(name, "Name must not is empty");
 
-        return PROVIDER_MAP.getOrDefault(name, UNKNOWN);
+        return PROVIDER_MAP.getOrDefault(name.toLowerCase(), UNKNOWN);
     }
 
 }

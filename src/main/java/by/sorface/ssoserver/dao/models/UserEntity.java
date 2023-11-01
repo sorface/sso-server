@@ -46,4 +46,7 @@ public class UserEntity extends BaseEntity {
     )
     private List<RoleEntity> roles;
 
+    @Column(name = "C_ISENABLED", nullable = false)
+    private boolean enabled;
+
 }

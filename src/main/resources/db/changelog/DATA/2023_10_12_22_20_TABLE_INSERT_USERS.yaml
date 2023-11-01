@@ -14,10 +14,10 @@ databaseChangeLog:
                   value: 4d1060a8-e148-44cf-9a26-397adcedf6ea
               - column:
                   name: C_USERNAME
-                  value: devpavdeveloper
+                  value: test
               - column:
                   name: C_EMAIL
-                  value: devpavdeveloper@yandex.ru
+                  value: test@test.ru
               - column:
                   name: C_PASSWORD
                   value: $2a$10$vj2r7xcYGX8aGnVAXYrs3etr54J8wngAGYDv9fyOlBba3mGpJbqa.
@@ -30,3 +30,6 @@ databaseChangeLog:
               - column:
                   name: C_MIDDLENAME
                   value: Дмитриевич
+              - column:
+                  name: C_ISENABLED
+                  value: "true"

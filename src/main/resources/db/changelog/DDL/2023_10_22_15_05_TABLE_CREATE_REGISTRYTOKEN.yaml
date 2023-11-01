@@ -1,0 +1,40 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 2023_10_22_15_05_ADD_TABLE_REGISTRYTOKEN
+      author: Pavel Talayko
+      comment: Создание таблицы T_REGISTRYTOKEN
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: T_REGISTRYTOKEN
+
+      changes:
+        - createTable:
+            tableName: T_REGISTRYTOKEN
+            columns:
+              - column:
+                  name: C_ID
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: C_CREATEDDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_MODIFIEDDATE
+                  type: TIMESTAMP
+              - column:
+                  name: C_HASH
+                  type: VARCHAR(255)
+              - column:
+                  name: C_USERID
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: T_USERSTORE
+                    referencedColumnNames: C_ID
+                    foreignKeyName: C_USERID_T_USERSTORE_C_ID

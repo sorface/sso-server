@@ -1,13 +1,16 @@
 package by.sorface.ssoserver.config;
 
+import by.sorface.ssoserver.constants.enums.UrlPatterns;
 import by.sorface.ssoserver.services.providers.OAuth2UserDatabaseProvider;
 import by.sorface.ssoserver.services.providers.SorfaceUserDatabaseProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -17,9 +20,12 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity(debug = true)
-@RequiredArgsConstructor
+@EnableMethodSecurity
 @Configuration(proxyBeanMethods = false)
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final PasswordEncoder passwordEncoder;
 
     private final OAuth2UserDatabaseProvider OAuth2UserDatabaseProvider;
 
@@ -32,9 +38,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(sorfaceUserDatabaseProvider);
+                .userDetailsService(sorfaceUserDatabaseProvider)
+                .passwordEncoder(passwordEncoder);
 
         return http
+                .csrf()
+                .disable()
                 .oauth2Login(configurer -> {
                     final var userInfoEndpointConfig = configurer.userInfoEndpoint();
 
@@ -43,9 +52,11 @@ public class SecurityConfig {
                     configurer.failureHandler(authenticationFailureHandler);
                     configurer.successHandler(authenticationSuccessHandler);
                 })
-                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry.anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
+                    authorizationManagerRequestMatcherRegistry
+                            .requestMatchers(UrlPatterns.toArray()).permitAll()
+                            .anyRequest().authenticated();
+                })
                 .formLogin(withDefaults())
                 .build();
     }

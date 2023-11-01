@@ -1,6 +1,7 @@
+# common properties
 spring:
   application:
-    name: j-sso
+    name: sorface-sso
   security:
     oauth2:
       authorizationserver:
@@ -10,17 +11,17 @@ spring:
         registration:
           github:
             client-name: github
-            client-id: 43794d53ae6c719cfa3d
-            client-secret: 5c7ea6108598e249b56dc9784e31c4b05b542d98
+            client-id: <github_id>
+            client-secret: <github_secret>
           google:
             client-name: google
-            clientId: 574812042094-qjpjr93sr0eg4ha6q1l3qia0bcvsa4dj.apps.googleusercontent.com
-            clientSecret: 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
+            clientId: <client_id>
+            clientSecret: <client_secret>
             authorization-grant-type: authorization_code
           yandex:
             client-name: yandex
-            client-id: ee1bdcc325294d8a915db0ede6911b85
-            client-secret: 0598eae2d4b1495f9b0b7d5923b11913
+            client-id: <yandex_id>
+            client-secret: <yandex_secret>
             authorization-grant-type: authorization_code
             provider: yandex
             redirect-uri: http://localhost:8080/login/oauth2/code/yandex
@@ -31,6 +32,17 @@ spring:
             user-name-attribute: default_email
             userInfoUri: https://login.yandex.ru/info
 
+  mail:
+    username: <username_email>
+    password: <email_password>
+    port: 465
+    host: <smtp.host.com>
+    properties:
+      mail.transport.protocol: smtp
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.enable: true
+
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/master.yaml
@@ -38,6 +50,8 @@ spring:
 logging:
   level:
     "liquibase" : error
+
+# development
 ---
 spring:
   config:
@@ -69,6 +83,8 @@ logging:
     org.springframework.security.oauth2: debug
     com.zaxxer.hikari: warn
 ---
+
+# production
 spring:
   config:
     activate:
@@ -81,5 +97,5 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url:
-    username: sa
-    password: sa
+    username: <postgres_username>
+    password: <postgres_password>
