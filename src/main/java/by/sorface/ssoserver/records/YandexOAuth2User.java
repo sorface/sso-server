@@ -27,12 +27,12 @@ public class YandexOAuth2User implements SocialOAuth2User {
 
     private  Map<String, Object> attributes;
 
-    public static YandexOAuth2User build(final OAuth2User oAuth2User) {
+    public static YandexOAuth2User parse(final OAuth2User oAuth2User) {
         final var id = String.valueOf(oAuth2User.getAttributes().get("id"));
         final var login = String.valueOf(oAuth2User.getAttributes().get("login"));
         final Object avatarUrlObject = oAuth2User.getAttributes().get("avatar_url");
 
-        YandexOAuth2UserBuilder yandexOAuth2UserBuilder = YandexOAuth2User.builder()
+        final var yandexOAuth2UserBuilder = YandexOAuth2User.builder()
                 .id(id)
                 .username(login);
 

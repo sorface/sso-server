@@ -15,13 +15,19 @@ public class DefaultUserService implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserEntity findByUsername(String username) {
-        return userRepository.findFirstByUsername(username);
+        return userRepository.findFirstByUsernameIgnoreCase(username);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserEntity findByEmail(String username) {
-        return userRepository.findFirstByEmail(username);
+    public UserEntity findByEmail(String email) {
+        return userRepository.findFirstByEmailIgnoreCase(email);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserEntity findByUsernameOrEmail(final String username, final String email) {
+        return userRepository.findFirstByUsernameIgnoreCaseOrEmailIgnoreCase(username, email);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class SorfaceUserMapperImpl implements SorfaceUserMapper {
     public SorfaceUser to(final UserEntity user) {
         final List<GrantedAuthority> authorities = this.convertRoles(user.getRoles());
 
-        final var sorfaceUser = new SorfaceUser(user.getUsername(), user.getPassword(), authorities);
+        final var sorfaceUser = new SorfaceUser(user.getUsername(), user.getPassword(), user.isEnabled(), authorities);
         {
             sorfaceUser.setId(user.getId());
             sorfaceUser.setFirstName(user.getFirstName());
