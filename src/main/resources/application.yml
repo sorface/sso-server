@@ -68,6 +68,7 @@ logging:
   level:
     org.springframework.security.oauth2: debug
     com.zaxxer.hikari: warn
+    root: trace
 ---
 spring:
   config:

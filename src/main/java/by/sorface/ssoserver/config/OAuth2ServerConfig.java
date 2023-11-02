@@ -13,19 +13,20 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
-public class AuthorizationServerConfig {
+public class OAuth2ServerConfig {
 
     private final AuthorizationServerProperties authorizationServerProperties;
 
@@ -34,14 +35,20 @@ public class AuthorizationServerConfig {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+        final OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
-        return http
-                .exceptionHandling(exceptions -> {
-                    final var authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/login");
-                    exceptions.authenticationEntryPoint(authenticationEntryPoint);
-                })
-                .build();
+        RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
+        http.securityMatcher(endpointsMatcher)
+                .authorizeHttpRequests(authorize ->
+                        authorize
+                                // ендпоинты которые вынесем из под security
+                                .requestMatchers("/login", "/static/**").permitAll()
+                                .anyRequest().authenticated()
+                )
+                .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+                .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
+                .apply(authorizationServerConfigurer);
+        return http.build();
     }
 
     @Bean
