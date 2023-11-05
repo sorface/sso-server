@@ -69,8 +69,8 @@ export const SignIn: FunctionComponent = () => {
           <input type="submit" value={Captions.SignIn} />
         </p>
         <p>
-          {loading && <div>{Captions.Loading}...</div>}
-          {error && <div>{Captions.Error}: {error}</div>}
+          {loading && <span>{Captions.Loading}...</span>}
+          {error && <span>{Captions.Error}: {error}</span>}
         </p>
       </form>
     </div>
