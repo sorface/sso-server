@@ -11,17 +11,17 @@ spring:
         registration:
           github:
             client-name: github
-            client-id: <github_id>
-            client-secret: <github_secret>
+            client-id: 43794d53ae6c719cfa3d
+            client-secret: 5c7ea6108598e249b56dc9784e31c4b05b542d98
           google:
             client-name: google
-            clientId: <client_id>
-            clientSecret: <client_secret>
+            clientId: 574812042094-qjpjr93sr0eg4ha6q1l3qia0bcvsa4dj.apps.googleusercontent.com
+            clientSecret: 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
             authorization-grant-type: authorization_code
           yandex:
             client-name: yandex
-            client-id: <yandex_id>
-            client-secret: <yandex_secret>
+            client-id: ee1bdcc325294d8a915db0ede6911b85
+            client-secret: 0598eae2d4b1495f9b0b7d5923b11913
             authorization-grant-type: authorization_code
             provider: yandex
             redirect-uri: http://localhost:8080/login/oauth2/code/yandex
@@ -33,10 +33,10 @@ spring:
             userInfoUri: https://login.yandex.ru/info
 
   mail:
-    username: <username_email>
-    password: <email_password>
+    username: welcome@sorface.com
+    password: nphnsnxgcimstkxj
     port: 465
-    host: <smtp.host.com>
+    host: smtp.yandex.ru
     properties:
       mail.transport.protocol: smtp
       mail.smtp.auth: true
@@ -47,9 +47,12 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/master.yaml
 
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+
 logging:
   level:
-    "liquibase" : error
+    "liquibase": error
 
 # development
 ---
@@ -57,6 +60,29 @@ spring:
   config:
     activate:
       on-profile: development
+
+  web:
+    resources:
+      static-locations: classpath:static
+
+  session:
+    timeout: 1800
+    redis:
+      flush-mode: on_save         # Указываем, когда изменения сеанса записываются в хранилище (immediate или on_save)
+      namespace: j-sso:session    # Пространство имен для ключей, используемых для хранения сессий.
+      save-mode: on_set_attribute # Определяет в какой момент происходит сохранение изменений сессии (on_set_attribute, on_get_attribute, always)
+
+  data:
+    redis: # Настраиваем подключение к Redis
+      client-type: lettuce        # Указываем тип клиента Redis (jedis или lettuce)
+      database: 0                 # Указываем номер БД Redis
+      host: localhost             # Хост подключения
+      port: 6379                  # Порт подключения
+      password: qwerty    # Пароль подключения
+      lettuce: # Настраиваем пул подключений клиента lettuce
+        pool:
+          max-active: 16          # Максимальное количество подключений в пуле
+          max-idle: 8             # Минимальное количество "idle" подключений в пуле
 
   jpa:
     show-sql: true
@@ -78,11 +104,15 @@ sorface:
       reuse-refresh-token: false
       authorization-code-time-live: 30
 
+
 logging:
   level:
-    org.springframework.security.oauth2: debug
-    com.zaxxer.hikari: warn
-    root: trace
+    root: DEBUG
+    org.springframework.security.web.FilterChainProxy: TRACE
+    org.springframework.security: TRACE
+    logging.level.org.hibernate.SQL: INFO
+    com.zaxxer.hikari: ERROR
+    org.postgresql: ERROR
 ---
 
 # production

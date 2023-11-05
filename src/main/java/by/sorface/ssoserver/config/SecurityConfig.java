@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -28,10 +27,6 @@ public class SecurityConfig {
 
     private final OAuth2UserDatabaseProvider oAuth2UserDatabaseProvider;
 
-    private final SorfaceUserDatabaseProvider sorfaceUserDatabaseProvider;
-
-    private final PasswordEncoder passwordEncoder;
-
     private AuthenticationSuccessHandler oAuth2successHandler;
     private AuthenticationSuccessHandler loginRequestSuccessHandler;
 
@@ -39,7 +34,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        SocialConfigurer socialConfigurer = new SocialConfigurer()
+        final var socialConfigurer = new SocialConfigurer()
                 .oAuth2UserService(oAuth2UserDatabaseProvider)
                 .successHandler(oAuth2successHandler)
                 .failureHandler(failureHandler)
@@ -55,27 +50,25 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/static/**").permitAll()
                         .anyRequest().authenticated()
         );
-        return http.formLogin(configurer -> {
-            configurer.loginPage(LOGIN_PAGE)
-                    .loginProcessingUrl(LOGIN_PAGE)
-                    .successHandler(loginRequestSuccessHandler)
-                    .failureHandler(failureHandler);
-        }).build();
+
+        return http
+                .formLogin(configurer ->
+                        configurer.loginPage(LOGIN_PAGE)
+                                .loginProcessingUrl(LOGIN_PAGE)
+                                .successHandler(loginRequestSuccessHandler)
+                                .failureHandler(failureHandler))
+                .build();
     }
 
     @PostConstruct
     private void initializeHandlers() {
-        // создаём кастомный AuthenticationSuccessHandler для формы логина
         this.loginRequestSuccessHandler = new SorfaceAuthenticationSuccessHandler(
-                "http://localhost:8080/",
-                "J-Sso-Next-Location"
+                "http://localhost:8080/", "J-Sso-Next-Location"
         );
 
-        // указываем стандартный AuthenticationSuccessHandler для OAuth2 Client
-        this.oAuth2successHandler = new SimpleUrlAuthenticationSuccessHandler(
-                "http://localhost:8080/"
-        );
+        this.oAuth2successHandler = new SimpleUrlAuthenticationSuccessHandler("http://localhost:8080/");
 
-        this.failureHandler = new SimpleUrlAuthenticationFailureHandler();
+        this.failureHandler = new SimpleUrlAuthenticationFailureHandler("http://localhost:8080/error");
     }
+
 }

@@ -1,5 +1,6 @@
 package by.sorface.ssoserver.config;
 
+import by.sorface.ssoserver.constants.enums.UrlPatterns;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,17 +31,18 @@ public class OAuth2ServerConfig {
     public SecurityFilterChain authServerSecurityFilterChain(final HttpSecurity http) throws Exception {
         final OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
-        RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
+        final RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
+
         http.securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                // ендпоинты которые вынесем из под security
-                                .requestMatchers("/login", "/static/**").permitAll()
+                                .requestMatchers(UrlPatterns.toArray()).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
                 .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
                 .apply(authorizationServerConfigurer);
+
         return http.build();
     }
 
