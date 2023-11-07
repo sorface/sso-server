@@ -1,4 +1,4 @@
-package by.sorface.ssoserver;
+package by.sorface.ssoserver.records;
 
 import lombok.Data;
 

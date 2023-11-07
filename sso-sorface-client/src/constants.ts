@@ -12,6 +12,8 @@ export const enum Captions {
   Home = 'Home',
   SignUp = 'Sign up',
   SignUpLink = 'You do not have an account? Register!',
+  SignInGitHub = 'SignIn with GitHub',
+  SignInYandex = 'SignIn with Yandex',
   Signin = 'Signin',
   SignIn = 'Sign in',
   SignInLink = 'You have an account? Sign In!',

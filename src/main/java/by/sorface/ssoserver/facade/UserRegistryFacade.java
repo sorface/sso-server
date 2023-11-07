@@ -1,6 +1,6 @@
 package by.sorface.ssoserver.facade;
 
-import by.sorface.ssoserver.UserRecord;
+import by.sorface.ssoserver.records.UserRecord;
 import by.sorface.ssoserver.dao.models.RegistryTokenEntity;
 import by.sorface.ssoserver.dao.models.UserEntity;
 import by.sorface.ssoserver.exceptions.NotFoundException;

@@ -1,6 +1,6 @@
 package by.sorface.ssoserver.mappers;
 
-import by.sorface.ssoserver.UserRecord;
+import by.sorface.ssoserver.records.UserRecord;
 import by.sorface.ssoserver.dao.models.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,4 +1,4 @@
-package by.sorface.ssoserver.config;
+package by.sorface.ssoserver.config.properties;
 
 import lombok.Getter;
 import lombok.Setter;

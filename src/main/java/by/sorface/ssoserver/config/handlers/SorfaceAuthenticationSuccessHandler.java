@@ -1,4 +1,4 @@
-package by.sorface.ssoserver.config;
+package by.sorface.ssoserver.config.handlers;
 
 import by.sorface.ssoserver.records.SorfaceUser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,8 +20,8 @@ public class SorfaceAuthenticationSuccessHandler implements AuthenticationSucces
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         final SorfaceUser principal = (SorfaceUser) authentication.getPrincipal();
 
-        log.debug("User sign in success with id [{}], email [{}], username: [{}]", principal.getId(), principal.getEmail(),
-                principal.getUsername());
+        log.debug("User sign in success with id [{}], email [{}], username: [{}]",
+                principal.getId(), principal.getEmail(), principal.getUsername());
 
         response.setHeader(headerName, locationUrl);
     }

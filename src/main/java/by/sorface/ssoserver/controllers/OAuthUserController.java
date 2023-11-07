@@ -1,6 +1,6 @@
 package by.sorface.ssoserver.controllers;
 
-import by.sorface.ssoserver.UserRecord;
+import by.sorface.ssoserver.records.UserRecord;
 import by.sorface.ssoserver.facade.UserFacadeService;
 import by.sorface.ssoserver.records.responses.UserConfirm;
 import by.sorface.ssoserver.records.responses.UserRegistered;
