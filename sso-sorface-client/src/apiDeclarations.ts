@@ -1,16 +1,16 @@
 import { ApiContractPost } from './types/apiContracts';
 
-export type SignInBody = Record<string, FormDataEntryValue>;
+export type SignUpBody = Record<string, FormDataEntryValue>;
 
 export const usersApiDeclaration = {
-  registry: (body: SignInBody): ApiContractPost => ({
+  registry: (body: SignUpBody): ApiContractPost => ({
     method: 'POST',
     baseUrl: '/users/registry',
     body,
   }),
 };
 
-export const loginApiDeclaration = {
+export const signInApiDeclaration = {
   login: (body: FormData): ApiContractPost => ({
     method: 'POST',
     baseUrl: '/login',

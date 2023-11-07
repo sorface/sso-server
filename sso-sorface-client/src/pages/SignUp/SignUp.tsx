@@ -1,18 +1,17 @@
 import { FormEvent, FunctionComponent, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useApiMethod } from '../../hooks/useApiMethod';
-import { signInApiDeclaration } from '../../apiDeclarations';
+import { SignUpBody, usersApiDeclaration } from '../../apiDeclarations';
 import { Captions, pathnames } from '../../constants';
-import { Field, Form } from '../../components/Form/Form';
+import { Form } from '../../components/Form/Form';
 import { PageLogo } from '../../components/PageLogo/PageLogo';
 
-const fields: Field[] = [
+const fields = [
   {
     name: 'username',
-    placeholder: Captions.Email,
+    placeholder: Captions.Signin,
     autoComplete: 'username',
     required: true,
-    error: 'User with email or username already exists',
   },
   {
     name: 'password',
@@ -20,12 +19,26 @@ const fields: Field[] = [
     type: 'password',
     autoComplete: 'current-password',
     required: true,
-    error: 'Password invalid',
+  },
+  {
+    name: 'email',
+    placeholder: Captions.Email,
+    required: true,
+  },
+  {
+    name: 'firstName',
+    placeholder: Captions.FirstName,
+    required: true,
+  },
+  {
+    name: 'lastName',
+    placeholder: Captions.LastName,
+    required: true,
   },
 ];
 
-export const SignIn: FunctionComponent = () => {
-  const { apiMethodState, fetchData } = useApiMethod<unknown, FormData>(signInApiDeclaration.login);
+export const SignUp: FunctionComponent = () => {
+  const { apiMethodState, fetchData } = useApiMethod<unknown, SignUpBody>(usersApiDeclaration.registry);
   const { process: { loading, error }, data } = apiMethodState;
 
   useEffect(() => {
@@ -39,7 +52,9 @@ export const SignIn: FunctionComponent = () => {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
     const data = new FormData(form);
-    fetchData(data);
+    const formDataObj: Record<string, FormDataEntryValue> = {};
+    data.forEach((value, key) => (formDataObj[key] = value));
+    fetchData(formDataObj);
   };
 
   return (
@@ -49,10 +64,10 @@ export const SignIn: FunctionComponent = () => {
         fields={fields}
         loading={loading}
         error={error}
-        submitCaption={Captions.SignIn}
+        submitCaption={Captions.SignUp}
         onSubmit={handleSignUp}
       >
-        <Link to={pathnames.signUp}>{Captions.SignUpLink}</Link>
+        <Link to={pathnames.signIn}>{Captions.SignInLink}</Link>
       </Form>
     </div>
   );

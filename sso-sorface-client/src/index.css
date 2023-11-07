@@ -1,3 +1,19 @@
+:root {
+  --border: #000033;
+  --primary: #66CCFF;
+  --primary-text: white;
+  --form-content-padding: 0rem 4rem;
+  --error: #FF3333;
+  --link: #0066CC;
+}
+
+@media screen and (max-width: 600px) {
+  :root {
+    --form-content-padding: 0rem 2rem;
+  }
+}
+
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +21,21 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  font-weight: normal;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+a {
+  color: var(--link);
+}
+
+button, input[type="submit"] {
+  width: 100% !important;
+  color: var(--primary-text);
+  background-color: var(--primary);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0rem;
+  text-decoration: none;
+  cursor: pointer;
 }

@@ -5,12 +5,12 @@ import { Captions, pathnames } from '../../constants';
 export const Home: FunctionComponent = () => {
   return (
     <div>
-      <h2>{Captions.Home}</h2>
+      <h1>{Captions.AppTitle}</h1>
       <p>
-        <Link to={pathnames.signIn}>{Captions.SignIn}</Link>
+        <Link to={pathnames.signUp}>{Captions.SignUp}</Link>
       </p>
       <p>
-        <Link to={pathnames.logIn}>{Captions.LogIn}</Link>
+        <Link to={pathnames.signIn}>{Captions.SignIn}</Link>
       </p>
     </div>
   );
