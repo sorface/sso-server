@@ -23,7 +23,7 @@ public class SorfaceUserDatabaseProvider implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        final UserEntity entity = userRepository.findByUsername(username);
+        final UserEntity entity = userRepository.findByUsernameOrEmail(username, username);
 
         return Optional.ofNullable(entity)
                 .map(sorfaceUserMapper::to)

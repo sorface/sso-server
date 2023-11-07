@@ -1,29 +1,37 @@
 package by.sorface.ssoserver.config;
 
+import by.sorface.ssoserver.constants.enums.UrlPatterns;
 import by.sorface.ssoserver.services.providers.OAuth2UserDatabaseProvider;
 import by.sorface.ssoserver.services.providers.SorfaceUserDatabaseProvider;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
-@EnableWebSecurity(debug = true)
+import java.io.IOException;
+
+@EnableWebSecurity
 @EnableMethodSecurity
 @Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    public static final String LOGIN_PAGE = "/login";
+    public static final String LOGIN_PAGE = "/api/login";
 
     private final OAuth2UserDatabaseProvider oAuth2UserDatabaseProvider;
 
@@ -47,7 +55,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(authorize ->
                 authorize
-                        .requestMatchers("/login", "/static/**").permitAll()
+                        .requestMatchers(UrlPatterns.toArray()).permitAll()
                         .anyRequest().authenticated()
         );
 
@@ -68,7 +76,7 @@ public class SecurityConfig {
 
         this.oAuth2successHandler = new SimpleUrlAuthenticationSuccessHandler("http://localhost:8080/");
 
-        this.failureHandler = new SimpleUrlAuthenticationFailureHandler("http://localhost:8080/error");
+        this.failureHandler = (request, response, exception) -> response.setStatus(HttpStatus.BAD_REQUEST.value());
     }
 
 }

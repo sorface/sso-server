@@ -11,7 +11,7 @@ public enum UrlPatterns {
 
     STATIC("/static/**"),
 
-    LOGIN("/login"),
+    LOGIN("/"),
 
     API("/api/**"),
     ;

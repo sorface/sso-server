@@ -6,7 +6,7 @@ import { Captions, pathnames } from '../../constants';
 
 const fields = [
   {
-    name: 'email',
+    name: 'username',
     placeholder: Captions.Email,
     autoComplete: 'username',
     required: true,

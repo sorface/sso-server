@@ -104,7 +104,6 @@ sorface:
       reuse-refresh-token: false
       authorization-code-time-live: 30
 
-
 logging:
   level:
     root: DEBUG

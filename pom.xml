@@ -20,6 +20,8 @@
 
         <liquibase.version>4.20.0</liquibase.version>
 
+        <build-client.phrase>disabled</build-client.phrase>
+
         <security-oauth2-server.version>1.0.2</security-oauth2-server.version>
     </properties>
 
@@ -67,6 +69,10 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
@@ -98,6 +104,28 @@
 
     <profiles>
         <profile>
+            <id>client-build-and-copy</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <build-client.phrase>generate-resources</build-client.phrase>
+                <copy-client-build.phrase>generate-resources</copy-client-build.phrase>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>client-only-copy</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <build-client.phrase>non</build-client.phrase>
+                <copy-client-build.phrase>generate-resources</copy-client-build.phrase>
+            </properties>
+        </profile>
+
+        <profile>
             <id>development</id>
 
             <activation>
@@ -106,6 +134,7 @@
 
             <properties>
                 <h2.version>2.2.224</h2.version>
+                <client-build-command.param>build</client-build-command.param>
             </properties>
 
             <dependencies>
@@ -122,6 +151,8 @@
 
             <properties>
                 <postgresql.version>42.5.1</postgresql.version>
+
+                <client-build-command.param>build</client-build-command.param>
             </properties>
 
             <dependencies>
@@ -153,6 +184,106 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <finalName>${project.name}</finalName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.13.4</version>
+                <configuration>
+                    <nodeVersion>v20.9.0</nodeVersion>
+                    <npmVersion>10.1.0</npmVersion>
+                    <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+                    <npmDownloadRoot>https://registry.npmjs.org/npm/-/</npmDownloadRoot>
+                    <installDirectory>${basedir}/sso-sorface-client/.node</installDirectory>
+                    <workingDirectory>${basedir}/sso-sorface-client</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>npm-install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>npm build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-templates</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/templates</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/sso-sorface-client/build</directory>
+                                    <includes>
+                                        <include>index.html</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-static</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/static</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/sso-sorface-client/build</directory>
+                                    <includes>
+                                        <include>**.ico</include>
+                                        <include>**/js/**</include>
+                                        <include>**/css/**</include>
+                                        <include>**/img/**</include>
+                                        <include>**.json</include>
+                                        <include>**.txt</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${basedir}/sso-sorface-client</directory>
+                            <includes>
+                                <include>build/</include>
+                            </includes>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
                 </configuration>
             </plugin>
         </plugins>
