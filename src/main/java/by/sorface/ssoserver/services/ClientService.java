@@ -2,20 +2,23 @@ package by.sorface.ssoserver.services;
 
 import by.sorface.ssoserver.dao.models.OAuth2Client;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.stereotype.Service;
 
+import javax.naming.AuthenticationException;
+import java.nio.file.AccessDeniedException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,16 +54,26 @@ public class ClientService implements RegisteredClientRepository {
         oAuth2ClientService.save(oAuth2Client);
     }
 
+    @SneakyThrows
     @Override
     public RegisteredClient findById(final String id) {
         final OAuth2Client oAuth2Client = oAuth2ClientService.findById(UUID.fromString(id));
 
+        if (Objects.isNull(oAuth2Client)) {
+            throw new AccessDeniedException("client not found");
+        }
+
         return this.buildClient(oAuth2Client);
     }
 
+    @SneakyThrows
     @Override
     public RegisteredClient findByClientId(final String clientId) {
         final OAuth2Client oAuth2Client = oAuth2ClientService.findByClientId(clientId);
+
+        if (Objects.isNull(oAuth2Client)) {
+            throw new AccessDeniedException("client not found");
+        }
 
         return buildClient(oAuth2Client);
     }
@@ -71,6 +84,10 @@ public class ClientService implements RegisteredClientRepository {
 
         final var tokenSettings = TokenSettings.builder()
                 .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
+                .accessTokenTimeToLive(Duration.of(30, ChronoUnit.MINUTES))
+                .refreshTokenTimeToLive(Duration.of(120, ChronoUnit.MINUTES))
+                .reuseRefreshTokens(false)
+                .authorizationCodeTimeToLive(Duration.of(30, ChronoUnit.SECONDS))
                 .build();
 
         final var authorizationCodes = Set.of(
@@ -78,7 +95,10 @@ public class ClientService implements RegisteredClientRepository {
                 AuthorizationGrantType.REFRESH_TOKEN
         );
 
-        final var clientSecretBasic = ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
+        final var clientsAuthMethod = List.of(
+                ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
+                ClientAuthenticationMethod.CLIENT_SECRET_POST
+        );
 
         return RegisteredClient
                 .withId(oAuth2Client.getId().toString())
@@ -87,7 +107,7 @@ public class ClientService implements RegisteredClientRepository {
                 .clientIdIssuedAt(oAuth2Client.getClientIdIssueAt().toInstant(ZoneOffset.UTC))
                 .clientSecretExpiresAt(oAuth2Client.getClientSecretExpiresAt().toInstant(ZoneOffset.UTC))
                 .clientName(oAuth2Client.getClientName())
-                .clientAuthenticationMethods(clientAuthenticationMethods -> clientAuthenticationMethods.add(clientSecretBasic))
+                .clientAuthenticationMethods(clientAuthenticationMethods -> clientAuthenticationMethods.addAll(clientsAuthMethod))
                 .authorizationGrantTypes(authorizationGrantTypes -> authorizationGrantTypes.addAll(authorizationCodes))
                 .redirectUris(redirectUris -> redirectUris.addAll(redirectUrls))
                 .scopes(scopeFunc -> scopeFunc.addAll(scopes))

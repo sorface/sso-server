@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter } from 'react-router-dom';
+import {BrowserRouter} from 'react-router-dom';
 import { AppRoutes } from './routes/AppRoutes';
 
 import './App.css';
@@ -7,7 +7,7 @@ import { REACT_APP_VERSION } from './config';
 
 function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <div className="App">
         <div className="App-content">
           <AppRoutes />
@@ -16,7 +16,7 @@ function App() {
           <div>{REACT_APP_VERSION}</div>
         </footer>
       </div>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 

@@ -2,6 +2,23 @@
 spring:
   application:
     name: sorface-sso
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  mvc:
+    static-path-pattern: /static/**
+    cors:
+      configs:
+        - pattern: /**
+          allowed-origins: "http://127.0.0.1:8080,http://localhost:5043"
+          allowed-headers: "*"
+          exposed-headers: "*"
+          allowed-methods: "*"
+          allow-credentials: true
+  web:
+    resources:
+      static-locations: classpath:static
+
   security:
     oauth2:
       authorizationserver:
@@ -15,8 +32,8 @@ spring:
             client-secret: 5c7ea6108598e249b56dc9784e31c4b05b542d98
           google:
             client-name: google
-            clientId: 574812042094-qjpjr93sr0eg4ha6q1l3qia0bcvsa4dj.apps.googleusercontent.com
-            clientSecret: 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
+            clientId: 574812042094-9t4sbk2hc7cr6q9hapdcg6edd5no56gd.apps.googleusercontent.com
+            clientSecret: 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
             authorization-grant-type: authorization_code
           yandex:
             client-name: yandex
@@ -31,6 +48,11 @@ spring:
             token-uri: https://oauth.yandex.ru/token
             user-name-attribute: default_email
             userInfoUri: https://login.yandex.ru/info
+      resourceserver:
+        opaquetoken:
+          introspection-uri: "/oauth2/introspect"
+          client-id: charp
+          client-secret: password
 
   mail:
     username: welcome@sorface.com
@@ -61,6 +83,10 @@ spring:
     activate:
       on-profile: development
 
+  security:
+    oauth2:
+      authorizationserver:
+        issuer-url: http://localhost:8888
   web:
     resources:
       static-locations: classpath:static
@@ -68,21 +94,21 @@ spring:
   session:
     timeout: 1800
     redis:
-      flush-mode: on_save         # Указываем, когда изменения сеанса записываются в хранилище (immediate или on_save)
-      namespace: j-sso:session    # Пространство имен для ключей, используемых для хранения сессий.
-      save-mode: on_set_attribute # Определяет в какой момент происходит сохранение изменений сессии (on_set_attribute, on_get_attribute, always)
+      flush-mode: on_save
+      namespace: sorface:session
+      save-mode: on_set_attribute
 
   data:
-    redis: # Настраиваем подключение к Redis
-      client-type: lettuce        # Указываем тип клиента Redis (jedis или lettuce)
-      database: 0                 # Указываем номер БД Redis
-      host: localhost             # Хост подключения
-      port: 6379                  # Порт подключения
-      password: qwerty    # Пароль подключения
-      lettuce: # Настраиваем пул подключений клиента lettuce
+    redis:
+      client-type: lettuce
+      database: 0
+      host: localhost
+      port: 6379
+      password: qwerty
+      lettuce:
         pool:
-          max-active: 16          # Максимальное количество подключений в пуле
-          max-idle: 8             # Минимальное количество "idle" подключений в пуле
+          max-active: 16
+          max-idle: 8
 
   jpa:
     show-sql: true
@@ -109,9 +135,93 @@ logging:
     root: DEBUG
     org.springframework.security.web.FilterChainProxy: TRACE
     org.springframework.security: TRACE
-    logging.level.org.hibernate.SQL: INFO
-    com.zaxxer.hikari: ERROR
-    org.postgresql: ERROR
+#    logging.level.org.hibernate.SQL: INFO
+#    com.zaxxer.hikari: ERROR
+#    org.postgresql: ERROR
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  web:
+    resources:
+      static-locations: classpath:static
+  security:
+    oauth2:
+      authorizationserver:
+        issuer-url: http://localhost:8888
+        introspection-endpoint: /oauth2/token-info
+      client:
+        registration:
+          github:
+            client-name: github
+            client-id: 43794d53ae6c719cfa3d
+            client-secret: 5c7ea6108598e249b56dc9784e31c4b05b542d98
+            redirect-uri: http://localhost:8888/login/oauth2/code/github
+          google:
+            client-name: google
+            clientId: 574812042094-9t4sbk2hc7cr6q9hapdcg6edd5no56gd.apps.googleusercontent.com
+            clientSecret: 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
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8888/login/oauth2/code/google
+          yandex:
+            client-name: yandex
+            client-id: ee1bdcc325294d8a915db0ede6911b85
+            client-secret: 0598eae2d4b1495f9b0b7d5923b11913
+            authorization-grant-type: authorization_code
+            provider: yandex
+            redirect-uri: http://localhost:8888/login/oauth2/code/yandex
+        provider:
+          yandex:
+            authorization-uri: https://oauth.yandex.ru/authorize
+            token-uri: https://oauth.yandex.ru/token
+            user-name-attribute: default_email
+            userInfoUri: https://login.yandex.ru/info
+
+  session:
+    timeout: 1800
+    redis:
+      flush-mode: on_save
+      namespace: sorface:session
+      save-mode: on_set_attribute
+
+  data:
+    redis:
+      client-type: lettuce
+      database: 0
+      host: redis
+      port: 6379
+      password: qwerty
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+
+  jpa:
+    show-sql: true
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  datasource:
+    url: jdbc:h2:file:./sorface-sso;AUTO_SERVER=TRUE
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+
+sorface:
+  sso:
+    token:
+      format: REFERENCE
+      access-time-live: 30
+      refresh-time-live: 120
+      reuse-refresh-token: false
+      authorization-code-time-live: 30
+
+logging:
+  level:
+    root: INFO
 ---
 
 # production

@@ -54,10 +54,13 @@ export const SignIn: FunctionComponent = () => {
             >
                 <Link to={pathnames.signUp}>{Captions.SignUpLink}</Link>
                 <p>
-                    <a href={"http://localhost:8080/oauth2/authorization/github"}>{Captions.SignInGitHub}</a>
+                    <a href={"/oauth2/authorization/github"}>{Captions.SignInGitHub}</a>
                 </p>
                 <p>
-                    <a href={"http://localhost:8080/oauth2/authorization/yandex"}>{Captions.SignInYandex}</a>
+                    <a href={"/oauth2/authorization/yandex"}>{Captions.SignInYandex}</a>
+                </p>
+                <p>
+                    <a href={"/oauth2/authorization/google"}>{Captions.SignInGoogle}</a>
                 </p>
             </Form>
         </div>

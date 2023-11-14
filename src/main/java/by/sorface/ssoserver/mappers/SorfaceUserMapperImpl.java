@@ -3,12 +3,15 @@ package by.sorface.ssoserver.mappers;
 import by.sorface.ssoserver.dao.models.RoleEntity;
 import by.sorface.ssoserver.dao.models.UserEntity;
 import by.sorface.ssoserver.records.SorfaceUser;
+import com.nimbusds.jose.crypto.PasswordBasedEncrypter;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -18,7 +21,9 @@ public class SorfaceUserMapperImpl implements SorfaceUserMapper {
     public SorfaceUser to(final UserEntity user) {
         final List<GrantedAuthority> authorities = this.convertRoles(user.getRoles());
 
-        final var sorfaceUser = new SorfaceUser(user.getUsername(), user.getPassword(), true, authorities);
+        final String userPassword = Optional.ofNullable(user.getPassword()).orElse(Strings.EMPTY);
+
+        final var sorfaceUser = new SorfaceUser(user.getUsername(), userPassword, true, authorities);
         {
             sorfaceUser.setId(user.getId());
             sorfaceUser.setFirstName(user.getFirstName());
@@ -33,7 +38,8 @@ public class SorfaceUserMapperImpl implements SorfaceUserMapper {
     }
 
     private List<GrantedAuthority> convertRoles(final Collection<? extends RoleEntity> roles) {
-        return roles.stream()
+        return Optional.ofNullable(roles).stream()
+                .flatMap(Collection::stream)
                 .map(role -> new SimpleGrantedAuthority(role.getValue()))
                 .collect(Collectors.toList());
     }

@@ -4,23 +4,39 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
 public enum UrlPatterns {
 
-    STATIC("/static/**"),
+    TECH(
+            List.of("/oauth2/introspect")
+    ),
 
-    LOGIN("/"),
+    API(
+            List.of("/api/**")
+    ),
 
-    API("/api/**"),
-    ;
+    STATIC(
+            List.of("/static/**")
+    ),
 
-    private final String pattern;
+    FRONTEND(
+            List.of(
+                    "/",
+                    "/signin",
+                    "/signup"
+            )
+    );
+
+    private final List<String> patterns;
 
     public static String[] toArray() {
         return Arrays.stream(UrlPatterns.values())
-                .map(UrlPatterns::getPattern)
+                .map(UrlPatterns::getPatterns)
+                .flatMap(Collection::stream)
                 .toArray(String[]::new);
     }
 

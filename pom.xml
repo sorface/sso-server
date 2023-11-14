@@ -255,15 +255,20 @@
                             <outputDirectory>${basedir}/target/classes/static</outputDirectory>
                             <resources>
                                 <resource>
+                                    <directory>${basedir}/sso-sorface-client/build/static</directory>
+                                    <includes>
+
+                                        <include>js/**</include>
+                                        <include>css/**</include>
+                                        <include>media/**.jpg</include>
+                                    </includes>
+                                </resource>
+                                <resource>
                                     <directory>${basedir}/sso-sorface-client/build</directory>
                                     <includes>
                                         <include>**.ico</include>
-                                        <include>**/js/**</include>
-                                        <include>**/css/**</include>
-                                        <include>**/img/**</include>
-                                        <include>**.json</include>
-                                        <include>**.txt</include>
-                                        <include>**/media/**.jpg</include>
+                                        <include>*.json</include>
+                                        <include>*.txt</include>
                                     </includes>
                                 </resource>
                             </resources>
