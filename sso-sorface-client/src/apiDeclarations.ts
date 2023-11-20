@@ -5,7 +5,7 @@ export type SignUpBody = Record<string, FormDataEntryValue>;
 export const usersApiDeclaration = {
   registry: (body: SignUpBody): ApiContractPost => ({
     method: 'POST',
-    baseUrl: '/users/registry',
+    baseUrl: '/api/users/registry',
     body,
   }),
 };
@@ -13,7 +13,7 @@ export const usersApiDeclaration = {
 export const signInApiDeclaration = {
   login: (body: FormData): ApiContractPost => ({
     method: 'POST',
-    baseUrl: '/signin',
+    baseUrl: '/login',
     body,
   }),
 };

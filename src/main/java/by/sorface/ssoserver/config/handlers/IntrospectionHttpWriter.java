@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 
-public interface IntrospectionWriter {
+public interface IntrospectionHttpWriter {
 
     void write(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException;
 

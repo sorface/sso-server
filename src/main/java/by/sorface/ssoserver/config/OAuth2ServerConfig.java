@@ -1,6 +1,6 @@
 package by.sorface.ssoserver.config;
 
-import by.sorface.ssoserver.config.handlers.IntrospectionWriter;
+import by.sorface.ssoserver.config.handlers.IntrospectionHttpWriter;
 import by.sorface.ssoserver.config.properties.AuthorizationServerProperties;
 import by.sorface.ssoserver.constants.enums.UrlPatterns;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @Configuration(proxyBeanMethods = false)
 public class OAuth2ServerConfig {
 
-    private final IntrospectionWriter introspectionWriter;
+    private final IntrospectionHttpWriter introspectionHttpWriter;
 
     /**
      * Конфигурация OAuth2 Spring Security
@@ -36,11 +36,8 @@ public class OAuth2ServerConfig {
         final OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
         authorizationServerConfigurer
-                .tokenIntrospectionEndpoint((tokenIntrospectionEndpointConfigurer) -> {
-                    tokenIntrospectionEndpointConfigurer.introspectionResponseHandler((request, response, authentication) -> {
-                        introspectionWriter.write(request, response, authentication);
-                    });
-                });
+                .tokenIntrospectionEndpoint(tokenIntrospectionEndpointConfigurer ->
+                        tokenIntrospectionEndpointConfigurer.introspectionResponseHandler(introspectionHttpWriter::write));
 
         final RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
@@ -52,7 +49,7 @@ public class OAuth2ServerConfig {
                 )
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
                 .exceptionHandling(exceptionHandlingConfigurer -> {
-                    final var authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/signin");
+                    final var authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/login");
 
                     exceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint);
                 })

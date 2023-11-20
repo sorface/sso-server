@@ -46,11 +46,12 @@ export const SignIn: FunctionComponent = () => {
         <div>
             <PageLogo/>
             <Form
+                httpMethod="POST"
+                url="/login"
                 fields={fields}
                 loading={loading}
                 error={error}
                 submitCaption={Captions.SignIn}
-                onSubmit={handleSignUp}
             >
                 <Link to={pathnames.signUp}>{Captions.SignUpLink}</Link>
                 <p>

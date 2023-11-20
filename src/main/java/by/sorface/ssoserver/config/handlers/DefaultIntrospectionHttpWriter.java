@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class DefaultIntrospectionWriter implements IntrospectionWriter {
+public class DefaultIntrospectionHttpWriter implements IntrospectionHttpWriter {
 
     private final static String principalAttributeKey = "java.security.Principal";
 
@@ -76,10 +76,9 @@ public class DefaultIntrospectionWriter implements IntrospectionWriter {
 
         if (attributeAuth.getPrincipal() instanceof SorfaceUser authorizedUser) {
             tokenRecordBuilder.principal(IntrospectionPrincipal.build(authorizedUser));
-        } else {
+        } else{
             throw new RuntimeException("Principal class = " + attributeAuth.getPrincipal().getClass().getSimpleName() + " is not supported");
         }
-
         return tokenRecordBuilder.build();
     }
 

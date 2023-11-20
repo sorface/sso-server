@@ -26,7 +26,7 @@ public enum UrlPatterns {
     FRONTEND(
             List.of(
                     "/",
-                    "/signin",
+                    "/login",
                     "/signup"
             )
     );

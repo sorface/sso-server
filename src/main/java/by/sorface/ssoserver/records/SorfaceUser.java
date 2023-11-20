@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.time.LocalDate;
@@ -15,7 +19,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SorfaceUser extends User implements OAuth2User {
+public class SorfaceUser extends User implements OAuth2User, OidcUser {
 
     /**
      * Внутренний идентификатор пользователя
@@ -68,5 +72,19 @@ public class SorfaceUser extends User implements OAuth2User {
         return this.getUsername();
     }
 
+    @Override
+    public Map<String, Object> getClaims() {
+        return oauthAttributes;
+    }
+
+    @Override
+    public OidcUserInfo getUserInfo() {
+        return getUserInfo();
+    }
+
+    @Override
+    public OidcIdToken getIdToken() {
+        return getIdToken();
+    }
 }
 

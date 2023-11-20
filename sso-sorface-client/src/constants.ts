@@ -1,7 +1,7 @@
 export const pathnames = {
   home: '/',
   signUp: '/signup',
-  signIn: '/signin',
+  signIn: '/login',
 };
 
 export const enum Captions {

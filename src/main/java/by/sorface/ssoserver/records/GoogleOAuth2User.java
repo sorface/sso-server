@@ -29,9 +29,9 @@ public class GoogleOAuth2User implements SocialOAuth2User {
     private  Map<String, Object> attributes;
 
     public static GoogleOAuth2User parse(final OAuth2User oAuth2User) {
-        final var id = String.valueOf(oAuth2User.getAttributes().get("id"));
-        final var avatarUrl = String.valueOf(oAuth2User.getAttributes().get("avatar_url"));
-        final var login = String.valueOf(oAuth2User.getAttributes().get("login"));
+        final var id = String.valueOf(oAuth2User.getAttributes().get("sub"));
+        final var avatarUrl = String.valueOf(oAuth2User.getAttributes().get("picture"));
+        final var login = String.valueOf(oAuth2User.getAttributes().get("email"));
         final var name = String.valueOf(oAuth2User.getAttributes().get("name"));
         final var email = String.valueOf(oAuth2User.getAttributes().get("email"));
 

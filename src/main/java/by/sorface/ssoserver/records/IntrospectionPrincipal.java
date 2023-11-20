@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -47,4 +49,5 @@ public class IntrospectionPrincipal {
                 .authorities(authorities)
                 .build();
     }
+
 }

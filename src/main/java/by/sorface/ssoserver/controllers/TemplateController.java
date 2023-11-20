@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class TemplateController {
 
-    @GetMapping({"/signin", "/signup", "/", "error"})
+    @GetMapping({"/login", "/signup", "/", "error"})
     public String index() {
         return "index";
     }
