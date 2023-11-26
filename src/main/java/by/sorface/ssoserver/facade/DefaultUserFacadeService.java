@@ -1,6 +1,6 @@
 package by.sorface.ssoserver.facade;
 
-import by.sorface.ssoserver.records.UserRecord;
+import by.sorface.ssoserver.records.UserRegistryRecord;
 import by.sorface.ssoserver.records.MailRequest;
 import by.sorface.ssoserver.records.responses.UserConfirm;
 import by.sorface.ssoserver.records.responses.UserRegistered;
@@ -23,7 +23,7 @@ public class DefaultUserFacadeService implements UserFacadeService {
     private final UserRegistryFacade userRegistryFacade;
 
     @Override
-    public UserRegistered registry(final UserRecord user) {
+    public UserRegistered registry(final UserRegistryRecord user) {
         final UserRegisteredHash registry = userRegistryFacade.registry(user);
 
         log.info("User registration completed. [account id - {}]", registry.getId());
@@ -50,7 +50,7 @@ public class DefaultUserFacadeService implements UserFacadeService {
         return userRegistryFacade.confirmByToken(token);
     }
 
-    public UserRegistered resendConfirmEmail(final String email) {
+    public UserRegistered resendConfirmationEmail(final String email) {
         final UserRegisteredHash userRegisteredHash = userRegistryFacade.findRegisteredTokenByEmail(email);
 
         final var mails = List.of(

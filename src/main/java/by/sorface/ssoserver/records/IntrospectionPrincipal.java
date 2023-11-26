@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -26,7 +24,7 @@ public class IntrospectionPrincipal {
     private String email;
     private List<String> authorities;
 
-    public static IntrospectionPrincipal build(final SorfaceUser authorizedUser) {
+    public static IntrospectionPrincipal build(final SorfacePrincipal authorizedUser) {
         if (Objects.isNull(authorizedUser)) {
             return null;
         }

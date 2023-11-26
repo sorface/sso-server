@@ -1,6 +1,6 @@
 package by.sorface.ssoserver.facade;
 
-import by.sorface.ssoserver.records.UserRecord;
+import by.sorface.ssoserver.records.UserRegistryRecord;
 import by.sorface.ssoserver.dao.models.RegistryTokenEntity;
 import by.sorface.ssoserver.dao.models.UserEntity;
 import by.sorface.ssoserver.exceptions.NotFoundException;
@@ -33,7 +33,7 @@ public class UserRegistryFacade {
     private final UserToUserEntityMapper userToUserEntityMapper;
 
     @Transactional
-    public UserRegisteredHash registry(final UserRecord user) throws UserRequestException {
+    public UserRegisteredHash registry(final UserRegistryRecord user) throws UserRequestException {
         log.info("User registration request received");
 
         final UserEntity foundUserByEmail = userService.findByEmail(user.getEmail());

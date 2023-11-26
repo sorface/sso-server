@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -19,46 +18,54 @@ import java.util.UUID;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SorfaceUser extends User implements OAuth2User, OidcUser {
+public class SorfacePrincipal extends User implements OAuth2User, OidcUser {
 
     /**
-     * Внутренний идентификатор пользователя
+     * Internal user id
      */
     private UUID id;
 
     /**
-     * Имя пользователя
+     * firstname user
      */
     private String firstName;
 
     /**
-     * Фамилия пользователя
+     * surname user
      */
     private String lastName;
 
     /**
-     * Отчество пользователя
+     * middleName user
      */
     private String middleName;
 
     /**
-     * Дата рождения пользователя
+     * birthday of user
      */
     private LocalDate birthday;
 
     /**
-     * Ссылка на изображение пользователя
+     * link to avatar of user
      */
     private String avatarUrl;
 
     /**
-     * Электронная почта пользователя
+     * email of user
      */
     private String email;
 
+    /**
+     * confirmed email
+     */
+    private boolean confirm;
+
+    /**
+     * Other users
+     */
     private Map<String, Object> oauthAttributes;
 
-    public SorfaceUser(final String username, final String password, final boolean enabled, final Collection<? extends GrantedAuthority> authorities) {
+    public SorfacePrincipal(final String username, final String password, final boolean enabled, final Collection<? extends GrantedAuthority> authorities) {
         super(username, password, enabled, true, true, true, authorities);
     }
 

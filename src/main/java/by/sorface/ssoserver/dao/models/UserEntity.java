@@ -49,4 +49,7 @@ public class UserEntity extends BaseEntity {
     @Column(name = "C_ISENABLED", nullable = false)
     private boolean enabled;
 
+    @Column(name = "C_CONFIRMED", nullable = false)
+    private boolean confirm;
+
 }

@@ -1,7 +1,7 @@
 package by.sorface.ssoserver.mappers;
 
 import by.sorface.ssoserver.dao.models.UserEntity;
-import by.sorface.ssoserver.records.SorfaceUser;
+import by.sorface.ssoserver.records.SorfacePrincipal;
 
 public interface SorfaceUserMapper {
 
@@ -11,6 +11,6 @@ public interface SorfaceUserMapper {
      * @param user доменный пользователь
      * @return principle
      */
-    SorfaceUser to(final UserEntity user);
+    SorfacePrincipal to(final UserEntity user);
 
 }

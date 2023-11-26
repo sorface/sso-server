@@ -1,7 +1,6 @@
 package by.sorface.ssoserver.config;
 
 import by.sorface.ssoserver.config.handlers.IntrospectionHttpWriter;
-import by.sorface.ssoserver.config.properties.AuthorizationServerProperties;
 import by.sorface.ssoserver.constants.enums.UrlPatterns;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,7 +25,7 @@ public class OAuth2ServerConfig {
     private final IntrospectionHttpWriter introspectionHttpWriter;
 
     /**
-     * Конфигурация OAuth2 Spring Security
+     * Configuration OAuth2 Spring Security
      *
      * @param http configuring web based security
      * @return security chain
@@ -41,26 +42,41 @@ public class OAuth2ServerConfig {
 
         final RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
-        http.securityMatcher(endpointsMatcher)
-                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry
-                                .requestMatchers(UrlPatterns.toArray()).permitAll()
-                                .anyRequest().authenticated()
-                )
+        http
+                .securityMatcher(endpointsMatcher)
+                .authorizeHttpRequests(this::configureAuthorizeHttRequest)
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-                .exceptionHandling(exceptionHandlingConfigurer -> {
-                    final var authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/login");
-
-                    exceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint);
-                })
+                .exceptionHandling(this::configureExceptionHandling)
                 .apply(authorizationServerConfigurer);
 
         return http.build();
     }
 
     @Bean
-    public AuthorizationServerSettings authorizationServerSettings(final AuthorizationServerProperties authorizationServerProperties) {
+    public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
+    }
+
+    /**
+     * configuration http matcher registry
+     *
+     * @param authorizationManagerRequestMatcherRegistry config object
+     */
+    private void configureAuthorizeHttRequest(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorizationManagerRequestMatcherRegistry) {
+        authorizationManagerRequestMatcherRegistry
+                .requestMatchers(UrlPatterns.toArray()).permitAll()
+                .anyRequest().authenticated();
+    }
+
+    /**
+     * configuration exception handling
+     *
+     * @param exceptionHandlingConfigurer config object
+     */
+    private void configureExceptionHandling(ExceptionHandlingConfigurer<HttpSecurity> exceptionHandlingConfigurer) {
+        final var authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/login");
+
+        exceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint);
     }
 
 }

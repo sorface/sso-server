@@ -1,19 +1,13 @@
 package by.sorface.ssoserver.controllers;
 
-import by.sorface.ssoserver.config.SecurityConfig;
-import by.sorface.ssoserver.records.UserRecord;
+import by.sorface.ssoserver.records.UserRegistryRecord;
 import by.sorface.ssoserver.facade.UserFacadeService;
 import by.sorface.ssoserver.records.responses.UserConfirm;
 import by.sorface.ssoserver.records.responses.UserRegistered;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -23,7 +17,7 @@ public class OAuthUserController {
     private final UserFacadeService userFacadeService;
 
     @PostMapping("/registry")
-    public ResponseEntity<UserRegistered> registry(@RequestBody final UserRecord user) {
+    public ResponseEntity<UserRegistered> registry(@RequestBody final UserRegistryRecord user) {
         final UserRegistered userRegistered = userFacadeService.registry(user);
 
         return ResponseEntity.ok(userRegistered);
@@ -39,7 +33,7 @@ public class OAuthUserController {
 
     @PostMapping("/confirm/{email}/resend")
     public ResponseEntity<UserRegistered> resendConfirmEmail(@PathVariable(name = "email") final String email) {
-        final UserRegistered userRegistered = userFacadeService.resendConfirmEmail(email);
+        final UserRegistered userRegistered = userFacadeService.resendConfirmationEmail(email);
 
         return ResponseEntity.ok(userRegistered);
     }

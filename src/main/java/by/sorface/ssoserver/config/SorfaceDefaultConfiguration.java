@@ -1,7 +1,5 @@
 package by.sorface.ssoserver.config;
 
-import by.sorface.ssoserver.config.properties.SorfaceTokenProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,25 +13,22 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@EnableConfigurationProperties(value = {
-        SorfaceTokenProperties.class
-})
 public class SorfaceDefaultConfiguration {
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        final var configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("*"));
-//        configuration.setAllowedHeaders(List.of("*"));
-//        configuration.setAllowedMethods(List.of("*"));
-//        configuration.setExposedHeaders(List.of("*"));
-//
-//        final var source = new UrlBasedCorsConfigurationSource();
-//
-//        source.registerCorsConfiguration("/**", configuration);
-//
-//        return source;
-//    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        final var configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setExposedHeaders(List.of("*"));
+
+        final var source = new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
 
     @Bean
     public OAuth2AuthorizationService oAuth2AuthorizationService() {

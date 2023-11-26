@@ -61,3 +61,9 @@ databaseChangeLog:
                   type: BOOLEAN
                   constraints:
                     nullable: false
+              - column:
+                  name: C_CONFIRMED
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

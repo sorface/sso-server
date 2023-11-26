@@ -1,10 +1,13 @@
-import {FormEvent, FunctionComponent, useEffect} from 'react';
-import {Link} from 'react-router-dom';
+import React, {FormEvent, FunctionComponent, useEffect} from 'react';
 import {useApiMethod} from '../../hooks/useApiMethod';
 import {signInApiDeclaration} from '../../apiDeclarations';
 import {Captions, pathnames} from '../../constants';
 import {Field, Form} from '../../components/Form/Form';
-import {PageLogo} from '../../components/PageLogo/PageLogo';
+import './SignIn.css';
+import yandexLogo from './img/yandex.svg';
+import googleLogo from './img/google.svg';
+import githubLogo from './img/github.svg';
+import {Link} from "react-router-dom";
 
 const fields: Field[] = [
     {
@@ -44,8 +47,19 @@ export const SignIn: FunctionComponent = () => {
 
     return (
         <div>
-            <PageLogo/>
-            <Form
+            <div className="form-sign-content">
+                <div className="container-sing-form">
+                    <div className="btn-container">
+                        <a className="enter-btn" href={"/oauth2/authorization/github"}><img src={githubLogo}
+                                                                                            alt="sign in with github"/></a>
+                        <a className="enter-btn" href={"/oauth2/authorization/yandex"}><img src={yandexLogo}
+                                                                                            alt="sign in with yandex"/></a>
+                        <a className="enter-btn" href={"/oauth2/authorization/google"}><img src={googleLogo}
+                                                                                            alt="sign in with google"/></a>
+                    </div>
+                </div>
+            </div>
+{/*            <Form
                 httpMethod="POST"
                 url="/login"
                 fields={fields}
@@ -63,7 +77,7 @@ export const SignIn: FunctionComponent = () => {
                 <p>
                     <a href={"/oauth2/authorization/google"}>{Captions.SignInGoogle}</a>
                 </p>
-            </Form>
+            </Form>*/}
         </div>
     );
 };

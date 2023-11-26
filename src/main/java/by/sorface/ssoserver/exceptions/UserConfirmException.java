@@ -4,8 +4,8 @@ import org.springframework.security.core.AuthenticationException;
 
 public class UserConfirmException extends AuthenticationException {
 
-    public UserConfirmException(String msg) {
-        super(msg);
+    public UserConfirmException(final String message) {
+        super(message);
     }
 
 }

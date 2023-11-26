@@ -1,6 +1,5 @@
 package by.sorface.ssoserver.services.providers;
 
-import by.sorface.ssoserver.dao.models.UserEntity;
 import by.sorface.ssoserver.mappers.SorfaceUserMapper;
 import by.sorface.ssoserver.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +19,21 @@ public class SorfaceUserDatabaseProvider implements UserDetailsService {
 
     private final SorfaceUserMapper sorfaceUserMapper;
 
+    /**
+     * Getting an authorized user from the database
+     *
+     * @param username the username identifying the user whose data is required.
+     * @return user details
+     * @throws UsernameNotFoundException when user not found by login or email
+     */
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        final UserEntity entity = userRepository.findByUsernameOrEmail(username, username);
+        final var user = userRepository.findByUsernameOrEmail(username, username);
 
-        return Optional.ofNullable(entity)
+        return Optional.ofNullable(user)
                 .map(sorfaceUserMapper::to)
-                .orElseThrow(() -> new UsernameNotFoundException("User with username {%s} not found".formatted(username)));
+                .orElseThrow(() -> new UsernameNotFoundException("User with username or email {%s} not found".formatted(username)));
     }
+
 }
