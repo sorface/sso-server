@@ -1,5 +1,6 @@
 package by.sorface.ssoserver.config.handlers;
 
+import by.sorface.ssoserver.exceptions.ObjectInvalidException;
 import by.sorface.ssoserver.records.IntrospectionPrincipal;
 import by.sorface.ssoserver.records.SorfacePrincipal;
 import by.sorface.ssoserver.records.TokenRecord;
@@ -75,9 +76,11 @@ public class DefaultIntrospectionHttpWriter implements IntrospectionHttpWriter {
         }
 
         if (attributeAuth.getPrincipal() instanceof SorfacePrincipal authorizedUser) {
-            tokenRecordBuilder.principal(IntrospectionPrincipal.build(authorizedUser));
+            final var introspectionPrincipal = IntrospectionPrincipal.build(authorizedUser);
+
+            tokenRecordBuilder.principal(introspectionPrincipal);
         } else{
-            throw new RuntimeException("Principal class = " + attributeAuth.getPrincipal().getClass().getSimpleName() + " is not supported");
+            throw new ObjectInvalidException("Principal class = " + attributeAuth.getPrincipal().getClass().getSimpleName() + " is not supported");
         }
         return tokenRecordBuilder.build();
     }

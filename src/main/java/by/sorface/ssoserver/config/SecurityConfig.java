@@ -3,21 +3,22 @@ package by.sorface.ssoserver.config;
 import by.sorface.ssoserver.constants.enums.UrlPatterns;
 import by.sorface.ssoserver.services.providers.OAuth2UserDatabaseProvider;
 import by.sorface.ssoserver.services.providers.OidcUserDatabaseProvider;
+import by.sorface.ssoserver.services.providers.SorfaceUserDatabaseProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-
-import java.util.Arrays;
 
 @Slf4j
 @EnableWebSecurity
@@ -56,5 +57,17 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
                 })
                 .build();
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(SorfaceUserDatabaseProvider userDetailsService,
+                                                       PasswordEncoder passwordEncoder) {
+        final var authenticationProvider = new DaoAuthenticationProvider();
+
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+
+        return new ProviderManager(authenticationProvider);
+    }
+
 
 }

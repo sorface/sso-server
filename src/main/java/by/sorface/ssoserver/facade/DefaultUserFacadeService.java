@@ -24,6 +24,8 @@ public class DefaultUserFacadeService implements UserFacadeService {
 
     @Override
     public UserRegistered registry(final UserRegistryRecord user) {
+        log.info("User registration request received {}{}", System.lineSeparator(), Json.lazyStringifyWithMasking(user));
+
         final UserRegisteredHash registry = userRegistryFacade.registry(user);
 
         log.info("User registration completed. [account id - {}]", registry.getId());

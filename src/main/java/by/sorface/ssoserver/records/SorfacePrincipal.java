@@ -86,12 +86,15 @@ public class SorfacePrincipal extends User implements OAuth2User, OidcUser {
 
     @Override
     public OidcUserInfo getUserInfo() {
-        return getUserInfo();
+        return OidcUserInfo.builder()
+                .email(email)
+                .preferredUsername(getUsername())
+                .build();
     }
 
     @Override
     public OidcIdToken getIdToken() {
-        return getIdToken();
+        return OidcIdToken.withTokenValue("value").build();
     }
 }
 
