@@ -49,6 +49,12 @@ public class AuthorizationServerConfig {
         return http.build();
     }
 
+    /**
+     * Configuration of the endpoint object
+     *
+     * @param authorizationServerProperties configuration object
+     * @return configuration object
+     */
     @Bean
     public AuthorizationServerSettings authorizationServerSettings(final AuthorizationServerProperties authorizationServerProperties) {
         return AuthorizationServerSettings.builder()

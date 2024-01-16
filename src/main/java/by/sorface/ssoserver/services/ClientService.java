@@ -12,41 +12,37 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class ClientService implements RegisteredClientRepository {
 
-    public static final String REDIRECT_URL_SPLITERATOR = ";";
+    private static final String REDIRECT_URL_SPLITERATOR = ";";
 
     private final OAuth2ClientService oAuth2ClientService;
 
     @Override
     public void save(final RegisteredClient registeredClient) {
         final var oAuth2Client = new OAuth2Client();
-        {
-            oAuth2Client.setId(UUID.fromString(registeredClient.getId()));
-            oAuth2Client.setClientId(registeredClient.getClientId());
-            oAuth2Client.setClientName(registeredClient.getClientName());
-            oAuth2Client.setClientSecret(registeredClient.getClientSecret());
 
-            final var clientIdIssueAt = registeredClient.getClientIdIssuedAt() != null
-                    ? LocalDateTime.ofInstant(registeredClient.getClientIdIssuedAt(), ZoneOffset.UTC)
-                    : null;
+        final var clientIdIssueAt = registeredClient.getClientIdIssuedAt() != null
+                ? LocalDateTime.ofInstant(registeredClient.getClientIdIssuedAt(), ZoneOffset.UTC)
+                : null;
 
-            oAuth2Client.setClientIdIssueAt(clientIdIssueAt);
+        final LocalDateTime clientSecretExpiresAt = Objects.nonNull(registeredClient.getClientSecretExpiresAt())
+                ? LocalDateTime.ofInstant(registeredClient.getClientSecretExpiresAt(), ZoneOffset.UTC)
+                : null;
 
-            final LocalDateTime clientSecretExpiresAt = registeredClient.getClientSecretExpiresAt() != null
-                    ? LocalDateTime.ofInstant(registeredClient.getClientSecretExpiresAt(), ZoneOffset.UTC)
-                    : null;
+        final String redirectUris = String.join(REDIRECT_URL_SPLITERATOR, registeredClient.getRedirectUris());
 
-            oAuth2Client.setClientSecretExpiresAt(clientSecretExpiresAt);
-            oAuth2Client.setRedirectUris(String.join(REDIRECT_URL_SPLITERATOR, registeredClient.getRedirectUris()));
-        }
+        oAuth2Client.setId(UUID.fromString(registeredClient.getId()));
+        oAuth2Client.setClientId(registeredClient.getClientId());
+        oAuth2Client.setClientName(registeredClient.getClientName());
+        oAuth2Client.setClientSecret(registeredClient.getClientSecret());
+        oAuth2Client.setClientIdIssueAt(clientIdIssueAt);
+        oAuth2Client.setClientSecretExpiresAt(clientSecretExpiresAt);
+        oAuth2Client.setRedirectUris(redirectUris);
 
         oAuth2ClientService.save(oAuth2Client);
     }
