@@ -1,20 +1,30 @@
 .form {
+  --padding: 1.75rem;
+  position: relative;
+  display: inline-block;
+  padding: var(--padding);
+  width: 24rem;
+  box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  margin-top: 2rem;
+  border-radius: var(--border-radius);
+
+}
+
+.form .form-page-logo {
+  position: absolute;
   display: flex;
-  flex-direction: row;
   justify-content: center;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  max-width: 600px;
-  min-width: 100px;
-  padding: 2rem 0rem;
-  text-align: left;
-  margin-left: auto;
-  margin-right: auto;
+  top: -4rem;
+  width: 100%;
+  margin-left: calc(var(--padding) * -1);
 }
 
 .form .form-content {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: var(--form-content-padding);
+  padding-top: 1rem;
 }
 
 .form .form-field-wrapper {
@@ -23,6 +33,11 @@
 
 .form .form-field-error {
   color: var(--error);
+  text-align: left;
+  margin-left: 0.25rem;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  font-weight: bold;
 }
 
 .form .form-status {
@@ -37,14 +52,23 @@
 
 .form label {
   display: block;
-  font-size: 1.15rem;
-  font-weight: normal;
+  color: var(--list-border-color);
+  font-size: 0.75rem;
+  text-align: left;
+  font-weight: bold;
+  margin-left: 0.25rem;
   padding-bottom: 0.25rem;
 }
 
 .form input {
-  width: calc(100% - 8px);
-  font-size: 1.15rem;
+  padding: 2px 1px;
+  width: calc(100% - 12px);
+  height: 2.5rem;
+  font-size: 0.9rem;
+  color: var(--text);
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border-color);
+  border-radius: var(--border-radius);
 }
 
 .form input[type="submit"] {

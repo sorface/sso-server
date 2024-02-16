@@ -1,21 +1,21 @@
-import React, {FormEvent, FunctionComponent, useEffect} from 'react';
-import {useApiMethod} from '../../hooks/useApiMethod';
-import {signInApiDeclaration} from '../../apiDeclarations';
-import {Captions, pathnames} from '../../constants';
-import {Field, Form} from '../../components/Form/Form';
-import './SignIn.css';
+import React, { FunctionComponent, useState, MouseEvent, Fragment } from 'react';
+import { Captions, pathnames } from '../../constants';
+import { Field } from '../../components/Form/Form';
+import { FormFields } from '../../components/Form/FormFields';
+import githubLogo from './img/github.svg';
 import yandexLogo from './img/yandex.svg';
 import googleLogo from './img/google.svg';
-import githubLogo from './img/github.svg';
-import {Link} from "react-router-dom";
+import emailLogo from './img/email-svgrepo-com.svg';
+import './SignIn.css';
+import { FormWrapper } from '../../components/Form/FormWrapper';
+import { Link } from 'react-router-dom';
 
-const fields: Field[] = [
+const emailFields: Field[] = [
     {
         name: 'username',
         placeholder: Captions.Email,
         autoComplete: 'username',
         required: true,
-        error: 'User with email or username already exists',
     },
     {
         name: 'password',
@@ -23,61 +23,78 @@ const fields: Field[] = [
         type: 'password',
         autoComplete: 'current-password',
         required: true,
-        error: 'Password invalid',
     },
 ];
 
 export const SignIn: FunctionComponent = () => {
-    const {apiMethodState, fetchData} = useApiMethod<unknown, FormData>(signInApiDeclaration.login);
-    const {process: {loading, error}, data} = apiMethodState;
+    const [withEmail, setWithEmail] = useState(false);
 
-    useEffect(() => {
-        if (!data) {
-            return;
-        }
-        alert(`Response data: ${JSON.stringify(data)}`)
-    }, [data]);
-
-    const handleSignUp = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const form = event.target as HTMLFormElement;
-        const data = new FormData(form);
-        fetchData(data);
-    };
+    const signinItems = [
+        {
+            name: 'Google',
+            href: '/oauth2/authorization/google',
+            logo: googleLogo,
+        },
+        {
+            name: 'Yandex',
+            href: '/oauth2/authorization/yandex',
+            logo: yandexLogo,
+        },
+        {
+            name: 'Github',
+            href: '/oauth2/authorization/github',
+            logo: githubLogo,
+        },
+        {
+            name: 'Email',
+            href: '#',
+            logo: emailLogo,
+            fields: withEmail ? emailFields : null,
+            onClick: (event: MouseEvent) => {
+                event.preventDefault();
+                setWithEmail(!withEmail);
+            }
+        },
+    ];
 
     return (
-        <div>
-            <div className="form-sign-content">
-                <div className="container-sing-form">
-                    <div className="btn-container">
-                        <a className="enter-btn" href={"/oauth2/authorization/github"}><img src={githubLogo}
-                                                                                            alt="sign in with github"/></a>
-                        <a className="enter-btn" href={"/oauth2/authorization/yandex"}><img src={yandexLogo}
-                                                                                            alt="sign in with yandex"/></a>
-                        <a className="enter-btn" href={"/oauth2/authorization/google"}><img src={googleLogo}
-                                                                                            alt="sign in with google"/></a>
-                    </div>
+        <div className='page-sign'>
+            <FormWrapper>
+                <div className="signin-container">
+                    <h1>{Captions.WelcomeToSSO}</h1>
+                    {signinItems.map(signinItem => (
+                        <Fragment key={signinItem.name}>
+                            {signinItem.fields ? (
+                                <>
+                                    <hr />
+                                    <form method='POST' action='/login'>
+                                        <FormFields fields={signinItem.fields} />
+                                        <input type="submit" value={Captions.SignIn} />
+                                    </form>
+                                    <Link className="signUp-link" to={pathnames.signUp}>{Captions.SignUpLink}</Link>
+                                </>
+                            ) : (
+                                <a
+                                    className="signin-link"
+                                    href={signinItem.href}
+                                    onClick={signinItem.onClick}
+                                >
+                                    <button className='signin-button'>
+                                        <img
+                                            className="signin-logo"
+                                            src={signinItem.logo}
+                                            alt={`${signinItem.name} ${Captions.LogoAlt}`}
+                                        />
+                                        <span className='signin-caption'>
+                                            {Captions.ContinueWith} {signinItem.name}
+                                        </span>
+                                    </button>
+                                </a>
+                            )}
+                        </Fragment>
+                    ))}
                 </div>
-            </div>
-{/*            <Form
-                httpMethod="POST"
-                url="/login"
-                fields={fields}
-                loading={loading}
-                error={error}
-                submitCaption={Captions.SignIn}
-            >
-                <Link to={pathnames.signUp}>{Captions.SignUpLink}</Link>
-                <p>
-                    <a href={"/oauth2/authorization/github"}>{Captions.SignInGitHub}</a>
-                </p>
-                <p>
-                    <a href={"/oauth2/authorization/yandex"}>{Captions.SignInYandex}</a>
-                </p>
-                <p>
-                    <a href={"/oauth2/authorization/google"}>{Captions.SignInGoogle}</a>
-                </p>
-            </Form>*/}
+            </FormWrapper>
         </div>
     );
 };

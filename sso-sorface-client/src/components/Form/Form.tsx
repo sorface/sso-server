@@ -1,5 +1,7 @@
-import {DetailedHTMLProps, FormEvent, FunctionComponent, InputHTMLAttributes, ReactNode} from 'react';
-import {Captions} from '../../constants';
+import { DetailedHTMLProps, FormEvent, FunctionComponent, InputHTMLAttributes, ReactNode } from 'react';
+import { Captions } from '../../constants';
+import { FormWrapper } from './FormWrapper';
+import { FormFields } from './FormFields';
 
 import './Form.css';
 
@@ -8,73 +10,34 @@ export interface Field extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputEl
     error?: string | null;
 }
 
-interface FormProps {
+export interface FormProps {
     fields: Field[];
     loading: boolean;
     error?: string | null;
-    submitCaption: string;
-
-    url?: string;
-
-    httpMethod?: string;
-
+    submitCaption?: string;
     onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
     children?: ReactNode;
 }
 
 export const Form: FunctionComponent<FormProps> = ({
-                                                       fields,
-                                                       loading,
-                                                       error,
-                                                       submitCaption,
-                                                       url,
-                                                       httpMethod,
-                                                       onSubmit,
-                                                       children,
-                                                   }) => {
-    if (onSubmit) {
-        return (
-            <form className='form' onSubmit={onSubmit}>
-                <div className='form-content'>
-                    {fields.map(field => (
-                        <div key={field.name} className='form-field-wrapper'>
-                            <label htmlFor={field.name}>{field.placeholder}:</label>
-                            <input id={field.name} {...field} />
-                            {!!field.error && (
-                                <div className='form-field-error'>{field.error}</div>
-                            )}
-                        </div>
-                    ))}
-                    <input type="submit" value={submitCaption}/>
-                    <div className='form-status'>
-                        {loading && <span>{Captions.Loading}...</span>}
-                        {error && <span className='form-field-error'>{Captions.Error}: {error}</span>}
-                    </div>
-                    {children && <div className='form-additional-content'>{children}</div>}
-                </div>
-            </form>
-        );
-    }
-
+    fields,
+    loading,
+    error,
+    submitCaption,
+    onSubmit,
+    children,
+}) => {
     return (
-        <form className='form' method={httpMethod} action={url}>
-            <div className='form-content'>
-                {fields.map(field => (
-                    <div key={field.name} className='form-field-wrapper'>
-                        <label htmlFor={field.name}>{field.placeholder}:</label>
-                        <input id={field.name} {...field} />
-                        {!!field.error && (
-                            <div className='form-field-error'>{field.error}</div>
-                        )}
-                    </div>
-                ))}
-                <input type="submit" value={submitCaption}/>
+        <FormWrapper>
+            <form onSubmit={onSubmit}>
+                <FormFields fields={fields} />
+                {submitCaption && <input type="submit" value={submitCaption} />}
                 <div className='form-status'>
                     {loading && <span>{Captions.Loading}...</span>}
                     {error && <span className='form-field-error'>{Captions.Error}: {error}</span>}
                 </div>
                 {children && <div className='form-additional-content'>{children}</div>}
-            </div>
-        </form>
+            </form>
+        </FormWrapper>
     );
 };

@@ -3,10 +3,9 @@ import {Link} from 'react-router-dom';
 import {useApiMethod} from '../../hooks/useApiMethod';
 import {SignUpBody, usersApiDeclaration} from '../../apiDeclarations';
 import {Captions, pathnames} from '../../constants';
-import {Form} from '../../components/Form/Form';
-import {PageLogo} from '../../components/PageLogo/PageLogo';
+import {Field, Form} from '../../components/Form/Form';
 
-const fields = [
+const fields: Field[] = [
     {
         name: 'username',
         placeholder: Captions.Signin,
@@ -34,6 +33,7 @@ const fields = [
         name: 'lastName',
         placeholder: Captions.LastName,
         required: true,
+        error: 'test error',
     },
 ];
 
@@ -59,7 +59,6 @@ export const SignUp: FunctionComponent = () => {
 
     return (
         <div>
-            <PageLogo/>
             <Form
                 fields={fields}
                 loading={loading}

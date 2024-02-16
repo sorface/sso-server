@@ -2,15 +2,14 @@
   --border: #000033;
   --primary: #66CCFF;
   --primary-text: white;
-  --form-content-padding: 0rem 4rem;
   --error: #FF3333;
   --link: #0066CC;
-}
-
-@media screen and (max-width: 600px) {
-  :root {
-    --form-content-padding: 0rem 2rem;
-  }
+  --text: #1F1F1F;
+  --page-bg: #F0F0F0;
+  --button-border-color: #D9D9D9;
+  --button-bg: #FFF;
+  --list-border-color: #444;
+  --border-radius: 0.5rem;
 }
 
 
@@ -23,6 +22,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
   font-weight: normal;
+  background-color: var(--page-bg);
 }
 
 a {
@@ -38,4 +38,19 @@ button, input[type="submit"] {
   padding: 0.5rem 0rem;
   text-decoration: none;
   cursor: pointer;
+}
+
+button {
+  color: var(--text);
+  background-color: var(--button-bg);
+  font-size: 0.9rem;
+  padding: 0rem 1rem;
+  height: 2.5rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: 300ms !important;
+  border: 1px solid var(--button-border-color);
+  border-radius: var(--border-radius);
 }
