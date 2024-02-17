@@ -34,8 +34,10 @@
 }
 
 .signin-logo {
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-right: 1px solid var(--button-border-color);
+    padding-right: 0.75rem;
 }
 
 .signin-caption {
