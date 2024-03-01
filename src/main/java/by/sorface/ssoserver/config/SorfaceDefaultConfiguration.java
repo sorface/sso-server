@@ -30,11 +30,6 @@ public class SorfaceDefaultConfiguration {
         return source;
     }
 
-    @Bean
-    public OAuth2AuthorizationService oAuth2AuthorizationService() {
-        return new InMemoryOAuth2AuthorizationService();
-    }
-
     /**
      * Создание компонента кодирования паролей
      *

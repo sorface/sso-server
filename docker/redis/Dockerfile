@@ -1,5 +1,10 @@
-FROM redis
+FROM redis/redis-stack:latest
 
-COPY docker/redis/redis.conf /usr/local/etc/redis/
+WORKDIR /usr/local/redis/
 
-ENTRYPOINT [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+RUN echo ${REDIS_PASSWORD}
+
+ENV PORT 6379
+EXPOSE 6379
+
+CMD [ "redis-stack-server", "--requirepass", "${REDIS_PASSWORD}"]

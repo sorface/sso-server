@@ -92,6 +92,7 @@ public class ClientService implements RegisteredClientRepository {
 
         final var authorizationCodes = Set.of(
                 AuthorizationGrantType.AUTHORIZATION_CODE,
+                AuthorizationGrantType.CLIENT_CREDENTIALS,
                 AuthorizationGrantType.REFRESH_TOKEN
         );
 

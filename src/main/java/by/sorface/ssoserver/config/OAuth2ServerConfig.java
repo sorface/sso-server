@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
@@ -43,9 +42,8 @@ public class OAuth2ServerConfig {
 
         final RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
-        http
-                .securityMatcher(endpointsMatcher)
-                .authorizeHttpRequests(this::configureAuthorizeHttRequest)
+        http.securityMatcher(endpointsMatcher)
+                .authorizeHttpRequests(this::configureAuthorizeHttpRequest)
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
                 .exceptionHandling(this::configureExceptionHandling)
                 .apply(authorizationServerConfigurer);
@@ -63,7 +61,7 @@ public class OAuth2ServerConfig {
      *
      * @param authorizationManagerRequestMatcherRegistry config object
      */
-    private void configureAuthorizeHttRequest(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorizationManagerRequestMatcherRegistry) {
+    private void configureAuthorizeHttpRequest(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorizationManagerRequestMatcherRegistry) {
         authorizationManagerRequestMatcherRegistry
                 .requestMatchers(UrlPatterns.toArray()).permitAll()
                 .anyRequest().authenticated();
@@ -76,7 +74,6 @@ public class OAuth2ServerConfig {
      */
     private void configureExceptionHandling(ExceptionHandlingConfigurer<HttpSecurity> exceptionHandlingConfigurer) {
         final var authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/login");
-
         exceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint);
     }
 

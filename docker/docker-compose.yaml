@@ -4,20 +4,33 @@ services:
   redis:
     container_name: 'redis-server'
     build:
-      context: ../
-      dockerfile: docker/redis/Dockerfile
+      context: .
+      dockerfile: redis/Dockerfile
     restart: unless-stopped
     ports:
       - "6379:6379"
+    env_file:
+      - .docker.redis.env
 
-  sso-sorface:
+  postgresql:
+    container_name: "postgres"
+    build:
+      context: .
+      dockerfile: postgresql/Dockerfile
+    ports:
+      - "5432:5432"
+    env_file:
+      - .docker.pgsql.env
+
+  sso:
     container_name: "sso-sorface"
     build:
       context: ../
-      dockerfile: docker/sso-server/Dockerfile
+      dockerfile: docker/sso/Dockerfile
     depends_on:
       - redis
+      - postgresql
     ports:
-      - '8888:8080'
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
+      - '80:8080'
+    env_file:
+      - .docker.sso.env

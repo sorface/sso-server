@@ -50,7 +50,9 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
                         authorize
                                 .requestMatchers(UrlPatterns.toArray()).permitAll()
                                 .requestMatchers("/css/**, /js/**, /images/**, /webjars/**, **/favicon.ico").permitAll()
-                                .anyRequest().authenticated())
+                                .anyRequest()
+                                .authenticated()
+                )
                 .formLogin(httpSecurityFormLoginConfigurer -> {
                     httpSecurityFormLoginConfigurer.loginPage("/login");
                     httpSecurityFormLoginConfigurer.loginProcessingUrl("/login");
