@@ -4,7 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-.run
+
 ### STS ###
 .apt_generated
 .classpath
@@ -16,6 +16,11 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+
+.run
+web/client/.node
+web/client/build
+web/client/node_modules
 
 # embeeded database
 sorface-sso.mv.db

@@ -2,13 +2,18 @@ version: '3.9'
 
 services:
   redis:
-    image: redis/redis-stack:latest
+#    image: redis/redis-stack:latest
+    build:
+      context: .
+      dockerfile: redis/Dockerfile
     container_name: redis
     restart: unless-stopped
-    command:
-      - /bin/sh
-      - -c
-      - redis-stack-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    #    environment:
+    #      - REDIST_ARGS=foobared
+    #    command:
+    #      - /bin/sh
+    #      - -c
+    #      - redis-stack-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     ports:
       - "6379:6379"
     env_file:
