@@ -17,14 +17,21 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+# configuration idea
 .run
-web/client/.node
-web/client/build
-web/client/node_modules
 
 # embeeded database
 sorface-sso.mv.db
 sorface-sso.trace.db
+
+# submodules web sso
+web/.idea/
+web/target/
+
+# submodules client frontend
+client/.node/
+client/build/
+client/node_modules/
 
 ### IntelliJ IDEA ###
 .idea
@@ -36,16 +43,4 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-frontend/node_modules
-frontend/.idea
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-/target/
