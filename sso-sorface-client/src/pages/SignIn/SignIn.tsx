@@ -67,7 +67,7 @@ export const SignIn: FunctionComponent = () => {
                             {signinItem.fields ? (
                                 <>
                                     <hr />
-                                    <form method='POST' action='/login'>
+                                    <form method='POST' action='/api/login'>
                                         <FormFields fields={signinItem.fields} />
                                         <input type="submit" value={Captions.SignIn} />
                                     </form>

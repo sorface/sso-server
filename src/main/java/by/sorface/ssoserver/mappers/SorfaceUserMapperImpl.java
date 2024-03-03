@@ -2,7 +2,7 @@ package by.sorface.ssoserver.mappers;
 
 import by.sorface.ssoserver.dao.models.RoleEntity;
 import by.sorface.ssoserver.dao.models.UserEntity;
-import by.sorface.ssoserver.records.SorfacePrincipal;
+import by.sorface.ssoserver.records.SfPrincipal;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 public class SorfaceUserMapperImpl implements SorfaceUserMapper {
 
     @Override
-    public SorfacePrincipal to(final UserEntity user) {
+    public SfPrincipal to(final UserEntity user) {
         final List<GrantedAuthority> authorities = this.convertRoles(user.getRoles());
 
         final String userPassword = Optional.ofNullable(user.getPassword()).orElse(Strings.EMPTY);
 
-        final var sorfaceUser = new SorfacePrincipal(user.getUsername(), userPassword, true, authorities);
+        final var sorfaceUser = new SfPrincipal(user.getUsername(), userPassword, true, authorities);
         {
             sorfaceUser.setId(user.getId());
             sorfaceUser.setFirstName(user.getFirstName());

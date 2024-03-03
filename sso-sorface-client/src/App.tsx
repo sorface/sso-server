@@ -4,6 +4,7 @@ import { AppRoutes } from './routes/AppRoutes';
 
 import './App.css';
 import { REACT_APP_VERSION } from './config';
+import { REACT_APP_BACKEND_URL } from './config';
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
           <AppRoutes />
         </div>
         <footer>
-          <div>{REACT_APP_VERSION}</div>
+          <div>Version: {REACT_APP_VERSION}/ Secure url: {REACT_APP_BACKEND_URL}</div>
         </footer>
       </div>
     </BrowserRouter>

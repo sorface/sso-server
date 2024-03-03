@@ -1,5 +1,8 @@
 FROM maven:3.8.5-openjdk-17 as build
 
+ARG MAVEN_OPTS="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
+ENV MAVEN_OPTS="${MAVEN_OPTS}"
+
 COPY . .
 
 RUN mvn clean package -P production

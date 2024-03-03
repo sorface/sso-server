@@ -13,7 +13,7 @@ export const usersApiDeclaration = {
 export const signInApiDeclaration = {
   login: (body: FormData): ApiContractPost => ({
     method: 'POST',
-    baseUrl: '/login',
+    baseUrl: '/api/login',
     body,
   }),
 };

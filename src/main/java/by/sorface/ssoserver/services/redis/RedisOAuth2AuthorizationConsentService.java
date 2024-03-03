@@ -14,7 +14,9 @@ public final class RedisOAuth2AuthorizationConsentService implements OAuth2Autho
     private final static String KEY_PREFIX = "oauth2_authorization_consent:";
 
     private final RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplate;
+
     private final ValueOperations<String, OAuth2AuthorizationConsent> authorizationConsents;
+
     private final long ttl;
 
     public RedisOAuth2AuthorizationConsentService(final RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplate,

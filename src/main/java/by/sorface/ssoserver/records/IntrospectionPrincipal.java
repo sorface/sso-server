@@ -24,7 +24,7 @@ public class IntrospectionPrincipal {
     private String email;
     private List<String> authorities;
 
-    public static IntrospectionPrincipal build(final SorfacePrincipal authorizedUser) {
+    public static IntrospectionPrincipal build(final SfPrincipal authorizedUser) {
         if (Objects.isNull(authorizedUser)) {
             return null;
         }

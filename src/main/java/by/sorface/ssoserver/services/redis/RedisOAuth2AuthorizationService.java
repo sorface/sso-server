@@ -18,17 +18,8 @@ import org.springframework.util.Assert;
 
 public final class RedisOAuth2AuthorizationService implements OAuth2AuthorizationService {
 
-    /**
-     * Префикс ключа для объектов OAuth2Authorization, для которых уже существует токен доступа.
-     * Т.е. являющихся завершёнными
-     */
     private final static String COMPLETE_KEY_PREFIX = "oauth2_authorization_complete:";
 
-    /**
-     * Префикс ключа для объектов OAuth2Authorization, для которых процесс авторизации ещё не завершился
-     * и токен доступа ещё нет. Данная ситуация может возникнуть при authorization code flow,
-     * на этапе работы с authorization code. До запроса на получение токенов доступа.
-     */
     private final static String INIT_KEY_PREFIX = "oauth2_authorization_init:";
 
     private final RedisTemplate<String, OAuth2Authorization> redisTemplate;

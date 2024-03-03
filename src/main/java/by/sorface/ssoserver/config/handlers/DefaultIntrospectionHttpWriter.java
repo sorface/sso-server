@@ -2,7 +2,7 @@ package by.sorface.ssoserver.config.handlers;
 
 import by.sorface.ssoserver.exceptions.ObjectInvalidException;
 import by.sorface.ssoserver.records.IntrospectionPrincipal;
-import by.sorface.ssoserver.records.SorfacePrincipal;
+import by.sorface.ssoserver.records.SfPrincipal;
 import by.sorface.ssoserver.records.TokenRecord;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -75,7 +75,7 @@ public class DefaultIntrospectionHttpWriter implements IntrospectionHttpWriter {
             return tokenRecordBuilder.build();
         }
 
-        if (attributeAuth.getPrincipal() instanceof SorfacePrincipal authorizedUser) {
+        if (attributeAuth.getPrincipal() instanceof SfPrincipal authorizedUser) {
             final var introspectionPrincipal = IntrospectionPrincipal.build(authorizedUser);
 
             tokenRecordBuilder.principal(introspectionPrincipal);

@@ -1,20 +1,20 @@
 package by.sorface.ssoserver.config;
 
 import by.sorface.ssoserver.config.handlers.IntrospectionHttpWriter;
-import by.sorface.ssoserver.constants.enums.UrlPatterns;
+import by.sorface.ssoserver.constants.enums.UrlPatternEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
-import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Slf4j
@@ -45,7 +45,7 @@ public class OAuth2ServerConfig {
         http.securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(this::configureAuthorizeHttpRequest)
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-                .exceptionHandling(this::configureExceptionHandling)
+                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .apply(authorizationServerConfigurer);
 
         return http.build();
@@ -61,20 +61,12 @@ public class OAuth2ServerConfig {
      *
      * @param authorizationManagerRequestMatcherRegistry config object
      */
-    private void configureAuthorizeHttpRequest(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorizationManagerRequestMatcherRegistry) {
+    private void configureAuthorizeHttpRequest(
+            final AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorizationManagerRequestMatcherRegistry
+    ) {
         authorizationManagerRequestMatcherRegistry
-                .requestMatchers(UrlPatterns.toArray()).permitAll()
+                .requestMatchers(UrlPatternEnum.toArray()).permitAll()
                 .anyRequest().authenticated();
-    }
-
-    /**
-     * configuration exception handling
-     *
-     * @param exceptionHandlingConfigurer config object
-     */
-    private void configureExceptionHandling(ExceptionHandlingConfigurer<HttpSecurity> exceptionHandlingConfigurer) {
-        final var authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/login");
-        exceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint);
     }
 
 }

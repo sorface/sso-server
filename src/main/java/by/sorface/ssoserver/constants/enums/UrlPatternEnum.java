@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public enum UrlPatterns {
+public enum UrlPatternEnum {
 
     TECH(
             List.of("/oauth2/introspect")
@@ -20,22 +20,28 @@ public enum UrlPatterns {
     ),
 
     STATIC(
-            List.of("/static/**")
+            List.of(
+                    "/static/**",
+                    "/css/**",
+                    "/js/**",
+                    "/images/**",
+                    "/webjars/**",
+                    "**/favicon.ico",
+                    "*.json"
+            )
     ),
 
     FRONTEND(
             List.of(
-                    "/",
-                    "/login",
-                    "/signup"
+                    "/login"
             )
     );
 
     private final List<String> patterns;
 
     public static String[] toArray() {
-        return Arrays.stream(UrlPatterns.values())
-                .map(UrlPatterns::getPatterns)
+        return Arrays.stream(UrlPatternEnum.values())
+                .map(UrlPatternEnum::getPatterns)
                 .flatMap(Collection::stream)
                 .toArray(String[]::new);
     }

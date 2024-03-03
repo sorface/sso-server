@@ -18,7 +18,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SorfacePrincipal extends User implements OAuth2User, OidcUser {
+public class SfPrincipal extends User implements OAuth2User, OidcUser {
 
     /**
      * Internal user id
@@ -65,7 +65,7 @@ public class SorfacePrincipal extends User implements OAuth2User, OidcUser {
      */
     private Map<String, Object> oauthAttributes;
 
-    public SorfacePrincipal(final String username, final String password, final boolean enabled, final Collection<? extends GrantedAuthority> authorities) {
+    public SfPrincipal(final String username, final String password, final boolean enabled, final Collection<? extends GrantedAuthority> authorities) {
         super(username, password, enabled, true, true, true, authorities);
     }
 

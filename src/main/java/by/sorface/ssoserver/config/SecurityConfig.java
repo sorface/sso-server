@@ -1,6 +1,9 @@
 package by.sorface.ssoserver.config;
 
-import by.sorface.ssoserver.constants.enums.UrlPatterns;
+import by.sorface.ssoserver.config.handlers.AuthLoginFailureHandler;
+import by.sorface.ssoserver.config.handlers.AuthLoginSuccessHandler;
+import by.sorface.ssoserver.config.properties.MvcLoginProperties;
+import by.sorface.ssoserver.constants.enums.UrlPatternEnum;
 import by.sorface.ssoserver.services.providers.OAuth2UserDatabaseProvider;
 import by.sorface.ssoserver.services.providers.OidcUserDatabaseProvider;
 import by.sorface.ssoserver.services.providers.SorfaceUserDatabaseProvider;
@@ -19,6 +22,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Slf4j
 @EnableWebSecurity
@@ -31,31 +36,44 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
 
     private final OidcUserDatabaseProvider oidcUserDatabaseProvider;
 
+    private final MvcLoginProperties mvcLoginProperties;
+
     @Bean
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    public AuthenticationFailureHandler authLoginFailureHandler() {
+        return new AuthLoginFailureHandler();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new AuthLoginSuccessHandler();
+    }
+
+    @Bean
+    public SecurityFilterChain defaultSecurityFilterChain(final HttpSecurity http,
+                                                          final AuthenticationFailureHandler failureHandler,
+                                                          final AuthenticationSuccessHandler authenticationSuccessHandler) throws Exception {
         http.getSharedObject(AuthenticationManagerBuilder.class);
 
         http.oauth2Login(configurer -> {
-            configurer.userInfoEndpoint(userInfoEndpointConfig -> {
-                userInfoEndpointConfig
-                        .userService(oAuth2UserDatabaseProvider)
-                        .oidcUserService(oidcUserDatabaseProvider);
-            });
-            configurer.loginPage("/login");
+            configurer.userInfoEndpoint(userInfoEndpointConfig ->
+                    userInfoEndpointConfig
+                            .userService(oAuth2UserDatabaseProvider)
+                            .oidcUserService(oidcUserDatabaseProvider));
         });
 
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers(UrlPatterns.toArray()).permitAll()
-                                .requestMatchers("/css/**, /js/**, /images/**, /webjars/**, **/favicon.ico").permitAll()
-                                .anyRequest()
-                                .authenticated()
+                                .requestMatchers(UrlPatternEnum.toArray()).permitAll()
+                                .anyRequest().authenticated()
                 )
-                .formLogin(httpSecurityFormLoginConfigurer -> {
-                    httpSecurityFormLoginConfigurer.loginPage("/login");
-                    httpSecurityFormLoginConfigurer.loginProcessingUrl("/login");
+                .formLogin(configurer -> {
+                    configurer.loginPage(mvcLoginProperties.getPageEndpoint());
+                    configurer.loginProcessingUrl(mvcLoginProperties.getApiEndpoint());
+
+                    configurer.successHandler(authenticationSuccessHandler);
+                    configurer.failureHandler(failureHandler);
                 })
                 .build();
     }
@@ -70,6 +88,5 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
 
         return new ProviderManager(authenticationProvider);
     }
-
 
 }
