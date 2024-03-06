@@ -20,6 +20,7 @@ public class SfDefaultConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final var configuration = new CorsConfiguration();
+
         configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedMethods(List.of("*"));

@@ -176,7 +176,7 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>${basedir}/client</directory>
+                            <directory>../client</directory>
                             <includes>
                                 <include>build/</include>
                             </includes>

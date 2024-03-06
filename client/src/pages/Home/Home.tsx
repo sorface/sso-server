@@ -15,7 +15,7 @@ export interface Profile {
 }
 
 export const Home: FunctionComponent = () => {
-    const {apiMethodState, fetchData} = useApiMethod<Profile, unknown>(usersApiDeclaration.getCurrentUser);
+    const {apiMethodState, fetchData} = useApiMethod<Profile, undefined>(usersApiDeclaration.getCurrentUser);
 
     const {
         process: {
@@ -43,6 +43,7 @@ export const Home: FunctionComponent = () => {
 
     return (
         <div>
+            {loading ? (<p>Loading</p>) : (<p>Success</p>)}
             <p>
                 {JSON.stringify(data)}
             </p>

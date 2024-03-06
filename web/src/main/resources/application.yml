@@ -13,7 +13,7 @@ spring:
     cors:
       configs:
         - pattern: /**
-          allowed-origins: "http://127.0.0.1:8090,http://localhost:5043;http://localhost:8080"
+          allowed-origins: "http://127.0.0.1:8090,http://127.0.0.1:5043;http://127.0.0.1:8080"
           allowed-headers: "*"
           exposed-headers: "*"
           allowed-methods: "*"

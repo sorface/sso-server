@@ -8,12 +8,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Slf4j
@@ -36,19 +35,21 @@ public class SfOAuth2ServerConfig {
         final OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
         authorizationServerConfigurer
-                .tokenIntrospectionEndpoint(tokenIntrospectionEndpointConfigurer ->
-                        tokenIntrospectionEndpointConfigurer.introspectionResponseHandler(introspectionHttpWriter::write));
+                .tokenIntrospectionEndpoint(tokenIntrospectionEndpointConfigurer -> {
+                    tokenIntrospectionEndpointConfigurer.introspectionResponseHandler(introspectionHttpWriter::write);
+                });
 
         final RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
-        http.securityMatcher(endpointsMatcher)
+        http
+                .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     authorizationManagerRequestMatcherRegistry
                             .requestMatchers(UrlPatternEnum.toArray()).permitAll()
                             .anyRequest().authenticated();
                 })
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
                 .apply(authorizationServerConfigurer);
 
         return http.build();

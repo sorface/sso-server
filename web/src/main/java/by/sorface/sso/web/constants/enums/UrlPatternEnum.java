@@ -11,10 +11,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum UrlPatternEnum {
 
-    TECH(
-            List.of("/oauth2/introspect", "/oauth2/authorize")
-    ),
-
     API(
             List.of("/api/**")
     ),

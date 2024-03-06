@@ -61,7 +61,7 @@ public class SfSecurityConfig extends SecurityConfigurerAdapter {
                     configurer.loginProcessingUrl(mvcLoginProperties.getApiEndpoint());
 
                     configurer.successHandler(new SimpleUrlAuthenticationSuccessHandler("/home"));
-                    configurer.failureHandler(new SimpleUrlAuthenticationFailureHandler());
+                    configurer.failureHandler(new SimpleUrlAuthenticationFailureHandler("/error"));
                 })
                 .build();
     }
