@@ -47,6 +47,7 @@ export const SignIn: FunctionComponent = () => {
         },
         {
             name: 'Email',
+            disabled: true,
             href: '#',
             logo: emailLogo,
             fields: withEmail ? emailFields : null,
@@ -79,7 +80,7 @@ export const SignIn: FunctionComponent = () => {
                                     href={signinItem.href}
                                     onClick={signinItem.onClick}
                                 >
-                                    <button className='signin-button'>
+                                    <button className='signin-button' disabled={signinItem.disabled}>
                                         <img
                                             className="signin-logo"
                                             src={signinItem.logo}
