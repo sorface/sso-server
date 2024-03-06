@@ -1,14 +1,17 @@
-import React, {Fragment, FunctionComponent, MouseEvent, useState} from 'react';
-import {Captions, pathnames} from '../../constants';
-import {Field} from '../../components/Form/Form';
-import {FormFields} from '../../components/Form/FormFields';
+import React, { FormEvent, Fragment, FunctionComponent, MouseEvent, createRef, useState } from 'react';
+import { Captions, pathnames } from '../../constants';
+import { Field } from '../../components/Form/Form';
+import { FormFields } from '../../components/Form/FormFields';
 import githubLogo from './img/github.svg';
 import yandexLogo from './img/yandex.svg';
 import googleLogo from './img/google.svg';
 import emailLogo from './img/email-svgrepo-com.svg';
+import { FormWrapper } from '../../components/Form/FormWrapper';
+import { Link } from 'react-router-dom';
+import { useApiMethod } from '../../hooks/useApiMethod';
+import { signInApiDeclaration } from '../../apiDeclarations';
+
 import './SignIn.css';
-import {FormWrapper} from '../../components/Form/FormWrapper';
-import {Link} from 'react-router-dom';
 
 const emailFields: Field[] = [
     {
@@ -28,6 +31,12 @@ const emailFields: Field[] = [
 
 export const SignIn: FunctionComponent = () => {
     const [withEmail, setWithEmail] = useState(false);
+    const { apiMethodState, fetchData } = useApiMethod<unknown, FormData>(signInApiDeclaration.login);
+    const { process: { loading, error }, data } = apiMethodState;
+    console.log('loading: ', loading);
+    console.log('data: ', data);
+    console.log('error: ', error);
+    const loginFormRef = createRef<HTMLFormElement>();
 
     const signinItems = [
         {
@@ -58,6 +67,15 @@ export const SignIn: FunctionComponent = () => {
         },
     ];
 
+    const handleLoginSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!loginFormRef.current) {
+            return;
+        }
+        const formData = new FormData(loginFormRef.current);
+        fetchData(formData);
+    };
+
     return (
         <div className='page-sign'>
             <FormWrapper>
@@ -67,10 +85,10 @@ export const SignIn: FunctionComponent = () => {
                         <Fragment key={signinItem.name}>
                             {signinItem.fields ? (
                                 <>
-                                    <hr/>
-                                    <form method='POST' action='/api/login'>
-                                        <FormFields fields={signinItem.fields}/>
-                                        <input type="submit" value={Captions.SignIn}/>
+                                    <hr />
+                                    <form ref={loginFormRef} onSubmit={handleLoginSubmit}>
+                                        <FormFields fields={signinItem.fields} />
+                                        <input type="submit" value={Captions.SignIn} />
                                     </form>
                                     <Link className="signUp-link" to={pathnames.signUp}>{Captions.SignUpLink}</Link>
                                 </>
