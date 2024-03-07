@@ -10,14 +10,6 @@ spring:
 
   mvc:
     static-path-pattern: /static/**
-    cors:
-      configs:
-        - pattern: /**
-          allowed-origins: "http://127.0.0.1:8090,http://127.0.0.1:5043;http://127.0.0.1:8080"
-          allowed-headers: "*"
-          exposed-headers: "*"
-          allowed-methods: "*"
-          allow-credentials: true
 
     login:
       page-endpoint: "/login"
@@ -27,11 +19,14 @@ spring:
     resources:
       static-locations: classpath:static
 
+  redis:
+    sorface:
+      auth:
+        complete-prefix: 'oauth2_auth_complete:'
+        init-prefix: 'oauth2_auth_init:'
+
   security:
     oauth2:
-      authorizationserver:
-        issuer-url: ${OAUTH_SERVER_ISSUER_URL}
-        introspection-endpoint: /oauth2/token-info
       client:
         registration:
           github:
@@ -43,6 +38,9 @@ spring:
             clientId: ${OAUTH_CLIENT_GOOGLE_ID}
             clientSecret: ${OAUTH_CLIENT_GOOGLE_SECRET}
             authorization-grant-type: authorization_code
+            scope:
+              - profile
+              - email
           yandex:
             client-name: yandex
             client-id: ${OAUTH_CLIENT_YANDEX_ID}
@@ -61,6 +59,10 @@ spring:
           introspection-uri: "/oauth2/introspect"
           client-id: charp
           client-secret: password
+
+    sorface:
+      sso:
+        issuer-url: ${OAUTH_SERVER_ISSUER_URL}
 
   mail:
     username: ${MAIL_NOTIFICATOR_USERNAME}

@@ -36,14 +36,14 @@ public class UserRegistryFacade {
     public UserRegisteredHash registry(final UserRegistryRecord user) throws UserRequestException {
         log.info("User registration request received");
 
-        final UserEntity foundUserByEmail = userService.findByEmail(user.getEmail());
+        final UserEntity foundUserByEmail = userService.findByEmail(user.email());
 
         if (Objects.nonNull(foundUserByEmail)) {
             log.warn("A user with [id {}] and [email {}] already exists", foundUserByEmail.getId(), foundUserByEmail.getEmail());
             throw new UserRequestException("The user already exists with this email");
         }
 
-        final UserEntity foundUserByLogin = userService.findByUsername(user.getUsername());
+        final UserEntity foundUserByLogin = userService.findByUsername(user.username());
 
         if (Objects.nonNull(foundUserByLogin)) {
             log.warn("A user with [id {}] and [login {}] already exists", foundUserByLogin.getId(), foundUserByLogin.getEmail());
@@ -64,11 +64,7 @@ public class UserRegistryFacade {
 
         log.info("The hash token {} created for account", registryToken.getHash().substring(0, 5).concat("..."));
 
-        return UserRegisteredHash.builder()
-                .id(savedUser.getId())
-                .email(savedUser.getEmail())
-                .hash(registryToken.getHash())
-                .build();
+        return new UserRegisteredHash(savedUser.getId(), savedUser.getEmail(), registryToken.getHash());
     }
 
     @Transactional
@@ -103,11 +99,7 @@ public class UserRegistryFacade {
         log.info("Account with ID {} confirmed by token hash {}", token.getUser().getId(),
                 HashUtils.shortHash(token.getHash()));
 
-        return UserConfirm.builder()
-                .id(savedUser.getId())
-                .email(savedUser.getEmail())
-                .confirm(savedUser.isEnabled())
-                .build();
+        return new UserConfirm(savedUser.getId(), savedUser.getEmail(), savedUser.isEnabled());
     }
 
     @Transactional
@@ -133,11 +125,7 @@ public class UserRegistryFacade {
 
         final UserEntity user = registryToken.getUser();
 
-        return UserRegisteredHash.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .hash(registryToken.getHash())
-                .build();
+        return new UserRegisteredHash(user.getId(), user.getEmail(), registryToken.getHash());
     }
 
 }

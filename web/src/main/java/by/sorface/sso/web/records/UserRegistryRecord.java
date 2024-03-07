@@ -1,41 +1,36 @@
 package by.sorface.sso.web.records;
 
-import lombok.Data;
-
 /**
  * application for user registration
  */
-@Data
-public class UserRegistryRecord {
+public record UserRegistryRecord(
+        /*
+          user firstname
+         */
+        String firstName,
 
-    /**
-     * user firstname
-     */
-    private String firstName;
+        /*
+          user's lastname
+         */
+        String lastName,
 
-    /**
-     * user's lastname
-     */
-    private String lastName;
+        /*
+          user's middleName
+         */
+        String middleName,
 
-    /**
-     * user's middleName
-     */
-    private String middleName;
+        /*
+          user's email
+         */
+        String email,
 
-    /**
-     * user's email
-     */
-    private String email;
+        /*
+          user's login in the system
+         */
+        String username,
 
-    /**
-     * user's login in the system
-     */
-    private String username;
-
-    /**
-     * user's password in the system
-     */
-    private String password;
-
+        /*
+          user's password in the system
+         */
+        String password) {
 }

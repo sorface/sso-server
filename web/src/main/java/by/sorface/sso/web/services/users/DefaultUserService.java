@@ -14,13 +14,13 @@ public class DefaultUserService implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserEntity findByUsername(String username) {
+    public UserEntity findByUsername(final String username) {
         return userRepository.findFirstByUsernameIgnoreCase(username);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserEntity findByEmail(String email) {
+    public UserEntity findByEmail(final String email) {
         return userRepository.findFirstByEmailIgnoreCase(email);
     }
 

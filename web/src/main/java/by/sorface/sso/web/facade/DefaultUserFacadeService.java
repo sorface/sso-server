@@ -28,10 +28,10 @@ public class DefaultUserFacadeService implements UserFacadeService {
 
         final UserRegisteredHash registry = userRegistryFacade.registry(user);
 
-        log.info("User registration completed. [account id - {}]", registry.getId());
+        log.info("User registration completed. [account id - {}]", registry.id());
 
         final var mails = List.of(
-                new MailRequest(user.getEmail(), "Подтверждение регистрации", registry.getHash())
+                new MailRequest(user.email(), "Подтверждение регистрации", registry.hash())
         );
 
         log.info("Preparing an email to confirm the account");
@@ -39,12 +39,9 @@ public class DefaultUserFacadeService implements UserFacadeService {
 
         emailService.send(mails);
 
-        log.info("The email to confirm your account has been sent to {}", registry.getEmail());
+        log.info("The email to confirm your account has been sent to {}", registry.email());
 
-        return UserRegistered.builder()
-                .id(registry.getId())
-                .email(registry.getEmail())
-                .build();
+        return new UserRegistered(registry.id(), registry.email());
     }
 
     @Override
@@ -56,15 +53,16 @@ public class DefaultUserFacadeService implements UserFacadeService {
         final UserRegisteredHash userRegisteredHash = userRegistryFacade.findRegisteredTokenByEmail(email);
 
         final var mails = List.of(
-                new MailRequest(userRegisteredHash.getEmail(), "Подтверждение регистрации", userRegisteredHash.getHash())
+                new MailRequest(
+                        userRegisteredHash.email(),
+                        "Подтверждение регистрации",
+                        userRegisteredHash.hash()
+                )
         );
 
         emailService.send(mails);
 
-        return UserRegistered.builder()
-                .id(userRegisteredHash.getId())
-                .email(userRegisteredHash.getEmail())
-                .build();
+        return new UserRegistered(userRegisteredHash.id(), userRegisteredHash.email());
     }
 
 }

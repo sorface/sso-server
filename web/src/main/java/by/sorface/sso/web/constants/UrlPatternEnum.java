@@ -1,4 +1,4 @@
-package by.sorface.sso.web.constants.enums;
+package by.sorface.sso.web.constants;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

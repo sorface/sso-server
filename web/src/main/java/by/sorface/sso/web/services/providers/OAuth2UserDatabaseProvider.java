@@ -1,9 +1,10 @@
 package by.sorface.sso.web.services.providers;
 
-import by.sorface.sso.web.constants.enums.OAuthProvider;
+import by.sorface.sso.web.constants.OAuthProvider;
 import by.sorface.sso.web.dao.models.UserEntity;
 import by.sorface.sso.web.mappers.SfUserMapper;
 import by.sorface.sso.web.records.GitHubOAuth2User;
+import by.sorface.sso.web.records.GoogleOAuth2User;
 import by.sorface.sso.web.records.YandexOAuth2User;
 import by.sorface.sso.web.services.users.social.SocialOAuth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Сервис получения пользователя из сторонних севисов
+ * Service for getting a user from third-party services
  */
 @Service
 public class OAuth2UserDatabaseProvider extends DefaultOAuth2UserService {
@@ -24,17 +25,28 @@ public class OAuth2UserDatabaseProvider extends DefaultOAuth2UserService {
 
     private final SocialOAuth2UserService<YandexOAuth2User> yandexOAuth2UserSocialOAuth2UserService;
 
+    private final SocialOAuth2UserService<GoogleOAuth2User> googleOAuth2UserSocialOAuth2UserService;
+
     private final SfUserMapper sfUserMapper;
 
     @Autowired
     public OAuth2UserDatabaseProvider(SocialOAuth2UserService<GitHubOAuth2User> gitHubSocialOAuth2UserServiceImpl,
                                       SocialOAuth2UserService<YandexOAuth2User> yandexOAuth2UserSocialOAuth2UserService,
+                                      SocialOAuth2UserService<GoogleOAuth2User> googleOAuth2UserSocialOAuth2UserService,
                                       SfUserMapper sfUserMapper) {
         this.gitHubSocialOAuth2UserServiceImpl = gitHubSocialOAuth2UserServiceImpl;
         this.yandexOAuth2UserSocialOAuth2UserService = yandexOAuth2UserSocialOAuth2UserService;
+        this.googleOAuth2UserSocialOAuth2UserService = googleOAuth2UserSocialOAuth2UserService;
         this.sfUserMapper = sfUserMapper;
     }
 
+    /**
+     * Getting user data from third-party services
+     *
+     * @param userRequest the user request
+     * @return пользователь oauth 2.0
+     * @throws OAuth2AuthenticationException error getting the user
+     */
     @Override
     @Transactional
     public OAuth2User loadUser(final OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -67,6 +79,11 @@ public class OAuth2UserDatabaseProvider extends DefaultOAuth2UserService {
                 final var yandexOAuth2User = YandexOAuth2User.parse(oAuth2User);
 
                 yield yandexOAuth2UserSocialOAuth2UserService.findOrCreate(yandexOAuth2User);
+            }
+            case GOOGLE -> {
+                final var googleOAuth2User = GoogleOAuth2User.parse(oAuth2User);
+
+                yield googleOAuth2UserSocialOAuth2UserService.findOrCreate(googleOAuth2User);
             }
 
             default -> throw new OAuth2AuthenticationException("Provider %s not supported".formatted(oAuthProvider));

@@ -5,35 +5,35 @@ import by.sorface.sso.web.dao.models.UserEntity;
 public interface UserService {
 
     /**
-     * Получение пользователя по логину
+     * Getting a user by login
      *
-     * @param username логин пользователя
-     * @return пользователь
+     * @param username user's login
+     * @return user
      */
     UserEntity findByUsername(final String username);
 
     /**
-     * Получение пользователя по электронной почте
+     * Receiving a user by email
      *
-     * @param email электронная почта пользователя
-     * @return пользователь
+     * @param email user's email address
+     * @return user
      */
     UserEntity findByEmail(final String email);
 
     /**
-     * Получение пользователя по логину или электронной почте
+     * Receiving a user by login or email
      *
-     * @param username логин пользователя
-     * @param email    электронная почта пользователя
-     * @return пользователь
+     * @param username user's login
+     * @param email    user's email address
+     * @return user
      */
     UserEntity findByUsernameOrEmail(final String username, final String email);
 
     /**
-     * Создание нового пользователя
+     * Creating a new user
      *
-     * @param user данные пользователя
-     * @return пользователь
+     * @param user user data
+     * @return user
      */
     UserEntity save(final UserEntity user);
 }

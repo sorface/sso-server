@@ -1,16 +1,16 @@
 package by.sorface.sso.web.controllers;
 
 import by.sorface.sso.web.facade.UserFacadeService;
+import by.sorface.sso.web.records.SfPrincipal;
 import by.sorface.sso.web.records.UserRegistryRecord;
 import by.sorface.sso.web.records.responses.UserConfirm;
 import by.sorface.sso.web.records.responses.UserRegistered;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,8 +20,6 @@ public class OAuthUserController {
 
     private final UserFacadeService userFacadeService;
 
-    private final AuthenticationManager authenticationManager;
-
     @PostMapping("/registry")
     public ResponseEntity<UserRegistered> registry(@RequestBody final UserRegistryRecord user) {
         final UserRegistered userRegistered = userFacadeService.registry(user);
@@ -30,22 +28,19 @@ public class OAuthUserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Object> registryWithSignIn(@RequestBody final UserRegistryRecord user) {
-        final UserRegistered userRegistered = userFacadeService.registry(user);
+    public ResponseEntity<Object> registryWithSignIn(@RequestBody final UserRegistryRecord userRegistry, HttpServletRequest request) {
+        userFacadeService.registry(userRegistry);
 
-        Authentication authenticationRequest =
-                UsernamePasswordAuthenticationToken.unauthenticated(userRegistered.getEmail(), user.getPassword());
-        Authentication authenticationResponse =
-                this.authenticationManager.authenticate(authenticationRequest);
+        try {
+            request.login(userRegistry.email(), userRegistry.password());
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
 
-        Object principal = authenticationResponse.getPrincipal();
+        final var auth = (Authentication) request.getUserPrincipal();
+        final var user = (SfPrincipal) auth.getPrincipal();
 
-        return ResponseEntity.ok(principal);
-    }
-
-    @GetMapping("/self")
-    public ResponseEntity<Object> getSelf() {
-        return ResponseEntity.ok(SecurityContextHolder.getContext().getAuthentication());
+        return ResponseEntity.ok(user.getEmail());
     }
 
     @PreAuthorize("isAuthenticated()")

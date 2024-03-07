@@ -9,6 +9,14 @@
       "name": "spring.security.sorface.sso.introspection-endpoint",
       "type": "java.lang.String",
       "description": "URL получение токена пользователя"
+    },
+    {
+      "name": "spring.redis.sorface.auth.complete-prefix",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.redis.sorface.auth.init-prefix",
+      "type": "java.lang.String"
     }
   ]
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @Configuration
 @EnableJpaAuditing
 @EnableGlobalAuthentication
-public class SfDefaultConfiguration {
+public class SfConfiguration {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -34,9 +34,9 @@ public class SfDefaultConfiguration {
     }
 
     /**
-     * Создание компонента кодирования паролей
+     * Creating a password encoding component
      *
-     * @return компонент кодирования паролей
+     * @return the password encoding component
      */
     @Bean
     public PasswordEncoder passwordEncoder() {

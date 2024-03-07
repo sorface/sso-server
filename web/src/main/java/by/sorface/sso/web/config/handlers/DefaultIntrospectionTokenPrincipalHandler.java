@@ -7,10 +7,10 @@ import by.sorface.sso.web.records.TokenRecord;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenIntrospection;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
@@ -22,7 +22,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class DefaultIntrospectionHttpWriter implements IntrospectionHttpWriter {
+public class DefaultIntrospectionTokenPrincipalHandler implements IntrospectionTokenPrincipalHandler {
 
     private final static String principalAttributeKey = "java.security.Principal";
 
@@ -32,11 +32,10 @@ public class DefaultIntrospectionHttpWriter implements IntrospectionHttpWriter {
 
     @Override
     public void write(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        final TokenRecord token = this.getToken((OAuth2TokenIntrospectionAuthenticationToken) authentication);
+        final var token = getToken((OAuth2TokenIntrospectionAuthenticationToken) authentication);
+        final var message = new ServletServerHttpResponse(response);
 
-        final var outputMessage = new ServletServerHttpResponse(response);
-
-        mappingJackson2HttpMessageConverter.write(token, null, outputMessage);
+        mappingJackson2HttpMessageConverter.write(token, MediaType.APPLICATION_JSON, message);
     }
 
     private TokenRecord getToken(final OAuth2TokenIntrospectionAuthenticationToken authenticationToken) {
@@ -63,13 +62,13 @@ public class DefaultIntrospectionHttpWriter implements IntrospectionHttpWriter {
 
         final String token = authenticationToken.getToken();
 
-        final OAuth2Authorization tokenAuth = oAuth2AuthorizationService.findByToken(token, OAuth2TokenType.ACCESS_TOKEN);
+        final var oAuth2Authorization = oAuth2AuthorizationService.findByToken(token, OAuth2TokenType.ACCESS_TOKEN);
 
-        if (Objects.isNull(tokenAuth)) {
+        if (Objects.isNull(oAuth2Authorization)) {
             return tokenRecordBuilder.build();
         }
 
-        final Authentication attributeAuth = tokenAuth.getAttribute(principalAttributeKey);
+        final Authentication attributeAuth = oAuth2Authorization.getAttribute(principalAttributeKey);
 
         if (Objects.isNull(attributeAuth)) {
             return tokenRecordBuilder.build();
@@ -82,6 +81,7 @@ public class DefaultIntrospectionHttpWriter implements IntrospectionHttpWriter {
         } else {
             throw new ObjectInvalidException("Principal class = " + attributeAuth.getPrincipal().getClass().getSimpleName() + " is not supported");
         }
+
         return tokenRecordBuilder.build();
     }
 

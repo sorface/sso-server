@@ -8,14 +8,16 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class EmailServiceImpl implements EmailService {
+public class DefaultEmailService implements EmailService {
 
     private final JavaMailSender emailSender;
+
     @Value("${spring.mail.username}")
     private String sender;
 
@@ -27,6 +29,7 @@ public class EmailServiceImpl implements EmailService {
                 message.setTo(it.to());
                 message.setSubject(it.subject());
                 message.setText(it.body());
+                message.setSentDate(new Date());
             }
 
             emailSender.send(message);

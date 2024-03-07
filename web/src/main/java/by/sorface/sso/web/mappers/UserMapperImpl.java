@@ -16,14 +16,15 @@ public class UserMapperImpl implements UserMapper {
     public UserEntity map(UserRegistryRecord user) {
         final var userEntity = new UserEntity();
 
-        userEntity.setUsername(user.getUsername());
-        userEntity.setEmail(user.getEmail());
-        userEntity.setFirstName(user.getFirstName());
-        userEntity.setLastName(user.getLastName());
-        userEntity.setMiddleName(user.getMiddleName());
+        userEntity.setUsername(user.username());
+        userEntity.setEmail(user.email());
+        userEntity.setFirstName(user.firstName());
+        userEntity.setLastName(user.lastName());
+        userEntity.setMiddleName(user.middleName());
         userEntity.setEnabled(false);
 
-        final var passwordHash = passwordEncoder.encode(user.getPassword());
+        final var passwordHash = passwordEncoder.encode(user.password());
+
         userEntity.setPassword(passwordHash);
 
         return userEntity;
