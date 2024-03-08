@@ -12,7 +12,7 @@ import java.util.List;
 public enum UrlPatternEnum {
 
     API(
-            List.of("/api/**")
+            List.of("/api/**", "/login/**")
     ),
 
     STATIC(
@@ -23,8 +23,9 @@ public enum UrlPatternEnum {
 
     FRONTEND(
             List.of(
-                    "/login",
-                    "/home"
+                    "/account/signin",
+                    "/account/signup",
+                    "/account"
             )
     );
 

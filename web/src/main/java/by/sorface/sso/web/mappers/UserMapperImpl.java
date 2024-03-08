@@ -1,7 +1,7 @@
 package by.sorface.sso.web.mappers;
 
 import by.sorface.sso.web.dao.models.UserEntity;
-import by.sorface.sso.web.records.UserRegistryRecord;
+import by.sorface.sso.web.records.requests.AccountSignup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ public class UserMapperImpl implements UserMapper {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserEntity map(UserRegistryRecord user) {
+    public UserEntity map(AccountSignup user) {
         final var userEntity = new UserEntity();
 
         userEntity.setUsername(user.username());

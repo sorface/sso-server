@@ -1,6 +1,6 @@
 import {FunctionComponent, useEffect} from 'react';
 import {useApiMethod} from '../../hooks/useApiMethod';
-import {usersApiDeclaration} from '../../apiDeclarations';
+import {accountsApiDeclaration} from '../../apiDeclarations';
 
 export interface Profile {
 
@@ -15,7 +15,7 @@ export interface Profile {
 }
 
 export const Home: FunctionComponent = () => {
-    const {apiMethodState, fetchData} = useApiMethod<Profile, undefined>(usersApiDeclaration.getCurrentUser);
+    const {apiMethodState, fetchData} = useApiMethod<Profile, undefined>(accountsApiDeclaration.current);
 
     const {
         process: {

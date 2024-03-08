@@ -1,7 +1,7 @@
 export const pathnames = {
-    home: '/home',
-    signUp: '/signup',
-    signIn: '/login',
+    account: '/account',
+    signUp: '/account/signup',
+    signIn: '/account/signin',
 };
 
 export const enum Captions {
@@ -9,7 +9,7 @@ export const enum Captions {
     Loading = 'Loading',
     Error = 'Error',
     NotFound = 'Not Found',
-    Home = 'Home',
+    Account = 'Account',
     SignUp = 'Sign up',
     SignUpLink = 'You do not have an account? Register!',
     SignInLink = 'You have an account? Sign In!',

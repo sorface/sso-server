@@ -130,7 +130,13 @@ export const useApiMethod = <ResponseData, RequestData = AnyObject>(apiContractC
                 createFetchRequestInit(apiContract),
             );
             if (response.status === unauthorizedHttpCode) {
-                navigate(pathnames.home);
+                navigate(pathnames.account);
+                return;
+            }
+            if (response.headers.has("Sorface-Next-Location")) {
+                // @ts-ignore
+                window.location = response.headers.get("Sorface-Next-Location");
+
                 return;
             }
 

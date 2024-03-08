@@ -1,7 +1,6 @@
 package by.sorface.sso.web.controllers.advices;
 
-import by.sorface.sso.web.controllers.OAuthUserController;
-import by.sorface.sso.web.controllers.ProfileController;
+import by.sorface.sso.web.controllers.AccountController;
 import by.sorface.sso.web.exceptions.NotFoundException;
 import by.sorface.sso.web.exceptions.ObjectExpiredException;
 import by.sorface.sso.web.exceptions.UnauthorizedException;
@@ -14,8 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(
         basePackageClasses = {
-                OAuthUserController.class,
-                ProfileController.class
+                AccountController.class
         }
 )
 public class ExceptionAdvice {

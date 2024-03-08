@@ -11,9 +11,11 @@ spring:
   mvc:
     static-path-pattern: /static/**
 
-    login:
-      page-endpoint: "/login"
-      api-endpoint: "/api/login"
+    endpoint:
+      uri-page-login: "/account/signin"
+      uri-page-profile: '/account'
+      uri-api-login: "/api/accounts/signin"
+      uri-api-logout: "/api/accounts/logout"
 
   web:
     resources:
@@ -24,6 +26,7 @@ spring:
       auth:
         complete-prefix: 'oauth2_auth_complete:'
         init-prefix: 'oauth2_auth_init:'
+        ttl: 72000
 
   security:
     oauth2:

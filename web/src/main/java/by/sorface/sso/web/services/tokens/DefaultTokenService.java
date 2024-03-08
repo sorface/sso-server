@@ -1,6 +1,6 @@
 package by.sorface.sso.web.services.tokens;
 
-import by.sorface.sso.web.dao.models.RegistryTokenEntity;
+import by.sorface.sso.web.dao.models.TokenEntity;
 import by.sorface.sso.web.dao.models.UserEntity;
 import by.sorface.sso.web.dao.repository.RegistryTokenRepository;
 import by.sorface.sso.web.utils.HashUtils;
@@ -10,21 +10,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class RegistryTokenServiceImpl implements RegistryTokenService {
+public class DefaultTokenService implements TokenService {
 
     private final RegistryTokenRepository registryTokenRepository;
 
     @Override
     @Transactional(readOnly = true)
-    public RegistryTokenEntity findByHash(final String hash) {
+    public TokenEntity findByHash(final String hash) {
         return registryTokenRepository.findByHashIgnoreCase(hash);
     }
 
     @Transactional
-    public RegistryTokenEntity saveRandomForUser(final UserEntity user) {
-        final String hash = HashUtils.generateRegistryHash(55);
+    public TokenEntity saveForUser(final UserEntity user) {
+        final String hash = HashUtils.generateRegistryHash(10);
 
-        final var registryTokenEntity = new RegistryTokenEntity();
+        final var registryTokenEntity = new TokenEntity();
         {
             registryTokenEntity.setHash(hash);
             registryTokenEntity.setUser(user);
@@ -34,7 +34,7 @@ public class RegistryTokenServiceImpl implements RegistryTokenService {
     }
 
     @Override
-    public RegistryTokenEntity findRegistryTokenByUserEmail(final String email) {
+    public TokenEntity findTokenByEmail(final String email) {
         return registryTokenRepository.findByUser_Email(email);
     }
 

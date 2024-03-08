@@ -7,11 +7,15 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "spring.mvc.login")
-public class MvcLoginProperties {
+@ConfigurationProperties(prefix = "spring.mvc.endpoint")
+public class MvcEndpointProperties {
 
-    private String pageEndpoint;
+    private String uriPageLogin;
 
-    private String apiEndpoint;
+    private String uriPageProfile;
+
+    private String uriApiLogin;
+
+    private String uriApiLogout;
 
 }

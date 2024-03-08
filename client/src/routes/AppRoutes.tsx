@@ -9,7 +9,7 @@ import {SignIn} from '../pages/SignIn/SignIn';
 export const AppRoutes: FunctionComponent = () => {
     return (
         <Routes>
-            <Route path={pathnames.home} element={<Home/>}/>
+            <Route path={pathnames.account} element={<Home/>}/>
             <Route path={pathnames.signUp} element={<SignUp/>}/>
             <Route path={pathnames.signIn} element={<SignIn/>}/>
             <Route path="*" element={<NotFound/>}/>

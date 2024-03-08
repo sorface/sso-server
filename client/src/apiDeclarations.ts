@@ -2,24 +2,19 @@ import {ApiContractGet, ApiContractPost} from './types/apiContracts';
 
 export type SignUpBody = Record<string, FormDataEntryValue>;
 
-export const usersApiDeclaration = {
-    registry: (body: SignUpBody): ApiContractPost => ({
+export const accountsApiDeclaration = {
+    signup: (body: SignUpBody): ApiContractPost => ({
         method: 'POST',
-        baseUrl: '/api/users/registry',
+        baseUrl: '/api/accounts/signup',
         body,
     }),
-    getCurrentUser: (): ApiContractGet => ({
+    signin: (body: FormData): ApiContractPost => ({
+        method: 'POST',
+        baseUrl: '/api/accounts/signin',
+        body,
+    }),
+    current: (): ApiContractGet => ({
         method: 'GET',
-        baseUrl: '/api/profiles',
+        baseUrl: '/api/accounts/current',
     })
 };
-
-export const signInApiDeclaration = {
-    login: (body: FormData): ApiContractPost => ({
-        method: 'POST',
-        baseUrl: '/api/login',
-        body,
-    }),
-};
-
-export const getCurrentUser = {};

@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class SorfaceUserDatabaseProvider implements UserDetailsService {
+public class SfUserDatabaseProvider implements UserDetailsService {
 
     private final UserService userRepository;
 

@@ -1,13 +1,13 @@
 package by.sorface.sso.web.dao.repository;
 
-import by.sorface.sso.web.dao.models.RegistryTokenEntity;
+import by.sorface.sso.web.dao.models.TokenEntity;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RegistryTokenRepository extends BaseRepository<RegistryTokenEntity> {
+public interface RegistryTokenRepository extends BaseRepository<TokenEntity> {
 
-    RegistryTokenEntity findByHashIgnoreCase(final String hash);
+    TokenEntity findByHashIgnoreCase(final String hash);
 
-    RegistryTokenEntity findByUser_Email(final String email);
+    TokenEntity findByUser_Email(final String email);
 
 }

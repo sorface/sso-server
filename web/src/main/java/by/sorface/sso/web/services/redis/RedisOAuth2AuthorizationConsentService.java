@@ -1,15 +1,18 @@
 package by.sorface.sso.web.services.redis;
 
+import by.sorface.sso.web.config.properties.RedisOAuth2Properties;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.lang.Nullable;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+@Service
 public final class RedisOAuth2AuthorizationConsentService implements OAuth2AuthorizationConsentService {
     private final static String KEY_PREFIX = "oauth2_authorization_consent:";
 
@@ -17,13 +20,13 @@ public final class RedisOAuth2AuthorizationConsentService implements OAuth2Autho
 
     private final ValueOperations<String, OAuth2AuthorizationConsent> authorizationConsents;
 
-    private final long ttl;
+    private final RedisOAuth2Properties redisOAuth2Properties;
 
     public RedisOAuth2AuthorizationConsentService(final RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplate,
-                                                  final long ttlInMs) {
+                                                  final RedisOAuth2Properties redisOAuth2Properties) {
         this.redisTemplate = redisTemplate;
         this.authorizationConsents = redisTemplate.opsForValue();
-        this.ttl = ttlInMs;
+        this.redisOAuth2Properties = redisOAuth2Properties;
     }
 
     private static String getId(final String registeredClientId, final String principalName) {
@@ -39,7 +42,7 @@ public final class RedisOAuth2AuthorizationConsentService implements OAuth2Autho
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");
         String id = getId(authorizationConsent);
 
-        this.authorizationConsents.set(KEY_PREFIX + id, authorizationConsent, this.ttl, TimeUnit.MILLISECONDS);
+        this.authorizationConsents.set(KEY_PREFIX + id, authorizationConsent, redisOAuth2Properties.getTtl(), TimeUnit.MILLISECONDS);
     }
 
     @Override

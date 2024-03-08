@@ -1,16 +1,17 @@
-package by.sorface.sso.web.facade;
+package by.sorface.sso.web.facade.signup;
 
-import by.sorface.sso.web.dao.models.RegistryTokenEntity;
+import by.sorface.sso.web.dao.models.TokenEntity;
 import by.sorface.sso.web.dao.models.UserEntity;
 import by.sorface.sso.web.exceptions.NotFoundException;
 import by.sorface.sso.web.exceptions.ObjectExpiredException;
 import by.sorface.sso.web.exceptions.ObjectInvalidException;
 import by.sorface.sso.web.exceptions.UserRequestException;
 import by.sorface.sso.web.mappers.UserMapper;
-import by.sorface.sso.web.records.UserRegistryRecord;
+import by.sorface.sso.web.records.requests.AccountSignup;
+import by.sorface.sso.web.records.requests.ConfirmEmail;
 import by.sorface.sso.web.records.responses.UserConfirm;
 import by.sorface.sso.web.records.responses.UserRegisteredHash;
-import by.sorface.sso.web.services.tokens.RegistryTokenService;
+import by.sorface.sso.web.services.tokens.TokenService;
 import by.sorface.sso.web.services.users.UserService;
 import by.sorface.sso.web.utils.HashUtils;
 import lombok.RequiredArgsConstructor;
@@ -24,16 +25,17 @@ import java.util.Objects;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserRegistryFacade {
+public class DefaultSignupFacade implements SignupFacade {
 
     private final UserService userService;
 
-    private final RegistryTokenService registryTokenService;
+    private final TokenService tokenService;
 
     private final UserMapper userMapper;
 
+    @Override
     @Transactional
-    public UserRegisteredHash registry(final UserRegistryRecord user) throws UserRequestException {
+    public UserRegisteredHash signup(final AccountSignup user) throws UserRequestException {
         log.info("User registration request received");
 
         final UserEntity foundUserByEmail = userService.findByEmail(user.email());
@@ -60,18 +62,19 @@ public class UserRegistryFacade {
 
         log.info("Preparing a hash token for user");
 
-        final RegistryTokenEntity registryToken = registryTokenService.saveRandomForUser(savedUser);
+        final TokenEntity registryToken = tokenService.saveForUser(savedUser);
 
         log.info("The hash token {} created for account", registryToken.getHash().substring(0, 5).concat("..."));
 
         return new UserRegisteredHash(savedUser.getId(), savedUser.getEmail(), registryToken.getHash());
     }
 
+    @Override
     @Transactional
-    public UserConfirm confirmByToken(final String hash) {
-        log.info("Request for account confirmation using a token {}", HashUtils.shortHash(hash));
+    public UserConfirm confirm(final ConfirmEmail confirmEmail) {
+        log.info("Request for account confirmation using a token {}", HashUtils.shortHash(confirmEmail.token()));
 
-        final var token = registryTokenService.findByHash(hash);
+        final var token = tokenService.findByHash(confirmEmail.token());
 
         if (Objects.isNull(token)) {
             log.warn("The token for confirming the account was not found");
@@ -102,9 +105,10 @@ public class UserRegistryFacade {
         return new UserConfirm(savedUser.getId(), savedUser.getEmail(), savedUser.isEnabled());
     }
 
+    @Override
     @Transactional
-    public UserRegisteredHash findRegisteredTokenByEmail(final String email) {
-        final var registryToken = registryTokenService.findRegistryTokenByUserEmail(email);
+    public UserRegisteredHash findTokenByEmail(final String email) {
+        final var registryToken = tokenService.findTokenByEmail(email);
 
         if (Objects.isNull(registryToken)) {
             log.warn("User not found by email {}", email);

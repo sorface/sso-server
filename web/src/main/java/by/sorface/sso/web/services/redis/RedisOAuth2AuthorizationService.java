@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationCode;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Objects;
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@Service
 public final class RedisOAuth2AuthorizationService implements OAuth2AuthorizationService {
 
     private final RedisTemplate<String, OAuth2Authorization> redisTemplate;
@@ -30,21 +32,10 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
 
     private final RedisOAuth2Properties redisOAuth2Properties;
 
-    private final long ttl;
-
-    /**
-     * Конструктор класса
-     *
-     * @param redisTemplate         клиент для Redis через который мы будем работать с ним
-     * @param redisOAuth2Properties свойства oauth2 для redis
-     * @param ttlInMs               Time To Live для записи
-     */
     public RedisOAuth2AuthorizationService(final RedisTemplate<String, OAuth2Authorization> redisTemplate,
-                                           final RedisOAuth2Properties redisOAuth2Properties,
-                                           final long ttlInMs) {
+                                           final RedisOAuth2Properties redisOAuth2Properties) {
         this.redisTemplate = redisTemplate;
         this.authorizations = redisTemplate.opsForValue();
-        this.ttl = ttlInMs;
         this.redisOAuth2Properties = redisOAuth2Properties;
     }
 
@@ -126,7 +117,7 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
 
         log.info("saved user's authorization object with id {}", authorization.getId());
 
-        this.authorizations.set(key, authorization, ttl, TimeUnit.MILLISECONDS);
+        this.authorizations.set(key, authorization, redisOAuth2Properties.getTtl(), TimeUnit.MILLISECONDS);
     }
 
     /**

@@ -13,7 +13,7 @@ function App() {
                     <AppRoutes/>
                 </div>
                 <footer>
-                    <div>current version: {REACT_APP_VERSION}</div>
+                    <div>{REACT_APP_VERSION}</div>
                 </footer>
             </div>
         </BrowserRouter>

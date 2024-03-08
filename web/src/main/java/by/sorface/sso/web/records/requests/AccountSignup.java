@@ -1,9 +1,9 @@
-package by.sorface.sso.web.records;
+package by.sorface.sso.web.records.requests;
 
 /**
  * application for user registration
  */
-public record UserRegistryRecord(
+public record AccountSignup(
         /*
           user firstname
          */

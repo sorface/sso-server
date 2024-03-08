@@ -13,4 +13,6 @@ public class RedisOAuth2Properties {
 
     private String initPrefix;
 
+    private long ttl;
+
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "T_REGISTRYTOKEN")
-public class RegistryTokenEntity extends BaseEntity {
+public class TokenEntity extends BaseEntity {
 
     @Column(name = "C_HASH")
     private String hash;

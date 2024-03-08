@@ -1,19 +1,19 @@
 package by.sorface.sso.web.config;
 
-import by.sorface.sso.web.config.handlers.IntrospectionTokenPrincipalHandler;
-import by.sorface.sso.web.config.properties.MvcLoginProperties;
+import by.sorface.sso.web.config.handlers.CustomSuccessHandler;
+import by.sorface.sso.web.config.handlers.TokenAuthenticationSuccessHandler;
+import by.sorface.sso.web.config.properties.MvcEndpointProperties;
 import by.sorface.sso.web.constants.UrlPatternEnum;
 import by.sorface.sso.web.services.providers.OAuth2UserDatabaseProvider;
-import by.sorface.sso.web.services.providers.SorfaceUserDatabaseProvider;
+import by.sorface.sso.web.services.providers.SfUserDatabaseProvider;
+import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
+import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,8 +24,6 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Slf4j
@@ -35,11 +33,21 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
 
+    private final CustomSuccessHandler customSuccessHandler;
+
+    private final RedisOAuth2AuthorizationService redisOAuth2AuthorizationService;
+
+    private final RedisOAuth2AuthorizationConsentService redisOAuth2AuthorizationConsentService;
+
     private final OAuth2UserDatabaseProvider oAuth2UserDatabaseProvider;
 
-    private final IntrospectionTokenPrincipalHandler introspectionTokenPrincipalHandler;
+    private final TokenAuthenticationSuccessHandler tokenAuthenticationSuccessHandler;
 
-    private final MvcLoginProperties mvcLoginProperties;
+    private final MvcEndpointProperties mvcEndpointProperties;
+
+    private final SfUserDatabaseProvider userDetailsService;
+
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Configuration OAuth2 Spring Security
@@ -52,21 +60,31 @@ public class SecurityConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authServerSecurityFilterChain(final HttpSecurity httpSecurity) throws Exception {
         final var authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+        {
+            authorizationServerConfigurer.setBuilder(httpSecurity);
 
-        authorizationServerConfigurer.tokenIntrospectionEndpoint(tokenIntrospectionEndpointConfigurer -> {
-            tokenIntrospectionEndpointConfigurer.introspectionResponseHandler(introspectionTokenPrincipalHandler::write);
-        });
+            authorizationServerConfigurer.tokenIntrospectionEndpoint(configurer ->
+                    configurer.introspectionResponseHandler(tokenAuthenticationSuccessHandler));
+
+            authorizationServerConfigurer.authorizationService(redisOAuth2AuthorizationService);
+            authorizationServerConfigurer.authorizationConsentService(redisOAuth2AuthorizationConsentService);
+        }
 
         final RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         httpSecurity
                 .securityMatcher(endpointsMatcher)
-                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry
-                                .requestMatchers(UrlPatternEnum.toArray()).permitAll()
-                                .anyRequest().authenticated())
+                .authorizeHttpRequests(configure -> {
+                    configure.requestMatchers(UrlPatternEnum.toArray()).permitAll();
+                    configure.anyRequest().authenticated();
+                })
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
+                .exceptionHandling(configurer -> {
+                    final var loginUrlAuthenticationEntryPoint =
+                            new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageLogin());
+
+                    configurer.authenticationEntryPoint(loginUrlAuthenticationEntryPoint);
+                })
                 .apply(authorizationServerConfigurer);
 
         return httpSecurity.build();
@@ -74,17 +92,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(final HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
+        httpSecurity.getSharedObject(AuthenticationManagerBuilder.class)
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder);
 
         httpSecurity.oauth2Login(configurer -> {
             configurer.userInfoEndpoint(configure -> configure.userService(oAuth2UserDatabaseProvider));
 
-            configurer.successHandler(new SimpleUrlAuthenticationSuccessHandler(
-                    "/home"
-            ));
-            configurer.failureHandler(new SimpleUrlAuthenticationFailureHandler());
-
-            configurer.loginPage(mvcLoginProperties.getPageEndpoint());
+            configurer.loginPage(mvcEndpointProperties.getUriPageLogin());
         });
 
         return httpSecurity
@@ -94,26 +109,22 @@ public class SecurityConfig {
                                 .requestMatchers(UrlPatternEnum.toArray()).permitAll()
                                 .anyRequest().authenticated()
                 )
-                .formLogin(configurer -> {
-                    configurer.loginPage(mvcLoginProperties.getPageEndpoint());
-                    configurer.loginProcessingUrl(mvcLoginProperties.getApiEndpoint());
+                .logout(configurer -> {
+                    configurer.clearAuthentication(true);
+                    configurer.invalidateHttpSession(true);
 
-                    configurer.successHandler((request, response, authentication) ->
-                            response.setHeader("Sorface-Next-Location", "http://localhost:8080/home"));
-                    configurer.failureHandler(new SimpleUrlAuthenticationFailureHandler("/error"));
+                    configurer.logoutUrl(mvcEndpointProperties.getUriApiLogout());
+                    configurer.deleteCookies("SESSION", "JSESSION");
+                })
+                .formLogin(configurer -> {
+                    configurer.loginPage(mvcEndpointProperties.getUriPageLogin());
+                    configurer.loginProcessingUrl(mvcEndpointProperties.getUriApiLogin());
+
+                    // configurer.successHandler(new SavedRequestAwareAuthenticationSuccessHandler());
+//                    configurer.successHandler((request, response, authentication) -> response.setHeader("Sorface-Next-Location", mvcEndpointProperties.getUriPageProfile()));
+//                    configurer.failureHandler(new SimpleUrlAuthenticationFailureHandler());
                 })
                 .build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(final SorfaceUserDatabaseProvider userDetailsService,
-                                                       final PasswordEncoder passwordEncoder) {
-        final var authenticationProvider = new DaoAuthenticationProvider();
-
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder);
-
-        return new ProviderManager(authenticationProvider);
     }
 
     @Bean

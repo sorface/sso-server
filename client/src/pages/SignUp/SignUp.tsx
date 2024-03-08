@@ -1,7 +1,7 @@
 import {FormEvent, FunctionComponent, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {useApiMethod} from '../../hooks/useApiMethod';
-import {SignUpBody, usersApiDeclaration} from '../../apiDeclarations';
+import {accountsApiDeclaration, SignUpBody} from '../../apiDeclarations';
 import {Captions, pathnames} from '../../constants';
 import {Field, Form} from '../../components/Form/Form';
 
@@ -38,7 +38,7 @@ const fields: Field[] = [
 ];
 
 export const SignUp: FunctionComponent = () => {
-    const {apiMethodState, fetchData} = useApiMethod<unknown, SignUpBody>(usersApiDeclaration.registry);
+    const {apiMethodState, fetchData} = useApiMethod<unknown, SignUpBody>(accountsApiDeclaration.signup);
     const {process: {loading, error}, data} = apiMethodState;
 
     useEffect(() => {

@@ -1,10 +1,9 @@
-package by.sorface.sso.web.facade;
+package by.sorface.sso.web.facade.signup;
 
 import by.sorface.sso.web.records.MailRequest;
-import by.sorface.sso.web.records.UserRegistryRecord;
-import by.sorface.sso.web.records.responses.UserConfirm;
+import by.sorface.sso.web.records.requests.AccountSignup;
+import by.sorface.sso.web.records.requests.ResendConfirmEmail;
 import by.sorface.sso.web.records.responses.UserRegistered;
-import by.sorface.sso.web.records.responses.UserRegisteredHash;
 import by.sorface.sso.web.services.emails.EmailService;
 import by.sorface.sso.web.utils.json.Json;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +15,17 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DefaultUserFacadeService implements UserFacadeService {
+public class DefaultSignupEmailFacade implements SignupEmailFacade {
 
     private final EmailService emailService;
 
-    private final UserRegistryFacade userRegistryFacade;
+    private final DefaultSignupFacade userRegistryFacade;
 
     @Override
-    public UserRegistered registry(final UserRegistryRecord user) {
+    public UserRegistered signup(final AccountSignup user) {
         log.info("User registration request received {}{}", System.lineSeparator(), Json.lazyStringifyWithMasking(user));
 
-        final UserRegisteredHash registry = userRegistryFacade.registry(user);
+        final var registry = userRegistryFacade.signup(user);
 
         log.info("User registration completed. [account id - {}]", registry.id());
 
@@ -45,12 +44,8 @@ public class DefaultUserFacadeService implements UserFacadeService {
     }
 
     @Override
-    public UserConfirm confirmEmail(final String token) {
-        return userRegistryFacade.confirmByToken(token);
-    }
-
-    public UserRegistered resendConfirmationEmail(final String email) {
-        final UserRegisteredHash userRegisteredHash = userRegistryFacade.findRegisteredTokenByEmail(email);
+    public UserRegistered resendConfirmationEmail(final ResendConfirmEmail resendConfirmEmail) {
+        final var userRegisteredHash = userRegistryFacade.findTokenByEmail(resendConfirmEmail.email());
 
         final var mails = List.of(
                 new MailRequest(

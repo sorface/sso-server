@@ -17,6 +17,26 @@
     {
       "name": "spring.redis.sorface.auth.init-prefix",
       "type": "java.lang.String"
+    },
+    {
+      "name": "spring.redis.sorface.auth.ttl",
+      "type": "java.lang.Long"
+    },
+    {
+      "name": "spring.mvc.endpoint.uri-page-login",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.mvc.endpoint.uri-page-profile",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.mvc.endpoint.uri-api-login",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.mvc.endpoint.uri-api-logout",
+      "type": "java.lang.String"
     }
   ]
 }
