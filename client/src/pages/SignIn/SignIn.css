@@ -1,0 +1,49 @@
+.page-sign .form-additional-content {
+    padding-top: 0rem;
+}
+
+.page-sign h1 {
+    margin: 0rem;
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
+    font-weight: normal;
+}
+
+.page-sign hr {
+    margin: 0.5rem 0.25rem;
+    margin-bottom: 0.75rem;
+    border: 0px;
+    border-top: 1px solid var(--button-border-color);
+}
+
+.signin-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-bottom: 1rem;
+}
+
+.signin-button {
+    display: flex;
+    align-items: center;
+}
+
+.signin-link {
+    margin: 0.5rem 0.25rem;
+    text-decoration: none !important;
+}
+
+.signin-logo {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-right: 1px solid var(--button-border-color);
+    padding-right: 0.75rem;
+}
+
+.signin-caption {
+    margin-left: 1rem;
+}
+
+.signUp-link {
+    margin-top: 1rem;
+}

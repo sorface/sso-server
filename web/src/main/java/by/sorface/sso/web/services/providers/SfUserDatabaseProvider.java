@@ -1,0 +1,39 @@
+package by.sorface.sso.web.services.providers;
+
+import by.sorface.sso.web.mappers.SfUserMapper;
+import by.sorface.sso.web.services.users.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class SfUserDatabaseProvider implements UserDetailsService {
+
+    private final UserService userRepository;
+
+    private final SfUserMapper sfUserMapper;
+
+    /**
+     * Getting an authorized user from the database
+     *
+     * @param username the username identifying the user whose data is required.
+     * @return user details
+     * @throws UsernameNotFoundException when user not found by login or email
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+        final var user = userRepository.findByUsernameOrEmail(username, username);
+
+        return Optional.ofNullable(user)
+                .map(sfUserMapper::to)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username or email {%s} not found".formatted(username)));
+    }
+
+}
