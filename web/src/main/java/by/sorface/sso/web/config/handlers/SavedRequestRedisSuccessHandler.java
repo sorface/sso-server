@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class SavedRequestRedisSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     public static final String SPRING_SECURITY_SAVED_REQUEST = "SPRING_SECURITY_SAVED_REQUEST";
     public static final String SORFACE_NEXT_LOCATION = "Sorface-Next-Location";
@@ -36,7 +36,15 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             return;
         }
 
-        final SavedRequest savedRequest = session.getRequiredAttribute(SPRING_SECURITY_SAVED_REQUEST);
+        final SavedRequest savedRequest;
+
+        try {
+            savedRequest = session.getRequiredAttribute(SPRING_SECURITY_SAVED_REQUEST);
+        } catch (IllegalArgumentException ignored) {
+            response.setHeader(SORFACE_NEXT_LOCATION, mvcEndpointProperties.getUriPageProfile());
+
+            return;
+        }
 
         if (Objects.isNull(savedRequest)) {
             super.onAuthenticationSuccess(request, response, authentication);

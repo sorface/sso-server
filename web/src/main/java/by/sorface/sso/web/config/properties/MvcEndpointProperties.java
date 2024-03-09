@@ -10,12 +10,34 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "spring.mvc.endpoint")
 public class MvcEndpointProperties {
 
-    private String uriPageLogin;
+    /**
+     * uri signin page
+     */
+    private String uriPageSignIn;
 
+    /**
+     * uri signup page
+     */
+    private String uriPageSignUp;
+
+    /**
+     * uri profile page
+     */
     private String uriPageProfile;
 
+    /**
+     * uri not found page
+     */
+    private String uriPageNotFound;
+
+    /**
+     * uri api signin
+     */
     private String uriApiLogin;
 
+    /**
+     * uri api logout
+     */
     private String uriApiLogout;
 
 }

@@ -12,7 +12,9 @@ spring:
     static-path-pattern: /static/**
 
     endpoint:
-      uri-page-login: "/account/signin"
+      uri-page-signin: '/account/signin'
+      uri-page-signup: '/account/signup'
+      uri-page-not-found: '/account/404'
       uri-page-profile: '/account'
       uri-api-login: "/api/accounts/signin"
       uri-api-logout: "/api/accounts/logout"

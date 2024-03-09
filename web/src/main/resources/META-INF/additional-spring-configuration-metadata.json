@@ -23,7 +23,15 @@
       "type": "java.lang.Long"
     },
     {
-      "name": "spring.mvc.endpoint.uri-page-login",
+      "name": "spring.mvc.endpoint.uri-page-signin",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.mvc.endpoint.uri-page-signup",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.mvc.endpoint.uri-page-not-found",
       "type": "java.lang.String"
     },
     {
