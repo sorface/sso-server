@@ -2,7 +2,15 @@ FROM maven:3.8.5-openjdk-17 as build
 
 COPY . .
 
-RUN mvn clean package -P run.context.production -P module.frontend
+ARG ACTIVE_PROFILE=production
+ARG REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+ARG REACT_APP_VERSION=$REACT_APP_VERSION
+
+RUN mvn clean package \
+     -P run.context.$ACTIVE_PROFILE  \
+     -P module.frontend  \
+     -D REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL  \
+     -D REACT_APP_VERSION=$REACT_APP_VERSION
 
 FROM openjdk:17.0.2-jdk-slim-buster
 

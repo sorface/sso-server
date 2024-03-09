@@ -8,12 +8,6 @@ services:
       dockerfile: redis/Dockerfile
     container_name: redis
     restart: unless-stopped
-    #    environment:
-    #      - REDIST_ARGS=foobared
-    #    command:
-    #      - /bin/sh
-    #      - -c
-    #      - redis-stack-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     ports:
       - "6379:6379"
     env_file:
@@ -34,10 +28,13 @@ services:
     build:
       context: ../
       dockerfile: docker/sso/Dockerfile
+      args:
+        REACT_APP_BACKEND_URL: http://localhost:8080
+        REACT_APP_VERSION: 1.0.0-Docker
     depends_on:
       - redis
       - postgresql
     ports:
-      - '8888:8080'
+      - '8080:8080'
     env_file:
       - .docker.sso.env
