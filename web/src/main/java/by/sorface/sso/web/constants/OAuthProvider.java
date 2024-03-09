@@ -19,6 +19,8 @@ public enum OAuthProvider {
 
     YANDEX("yandex"),
 
+    TWITCH("twitch"),
+
     UNKNOWN("unknown");
 
     private static final Map<String, OAuthProvider> PROVIDER_MAP = Arrays.stream(OAuthProvider.values())

@@ -7,63 +7,51 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.savedrequest.SavedRequest;
-import org.springframework.session.Session;
-import org.springframework.session.data.redis.RedisSessionRepository;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 public class SavedRequestRedisSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    public static final String SPRING_SECURITY_SAVED_REQUEST = "SPRING_SECURITY_SAVED_REQUEST";
     public static final String SORFACE_NEXT_LOCATION = "Sorface-Next-Location";
-    private final RedisSessionRepository sessionRepository;
 
     private final MvcEndpointProperties mvcEndpointProperties;
 
+    private RequestCache requestCache = new HttpSessionRequestCache();
+
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-        final Session session = sessionRepository.findById(request.getRequestedSessionId());
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws ServletException, IOException {
+        final var savedRequest = this.requestCache.getRequest(request, response);
 
-        if (Objects.isNull(session)) {
+        if (savedRequest == null) {
             response.setHeader(SORFACE_NEXT_LOCATION, mvcEndpointProperties.getUriPageProfile());
+
+            super.onAuthenticationSuccess(request, response, authentication);
 
             return;
         }
 
-        final SavedRequest savedRequest;
+        String targetUrlParameter = getTargetUrlParameter();
 
-        try {
-            savedRequest = session.getRequiredAttribute(SPRING_SECURITY_SAVED_REQUEST);
-        } catch (IllegalArgumentException ignored) {
-            response.setHeader(SORFACE_NEXT_LOCATION, mvcEndpointProperties.getUriPageProfile());
-
-            return;
-        }
-
-        if (Objects.isNull(savedRequest)) {
+        if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
+            this.requestCache.removeRequest(request, response);
             super.onAuthenticationSuccess(request, response, authentication);
             return;
         }
-
-        final var targetUrlParameter = getTargetUrlParameter();
-
-        if (isAlwaysUseDefaultTargetUrl() || (Objects.nonNull(targetUrlParameter) && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
-            this.sessionRepository.deleteById(request.getSession().getId());
-
-            super.onAuthenticationSuccess(request, response, authentication);
-            return;
-        }
-
         clearAuthenticationAttributes(request);
-
-        final String targetUrl = savedRequest.getRedirectUrl();
+        // Use the DefaultSavedRequest URL
+        String targetUrl = savedRequest.getRedirectUrl();
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
+    }
+
+    public void setRequestCache(RequestCache requestCache) {
+        this.requestCache = requestCache;
     }
 
 }

@@ -5,6 +5,7 @@ import {FormFields} from '../../components/Form/FormFields';
 import githubLogo from './img/github.svg';
 import yandexLogo from './img/yandex.svg';
 import googleLogo from './img/google.svg';
+import twitchLogo from './img/twitch.svg';
 import emailLogo from './img/email-svgrepo-com.svg';
 import {FormWrapper} from '../../components/Form/FormWrapper';
 import {Link} from 'react-router-dom';
@@ -56,8 +57,13 @@ export const SignIn: FunctionComponent = () => {
             logo: githubLogo,
         },
         {
+            name: 'Twitch',
+            href: '/oauth2/authorization/twitch',
+            logo: twitchLogo,
+        },
+        {
             name: 'Email',
-            disabled: false,
+            disabled: true,
             href: '#',
             logo: emailLogo,
             fields: withEmail ? emailFields : null,

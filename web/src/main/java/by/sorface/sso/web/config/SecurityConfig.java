@@ -1,9 +1,10 @@
 package by.sorface.sso.web.config;
 
-import by.sorface.sso.web.config.handlers.CustomSuccessHandler;
+import by.sorface.sso.web.config.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.config.handlers.TokenAuthenticationSuccessHandler;
 import by.sorface.sso.web.config.properties.MvcEndpointProperties;
 import by.sorface.sso.web.constants.UrlPatternEnum;
+import by.sorface.sso.web.dao.repository.OAuth2ClientRepository;
 import by.sorface.sso.web.services.providers.OAuth2UserDatabaseProvider;
 import by.sorface.sso.web.services.providers.SfUserDatabaseProvider;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
@@ -33,7 +34,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
 
-    private final CustomSuccessHandler customSuccessHandler;
+    private final SavedRequestRedisSuccessHandler savedRequestRedisSuccessHandler;
 
     private final RedisOAuth2AuthorizationService redisOAuth2AuthorizationService;
 
@@ -81,7 +82,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
                 .exceptionHandling(configurer -> {
                     final var loginUrlAuthenticationEntryPoint =
-                            new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageLogin());
+                            new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn());
 
                     configurer.authenticationEntryPoint(loginUrlAuthenticationEntryPoint);
                 })
@@ -91,7 +92,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain defaultSecurityFilterChain(final HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain defaultSecurityFilterChain(final HttpSecurity httpSecurity,
+                                                          OAuth2ClientRepository oAuth2ClientRepository) throws Exception {
         httpSecurity.getSharedObject(AuthenticationManagerBuilder.class)
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder);
@@ -99,7 +101,7 @@ public class SecurityConfig {
         httpSecurity.oauth2Login(configurer -> {
             configurer.userInfoEndpoint(configure -> configure.userService(oAuth2UserDatabaseProvider));
 
-            configurer.loginPage(mvcEndpointProperties.getUriPageLogin());
+            configurer.loginPage(mvcEndpointProperties.getUriPageSignIn());
         });
 
         return httpSecurity
@@ -117,12 +119,10 @@ public class SecurityConfig {
                     configurer.deleteCookies("SESSION", "JSESSION");
                 })
                 .formLogin(configurer -> {
-                    configurer.loginPage(mvcEndpointProperties.getUriPageLogin());
+                    configurer.loginPage(mvcEndpointProperties.getUriPageSignIn());
                     configurer.loginProcessingUrl(mvcEndpointProperties.getUriApiLogin());
 
-                    // configurer.successHandler(new SavedRequestAwareAuthenticationSuccessHandler());
-//                    configurer.successHandler((request, response, authentication) -> response.setHeader("Sorface-Next-Location", mvcEndpointProperties.getUriPageProfile()));
-//                    configurer.failureHandler(new SimpleUrlAuthenticationFailureHandler());
+                    configurer.successHandler(savedRequestRedisSuccessHandler);
                 })
                 .build();
     }
