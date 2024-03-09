@@ -118,7 +118,7 @@
             <id>module.frontend</id>
 
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
 
             <properties>
