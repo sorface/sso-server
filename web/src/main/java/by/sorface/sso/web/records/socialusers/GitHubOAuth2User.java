@@ -1,4 +1,4 @@
-package by.sorface.sso.web.records;
+package by.sorface.sso.web.records.socialusers;
 
 import by.sorface.sso.web.utils.UserUtils;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Getter
 @Builder
-public class GoogleOAuth2User implements SocialOAuth2User {
+public class GitHubOAuth2User implements SocialOAuth2User {
 
     private String id;
 
@@ -28,21 +28,21 @@ public class GoogleOAuth2User implements SocialOAuth2User {
 
     private Map<String, Object> attributes;
 
-    public static GoogleOAuth2User parse(final OAuth2User oAuth2User) {
-        final var id = String.valueOf(oAuth2User.getAttributes().get("sub"));
-        final var avatarUrl = String.valueOf(oAuth2User.getAttributes().get("picture"));
-        final var login = String.valueOf(oAuth2User.getAttributes().get("email"));
+    public static GitHubOAuth2User from(final OAuth2User oAuth2User) {
+        final var id = String.valueOf(oAuth2User.getAttributes().get("id"));
+        final var avatarUrl = String.valueOf(oAuth2User.getAttributes().get("avatar_url"));
+        final var login = String.valueOf(oAuth2User.getAttributes().get("login"));
         final var name = String.valueOf(oAuth2User.getAttributes().get("name"));
         final var email = String.valueOf(oAuth2User.getAttributes().get("email"));
 
-        final GoogleOAuth2User.GoogleOAuth2UserBuilder builder = GoogleOAuth2User.builder()
+        final var builder = GitHubOAuth2User.builder()
                 .id(id)
                 .avatarUrl(avatarUrl)
                 .username(login)
                 .email(email);
 
         if (Objects.nonNull(name)) {
-            UserUtils.DefaultFullName defaultFullName = UserUtils.parseFullName(name);
+            final UserUtils.DefaultFullName defaultFullName = UserUtils.parseFullName(name);
 
             builder
                     .firstName(defaultFullName.getFirstName())

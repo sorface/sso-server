@@ -1,9 +1,9 @@
 package by.sorface.sso.web.config.handlers;
 
 import by.sorface.sso.web.exceptions.ObjectInvalidException;
-import by.sorface.sso.web.records.IntrospectionPrincipal;
-import by.sorface.sso.web.records.SfPrincipal;
-import by.sorface.sso.web.records.TokenRecord;
+import by.sorface.sso.web.records.principals.SfPrincipal;
+import by.sorface.sso.web.records.tokens.IntrospectionPrincipal;
+import by.sorface.sso.web.records.tokens.TokenRecord;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +76,7 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
         }
 
         if (attributeAuth.getPrincipal() instanceof SfPrincipal authorizedUser) {
-            final var introspectionPrincipal = IntrospectionPrincipal.build(authorizedUser);
+            final var introspectionPrincipal = IntrospectionPrincipal.from(authorizedUser);
 
             tokenRecordBuilder.principal(introspectionPrincipal);
         } else {

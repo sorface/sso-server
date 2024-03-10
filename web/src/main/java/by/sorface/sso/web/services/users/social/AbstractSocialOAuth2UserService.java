@@ -1,7 +1,7 @@
 package by.sorface.sso.web.services.users.social;
 
 import by.sorface.sso.web.dao.models.UserEntity;
-import by.sorface.sso.web.records.SocialOAuth2User;
+import by.sorface.sso.web.records.socialusers.SocialOAuth2User;
 import by.sorface.sso.web.services.users.UserService;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -3,7 +3,7 @@ package by.sorface.sso.web.controllers;
 import by.sorface.sso.web.exceptions.UnauthorizedException;
 import by.sorface.sso.web.facade.signup.SignupEmailFacade;
 import by.sorface.sso.web.facade.signup.SignupFacade;
-import by.sorface.sso.web.records.SfPrincipal;
+import by.sorface.sso.web.records.principals.SfPrincipal;
 import by.sorface.sso.web.records.requests.AccountSignup;
 import by.sorface.sso.web.records.requests.ConfirmEmail;
 import by.sorface.sso.web.records.requests.ResendConfirmEmail;
@@ -65,7 +65,7 @@ public class AccountController {
 
     @PostMapping("/confirm/resend")
     public UserRegistered resendConfirmEmail(@RequestBody final ResendConfirmEmail resendConfirmEmail) {
-        return signupEmailFacade.resendConfirmationEmail(resendConfirmEmail);
+        return signupEmailFacade.resendConfirmEmail(resendConfirmEmail);
     }
 
 }
