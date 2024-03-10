@@ -35,6 +35,7 @@ jobs:
           SSO_APPLICATION_PROPERTIES: ${{ secrets.SSO_APPLICATION_PROPERTIES }}
         run: |
           echo $SSO_APPLICATION_PROPERTIES | base64 --decode > docker/.docker.sso.env
+          cat docker/.docker.sso.env
 
       - name: Yandex Cloud CR "Login" Action for GitHub Actions
         uses: yc-actions/yc-cr-login@v0.1-alpha
