@@ -1,0 +1,26 @@
+name: Deploy SSO Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-tag:
+        required: true
+        type: string
+    
+    secrets:
+      YC_ACCOUNT:
+        required: true
+      SSO_APPLICATION_PROPERTIES:
+        required: true
+
+jobs:
+  redis-stack:
+    name: build redis-stack
+    uses: sorface/docker-system/.github/workflows/yc.docker.image.workflow.call@master
+    with:
+      release-tag: ${{ github.event.inputs.release-tag }}
+      name: platform-sso
+      domain: https://code.sorface.com
+    secrets:
+      YC_ACCOUNT: ${{ secrets.YC_ACCOUNT }}
+      SSO_APPLICATION_PROPERTIES: ${{ secrets.SSO_APPLICATION_PROPERTIES }}

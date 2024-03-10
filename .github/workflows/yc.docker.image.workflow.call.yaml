@@ -1,0 +1,52 @@
+name: sso server [release]
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      release-tag:
+        required: true
+        type: string
+      domain:
+        required: true
+        type: string
+
+    secrets:
+      YC_ACCOUNT:
+        required: true
+      SSO_APPLICATION_PROPERTIES:
+        required: true
+
+jobs:
+  docker-backend-release:
+    name: Build docker image for backend
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - name: Build application.properties
+        env:
+          SSO_APPLICATION_PROPERTIES: ${{ secrets.SSO_APPLICATION_PROPERTIES }}
+        run: |
+          echo $SSO_APPLICATION_PROPERTIES | base64 --decode > docker/.docker.sso.env
+
+      - name: Yandex Cloud CR "Login" Action for GitHub Actions
+        uses: yc-actions/yc-cr-login@v0.1-alpha
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_ACCOUNT }}
+
+      - name: Build, tag, and push image to Yandex Cloud Container Registry
+        env:
+          CR_REGISTRY: crp32rkjbqn6qnm9jshk
+          CR_REPO: ${{ inputs.name }}
+          IMAGE_TAG: ${{ inputs.release-tag }}
+          DOMAIN: ${{ inputs.domain }}
+        run: |
+          docker build -f docker/sso/Dockerfile --build-arg REACT_APP_BACKEND_URL=$DOMAIN --build-arg REACT_APP_VERSION=$IMAGE_TAG --env-file docker/.docker.sso.env -t cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG .
+          docker push cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
