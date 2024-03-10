@@ -1,4 +1,4 @@
-name: sso server [release]
+name: yc.docker.image builder [wc] [release]
 
 on:
   workflow_call:
