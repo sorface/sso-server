@@ -1,4 +1,4 @@
-name: Deploy SSO Docker Image
+name: yc.deploy.image wd [release]
 
 on:
   workflow_dispatch:
