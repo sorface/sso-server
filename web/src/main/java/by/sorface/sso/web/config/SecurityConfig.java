@@ -4,9 +4,8 @@ import by.sorface.sso.web.config.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.config.handlers.TokenAuthenticationSuccessHandler;
 import by.sorface.sso.web.config.properties.MvcEndpointProperties;
 import by.sorface.sso.web.constants.UrlPatternEnum;
-import by.sorface.sso.web.dao.repository.OAuth2ClientRepository;
-import by.sorface.sso.web.services.providers.OAuth2UserDatabaseProvider;
-import by.sorface.sso.web.services.providers.SfUserDatabaseProvider;
+import by.sorface.sso.web.services.providers.DefaultUserDatabaseProvider;
+import by.sorface.sso.web.services.providers.OAuth2UserDatabaseStrategy;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationService;
 import lombok.RequiredArgsConstructor;
@@ -40,13 +39,13 @@ public class SecurityConfig {
 
     private final RedisOAuth2AuthorizationConsentService redisOAuth2AuthorizationConsentService;
 
-    private final OAuth2UserDatabaseProvider oAuth2UserDatabaseProvider;
+    private final OAuth2UserDatabaseStrategy oAuth2UserDatabaseStrategy;
 
     private final TokenAuthenticationSuccessHandler tokenAuthenticationSuccessHandler;
 
     private final MvcEndpointProperties mvcEndpointProperties;
 
-    private final SfUserDatabaseProvider userDetailsService;
+    private final DefaultUserDatabaseProvider userDetailsService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -92,14 +91,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain defaultSecurityFilterChain(final HttpSecurity httpSecurity,
-                                                          OAuth2ClientRepository oAuth2ClientRepository) throws Exception {
+    public SecurityFilterChain defaultSecurityFilterChain(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity.getSharedObject(AuthenticationManagerBuilder.class)
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder);
 
         httpSecurity.oauth2Login(configurer -> {
-            configurer.userInfoEndpoint(configure -> configure.userService(oAuth2UserDatabaseProvider));
+            configurer.userInfoEndpoint(configure -> configure.userService(oAuth2UserDatabaseStrategy));
 
             configurer.loginPage(mvcEndpointProperties.getUriPageSignIn());
         });

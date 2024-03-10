@@ -1,4 +1,4 @@
-package by.sorface.sso.web.records;
+package by.sorface.sso.web.records.tokens;
 
 import lombok.Builder;
 import lombok.Getter;

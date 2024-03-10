@@ -1,4 +1,4 @@
-package by.sorface.sso.web.records;
+package by.sorface.sso.web.records.socialusers;
 
 import by.sorface.sso.web.exceptions.ObjectInvalidException;
 import lombok.Builder;
@@ -29,7 +29,7 @@ public class TwitchOAuth2User implements SocialOAuth2User {
     private Map<String, Object> attributes;
 
     @SuppressWarnings("unchecked")
-    public static TwitchOAuth2User parse(final OAuth2User oAuth2User) {
+    public static TwitchOAuth2User from(final OAuth2User oAuth2User) {
         final var user = ((ArrayList<Map<String, String>>) oAuth2User.getAttributes().get("data"))
                 .stream()
                 .findFirst()

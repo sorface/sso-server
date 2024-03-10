@@ -1,4 +1,4 @@
-package by.sorface.sso.web.records;
+package by.sorface.sso.web.records.socialusers;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public class YandexOAuth2User implements SocialOAuth2User {
 
     private Map<String, Object> attributes;
 
-    public static YandexOAuth2User parse(final OAuth2User oAuth2User) {
+    public static YandexOAuth2User from(final OAuth2User oAuth2User) {
         final var id = String.valueOf(oAuth2User.getAttributes().get("id"));
         final var login = String.valueOf(oAuth2User.getAttributes().get("login"));
         final Object avatarUrlObject = oAuth2User.getAttributes().get("avatar_url");

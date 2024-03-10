@@ -4,6 +4,9 @@ import by.sorface.sso.web.records.requests.AccountSignup;
 import by.sorface.sso.web.records.requests.ResendConfirmEmail;
 import by.sorface.sso.web.records.responses.UserRegistered;
 
+/**
+ *
+ */
 public interface SignupEmailFacade {
 
     /**
@@ -20,6 +23,6 @@ public interface SignupEmailFacade {
      * @param email user's email
      * @return info by confirmation email
      */
-    UserRegistered resendConfirmationEmail(final ResendConfirmEmail email);
+    UserRegistered resendConfirmEmail(final ResendConfirmEmail email);
 
 }

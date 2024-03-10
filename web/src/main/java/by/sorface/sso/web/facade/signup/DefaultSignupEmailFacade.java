@@ -1,6 +1,6 @@
 package by.sorface.sso.web.facade.signup;
 
-import by.sorface.sso.web.records.MailRequest;
+import by.sorface.sso.web.records.mails.Mail;
 import by.sorface.sso.web.records.requests.AccountSignup;
 import by.sorface.sso.web.records.requests.ResendConfirmEmail;
 import by.sorface.sso.web.records.responses.UserRegistered;
@@ -9,8 +9,6 @@ import by.sorface.sso.web.utils.json.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -29,35 +27,38 @@ public class DefaultSignupEmailFacade implements SignupEmailFacade {
 
         log.info("User registration completed. [account id - {}]", registry.id());
 
-        final var mails = List.of(
-                new MailRequest(user.email(), "Подтверждение регистрации", registry.hash())
-        );
-
-        log.info("Preparing an email to confirm the account");
-        log.debug("{}{}", System.lineSeparator(), Json.stringify(mails));
-
-        emailService.send(mails);
-
-        log.info("The email to confirm your account has been sent to {}", registry.email());
+        this.sendRegistryEmail(registry.email(), registry.hash());
 
         return new UserRegistered(registry.id(), registry.email());
     }
 
+    /**
+     * @param resendConfirmEmail user's email
+     * @return user info
+     */
     @Override
-    public UserRegistered resendConfirmationEmail(final ResendConfirmEmail resendConfirmEmail) {
+    public UserRegistered resendConfirmEmail(final ResendConfirmEmail resendConfirmEmail) {
         final var userRegisteredHash = userRegistryFacade.findTokenByEmail(resendConfirmEmail.email());
 
-        final var mails = List.of(
-                new MailRequest(
-                        userRegisteredHash.email(),
-                        "Подтверждение регистрации",
-                        userRegisteredHash.hash()
-                )
-        );
-
-        emailService.send(mails);
+        this.sendRegistryEmail(userRegisteredHash.email(), userRegisteredHash.hash());
 
         return new UserRegistered(userRegisteredHash.id(), userRegisteredHash.email());
+    }
+
+    /**
+     * Sending an email with a confirmation token
+     *
+     * @param email user email
+     * @param hash  confirm mail
+     */
+    private void sendRegistryEmail(final String email, final String hash) {
+        final var mail = new Mail(email, "Подтверждение регистрации", hash);
+        log.info("Preparing an email to confirm the account");
+        log.debug("{}{}", System.lineSeparator(), Json.stringify(mail));
+
+        emailService.send(mail);
+
+        log.info("The email to confirm your account has been sent to {}", email);
     }
 
 }
