@@ -16,7 +16,7 @@ on:
 jobs:
   redis-stack:
     name: build redis-stack
-    uses: sorface/docker-system/.github/workflows/yc-docker-image-workflow-call.yml@master
+    uses: sorface/sso-server/.github/workflows/yc-docker-image-workflow-call.yml@master
     with:
       release-tag: ${{ github.event.inputs.release-tag }}
       name: platform-sso
