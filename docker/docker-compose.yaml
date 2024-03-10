@@ -23,14 +23,14 @@ services:
     env_file:
       - .docker.pgsql.env
 
-  sso:
+  platform-sso:
     container_name: "sso-sorface"
     build:
       context: ../
       dockerfile: docker/sso/Dockerfile
       args:
-        REACT_APP_BACKEND_URL: http://localhost:8080
-        REACT_APP_VERSION: 1.0.0-Docker
+        - REACT_APP_BACKEND_URL=${APP_BACKEND_URL}
+        - REACT_APP_VERSION=${APP_VERSION}
     depends_on:
       - redis
       - postgresql
