@@ -49,5 +49,5 @@ jobs:
           IMAGE_TAG: ${{ inputs.release-tag }}
           DOMAIN: ${{ inputs.domain }}
         run: |
-          docker build -f docker/sso/Dockerfile --build-arg REACT_APP_BACKEND_URL=$DOMAIN --build-arg REACT_APP_VERSION=$IMAGE_TAG --env-file docker/.docker.sso.env -t cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG .
+          docker build -f docker/sso/Dockerfile --build-arg REACT_APP_BACKEND_URL=$DOMAIN --build-arg REACT_APP_VERSION=$IMAGE_TAG $(for i in $(grep -vE '^#|^$' docker/.docker.sso.env); do out+="--build-arg $i " ; done; echo $out;out="") -t cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG .
           docker push cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
