@@ -8,11 +8,6 @@ export const accountsApiDeclaration = {
         baseUrl: '/api/accounts/signup',
         body,
     }),
-    signin: (body: FormData): ApiContractPost => ({
-        method: 'POST',
-        baseUrl: '/api/accounts/signin',
-        body,
-    }),
     current: (): ApiContractGet => ({
         method: 'GET',
         baseUrl: '/api/accounts/current',

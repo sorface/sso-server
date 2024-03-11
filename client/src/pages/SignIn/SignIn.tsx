@@ -1,4 +1,4 @@
-import React, {createRef, FormEvent, Fragment, FunctionComponent, MouseEvent, useState} from 'react';
+import React, {Fragment, FunctionComponent, MouseEvent, useState} from 'react';
 import {Captions, pathnames} from '../../constants';
 import {Field} from '../../components/Form/Form';
 import githubLogo from './img/github.svg';
@@ -8,8 +8,6 @@ import twitchLogo from './img/twitch.svg';
 import emailLogo from './img/email-svgrepo-com.svg';
 import {FormWrapper} from '../../components/Form/FormWrapper';
 import {Link} from 'react-router-dom';
-import {useApiMethod} from '../../hooks/useApiMethod';
-import {accountsApiDeclaration} from '../../apiDeclarations';
 
 import './SignIn.css';
 
@@ -31,13 +29,6 @@ const emailFields: Field[] = [
 
 export const SignIn: FunctionComponent = () => {
     const [withEmail, setWithEmail] = useState(false);
-    const {apiMethodState, fetchData} = useApiMethod<any, FormData>(accountsApiDeclaration.signin);
-    const {process: {loading, error}, data} = apiMethodState;
-    console.log('loading: ', loading);
-    console.log('data: ', data);
-    console.log('error: ', error);
-
-    const loginFormRef = createRef<HTMLFormElement>();
 
     const signinItems = [
         {
@@ -72,17 +63,6 @@ export const SignIn: FunctionComponent = () => {
             }
         },
     ];
-
-    const handleLoginSubmit = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        if (!loginFormRef.current) {
-            return;
-        }
-        const formData = new FormData(loginFormRef.current);
-        fetchData(formData).then((response) => {
-            console.log(response);
-        })
-    };
 
     return (
         <div className='page-sign'>
