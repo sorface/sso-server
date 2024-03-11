@@ -3,7 +3,7 @@ package by.sorface.sso.web.controllers;
 import by.sorface.sso.web.exceptions.UnauthorizedException;
 import by.sorface.sso.web.facade.signup.SignupEmailFacade;
 import by.sorface.sso.web.facade.signup.SignupFacade;
-import by.sorface.sso.web.records.principals.SfPrincipal;
+import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import by.sorface.sso.web.records.requests.AccountSignup;
 import by.sorface.sso.web.records.requests.ConfirmEmail;
 import by.sorface.sso.web.records.requests.ResendConfirmEmail;
@@ -37,7 +37,7 @@ public class AccountController {
             throw new UnauthorizedException("unauthorized");
         }
 
-        final var principal = (SfPrincipal) auth.getPrincipal();
+        final var principal = (DefaultPrincipal) auth.getPrincipal();
 
         return new ProfileRecord(principal.getId(), principal.getEmail(), principal.getFirstName(), principal.getLastName());
     }
@@ -53,7 +53,7 @@ public class AccountController {
         }
 
         final var auth = (Authentication) request.getUserPrincipal();
-        final var user = (SfPrincipal) auth.getPrincipal();
+        final var user = (DefaultPrincipal) auth.getPrincipal();
 
         return new AccountSignupResponse(user.getUsername(), userRegistry.email());
     }

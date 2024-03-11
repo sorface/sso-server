@@ -1,8 +1,8 @@
-package by.sorface.sso.web.mappers;
+package by.sorface.sso.web.converters;
 
 import by.sorface.sso.web.dao.models.RoleEntity;
 import by.sorface.sso.web.dao.models.UserEntity;
-import by.sorface.sso.web.records.principals.SfPrincipal;
+import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,15 +14,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class DefaultSfUserMapper implements SfUserMapper {
+public class DefaultPrincipalConverter implements PrincipalConverter {
 
     @Override
-    public SfPrincipal convert(final UserEntity user) {
+    public DefaultPrincipal convert(final UserEntity user) {
         final List<GrantedAuthority> authorities = this.convertRoles(user.getRoles());
 
         final String userPassword = Optional.ofNullable(user.getPassword()).orElse(Strings.EMPTY);
 
-        final var sorfaceUser = new SfPrincipal(user.getUsername(), userPassword, true, authorities);
+        final var sorfaceUser = new DefaultPrincipal(user.getUsername(), userPassword, true, authorities);
         {
             sorfaceUser.setId(user.getId());
             sorfaceUser.setFirstName(user.getFirstName());
