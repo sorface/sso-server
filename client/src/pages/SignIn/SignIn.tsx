@@ -1,7 +1,6 @@
 import React, {createRef, FormEvent, Fragment, FunctionComponent, MouseEvent, useState} from 'react';
 import {Captions, pathnames} from '../../constants';
 import {Field} from '../../components/Form/Form';
-import {FormFields} from '../../components/Form/FormFields';
 import githubLogo from './img/github.svg';
 import yandexLogo from './img/yandex.svg';
 import googleLogo from './img/google.svg';
@@ -63,7 +62,7 @@ export const SignIn: FunctionComponent = () => {
         },
         {
             name: 'Email',
-            disabled: true,
+            disabled: false,
             href: '#',
             logo: emailLogo,
             fields: withEmail ? emailFields : null,
@@ -94,10 +93,19 @@ export const SignIn: FunctionComponent = () => {
                         <Fragment key={signinItem.name}>
                             {signinItem.fields ? (
                                 <>
-                                    <hr />
-                                    <form ref={loginFormRef} onSubmit={handleLoginSubmit}>
-                                        <FormFields fields={signinItem.fields} />
-                                        <input type="submit" value={Captions.SignIn} />
+                                    <hr/>
+                                    <form action="/api/accounts/signin" method="post">
+                                        <div>
+                                            <label htmlFor="name">Email or Username: </label>
+                                            <input type="text" name="username" id="name" required/>
+                                        </div>
+                                        <div className="form-example">
+                                            <label htmlFor="password">Password: </label>
+                                            <input type="password" name="password" id="password" required/>
+                                        </div>
+                                        <div className="form-example">
+                                            <input type="submit" value="Войти"/>
+                                        </div>
                                     </form>
                                     <Link className="signUp-link" to={pathnames.signUp}>{Captions.SignUpLink}</Link>
                                 </>
