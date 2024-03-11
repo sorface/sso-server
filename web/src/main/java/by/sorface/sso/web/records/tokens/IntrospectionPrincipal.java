@@ -1,6 +1,6 @@
 package by.sorface.sso.web.records.tokens;
 
-import by.sorface.sso.web.records.principals.SfPrincipal;
+import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class IntrospectionPrincipal {
     private String email;
     private List<String> authorities;
 
-    public static IntrospectionPrincipal from(final SfPrincipal authorizedUser) {
+    public static IntrospectionPrincipal from(final DefaultPrincipal authorizedUser) {
         if (Objects.isNull(authorizedUser)) {
             return null;
         }

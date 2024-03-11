@@ -1,8 +1,9 @@
 package by.sorface.sso.web.services.providers;
 
 import by.sorface.sso.web.dao.models.UserEntity;
-import by.sorface.sso.web.records.principals.SfPrincipal;
+import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import by.sorface.sso.web.services.users.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +19,11 @@ public class DefaultUserDatabaseProvider implements UserDetailsService {
 
     private final UserService userRepository;
 
-    private final Converter<UserEntity, SfPrincipal> principalConverter;
+    private final Converter<UserEntity, DefaultPrincipal> principalConverter;
 
+    @Autowired
     public DefaultUserDatabaseProvider(@Qualifier("defaultUserService") final UserService userRepository,
-                                       @Qualifier("defaultSfUserMapper") final Converter<UserEntity, SfPrincipal> principalConverter) {
+                                       @Qualifier("defaultPrincipalConverter") final Converter<UserEntity, DefaultPrincipal> principalConverter) {
         this.userRepository = userRepository;
         this.principalConverter = principalConverter;
     }

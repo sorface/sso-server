@@ -30,7 +30,9 @@ public class DefaultOAuth2UserDatabaseStrategy implements OAuth2UserDatabaseStra
     public OAuth2User loadUser(final OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         final var provider = getAuthProvider(userRequest);
 
-        return getUserServiceByProvider(provider).loadUser(userRequest);
+        final var providerService = getUserServiceByProvider(provider);
+
+        return providerService.loadUser(userRequest);
     }
 
     private OAuth2UserService<OAuth2UserRequest, OAuth2User> getUserServiceByProvider(OAuthProvider provider) {
