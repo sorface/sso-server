@@ -86,9 +86,11 @@ const createFetchRequestInit = (apiContract: ApiContract) => {
         return undefined;
     }
     const {method, body} = apiContract;
+    const formDataInBody = body instanceof FormData;
 
     return {
         method: method,
+        ...(!formDataInBody && {headers: {'Content-Type': 'application/json'}}),
         body: body instanceof FormData ? body : JSON.stringify(body),
     };
 };
