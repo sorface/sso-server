@@ -12,7 +12,7 @@ RUN mvn clean package \
      -D REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL  \
      -D REACT_APP_VERSION=$REACT_APP_VERSION
 
-FROM openjdk:19-jdk-alpine
+FROM eclipse-temurin:19
 
 # delete the pizdec
 
