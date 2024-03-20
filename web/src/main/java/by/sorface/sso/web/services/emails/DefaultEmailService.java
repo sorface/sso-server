@@ -1,21 +1,33 @@
 package by.sorface.sso.web.services.emails;
 
 import by.sorface.sso.web.records.mails.Mail;
+import by.sorface.sso.web.records.mails.MailTemplate;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class DefaultEmailService implements EmailService {
+
+    public static final String CLASSPATH_STATIC_IMAGES = "/static/images/";
+
+    private final ResourceLoader imageResourceLoader;
+
+    private final TemplateEngine templateEngine;
 
     private final JavaMailSender emailSender;
 
@@ -35,17 +47,33 @@ public class DefaultEmailService implements EmailService {
         emailSender.send(message);
     }
 
-    public void sendHtml(final Mail mail) {
+    public void sendHtml(final MailTemplate mailTemplate) {
         try {
             final var mimeMessage = emailSender.createMimeMessage();
-            final var helper = new MimeMessageHelper(mimeMessage, true);
+            final var email = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            helper.setFrom(sender);
-            helper.setTo(mail.to());
-            helper.setText(mail.body(), true);
-            helper.setSentDate(new Date());
+            final var html = templateEngine.process(mailTemplate.template() + ".html", mailTemplate.context());
 
-            mimeMessage.setSubject(mail.subject());
+            email.setFrom(sender);
+            email.setTo(mailTemplate.to());
+            email.setText(html, true);
+            email.setSentDate(new Date());
+
+            Optional.ofNullable(mailTemplate.images()).orElse(List.of())
+                    .forEach(image -> {
+                        final var simpleImageName = image.name().replaceFirst("[.][^.]+$", "");
+
+                        final var path = buildImageResourcePath(image.name());
+                        final var clr = new ClassPathResource(path);
+
+                        try {
+                            email.addInline(simpleImageName, clr);
+                        } catch (MessagingException e) {
+                            log.error(e.getMessage(), e);
+                        }
+                    });
+
+            mimeMessage.setSubject(mailTemplate.subject());
 
             emailSender.send(mimeMessage);
         } catch (MessagingException e) {
@@ -53,4 +81,7 @@ public class DefaultEmailService implements EmailService {
         }
     }
 
+    private String buildImageResourcePath(final String imageFileName) {
+        return CLASSPATH_STATIC_IMAGES.concat(imageFileName);
+    }
 }

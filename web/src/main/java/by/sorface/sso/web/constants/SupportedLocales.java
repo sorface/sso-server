@@ -1,0 +1,11 @@
+package by.sorface.sso.web.constants;
+
+import java.util.Locale;
+
+public class SupportedLocales {
+
+    public static final Locale EN = Locale.ENGLISH;
+
+    public static final Locale RU = Locale.of("ru", "RU");
+
+}

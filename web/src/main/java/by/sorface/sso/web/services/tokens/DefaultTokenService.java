@@ -22,7 +22,7 @@ public class DefaultTokenService implements TokenService {
 
     @Transactional
     public TokenEntity saveForUser(final UserEntity user) {
-        final String hash = HashUtils.generateRegistryHash(10);
+        final String hash = HashUtils.generateRegistryHash(50);
 
         final var registryTokenEntity = new TokenEntity();
         {

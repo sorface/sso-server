@@ -48,6 +48,12 @@ public class ExceptionAdvice {
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public OperationError handleException(final Exception e) {
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, e);
+    }
+
     private OperationError buildError(final HttpStatus status, final Exception exception) {
         return new OperationError(exception.getMessage(), status.getReasonPhrase(), status.value());
     }

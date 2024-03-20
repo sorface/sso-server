@@ -1,6 +1,8 @@
 package by.sorface.sso.web.controllers;
 
+import by.sorface.sso.web.config.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.exceptions.UnauthorizedException;
+import by.sorface.sso.web.exceptions.UserRequestException;
 import by.sorface.sso.web.facade.signup.SignupEmailFacade;
 import by.sorface.sso.web.facade.signup.SignupFacade;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
@@ -13,11 +15,13 @@ import by.sorface.sso.web.records.responses.UserConfirm;
 import by.sorface.sso.web.records.responses.UserRegistered;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Objects;
 
 @RestController
@@ -28,6 +32,8 @@ public class AccountController {
     private final SignupEmailFacade signupEmailFacade;
 
     private final SignupFacade signupFacade;
+
+    private final SavedRequestRedisSuccessHandler savedRequestRedisSuccessHandler;
 
     @GetMapping("/current")
     public ProfileRecord getSelf() {
@@ -42,20 +48,28 @@ public class AccountController {
         return new ProfileRecord(principal.getId(), principal.getEmail(), principal.getFirstName(), principal.getLastName());
     }
 
-    @PostMapping("/signup")
-    public AccountSignupResponse signupWithSignIn(@RequestBody final AccountSignup userRegistry, final HttpServletRequest request) {
-        signupEmailFacade.signup(userRegistry);
+    //    @PostMapping(
+//            value = "/signup",
+//            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+//            produces = MediaType.APPLICATION_JSON_VALUE
+//    )
+    public AccountSignupResponse signupWithSignIn(final AccountSignup accountSignup,
+                                                  final HttpServletRequest request,
+                                                  final HttpServletResponse response) throws ServletException, IOException {
+        signupEmailFacade.signup(accountSignup);
 
         try {
-            request.login(userRegistry.email(), userRegistry.password());
+            request.login(accountSignup.email(), accountSignup.password());
         } catch (ServletException e) {
-            throw new RuntimeException(e);
+            throw new UserRequestException(e.getMessage());
         }
 
         final var auth = (Authentication) request.getUserPrincipal();
         final var user = (DefaultPrincipal) auth.getPrincipal();
 
-        return new AccountSignupResponse(user.getUsername(), userRegistry.email());
+        savedRequestRedisSuccessHandler.onAuthenticationSuccess(request, response, auth);
+
+        return new AccountSignupResponse(user.getUsername(), accountSignup.email());
     }
 
     @PostMapping("/confirm")
