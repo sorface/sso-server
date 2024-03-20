@@ -2,7 +2,18 @@ export const pathnames = {
     account: '/account',
     signUp: '/account/signup',
     signIn: '/account/signin',
+    activate: '/account/activate',
 };
+
+export const enum IconNames {
+    None = 'alert-circle',
+    Time = 'time',
+    Checkmark = 'checkmark-circle',
+}
+
+export const enum IconThemePostfix {
+    Light = '-outline',
+}
 
 export const enum Captions {
     AppTitle = 'sso sorface',
@@ -22,4 +33,11 @@ export const enum Captions {
     LogoAlt = 'logo',
     ContinueWith = 'Continue with',
     WelcomeToSSO = 'Welcome to SSO Sorface',
+    ActivateFail = 'Activation Fail',
+    ActivateSuccess = 'Activation Success',
+    Activating = 'Activating',
+    TokenNotFound = 'Token not found',
+    InvalidToken = 'Invalid token',
+    YouWillBeRedirected = 'You will be redirected in :redirectTimeoutSec seconds',
+    PleaseWait = 'Please wait...',
 }
