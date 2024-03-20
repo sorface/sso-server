@@ -4,7 +4,6 @@ import by.sorface.sso.web.config.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.config.handlers.TokenAuthenticationSuccessHandler;
 import by.sorface.sso.web.config.properties.MvcEndpointProperties;
 import by.sorface.sso.web.constants.UrlPatternEnum;
-import by.sorface.sso.web.services.providers.DefaultUserDatabaseProvider;
 import by.sorface.sso.web.services.providers.OAuth2UserDatabaseStrategy;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationService;
@@ -19,7 +18,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
@@ -44,10 +42,6 @@ public class SecurityConfig {
     private final TokenAuthenticationSuccessHandler tokenAuthenticationSuccessHandler;
 
     private final MvcEndpointProperties mvcEndpointProperties;
-
-    private final DefaultUserDatabaseProvider userDetailsService;
-
-    private final PasswordEncoder passwordEncoder;
 
     /**
      * Configuration OAuth2 Spring Security
@@ -92,9 +86,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(final HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder);
+        httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
 
         httpSecurity.oauth2Login(configurer -> {
             configurer.userInfoEndpoint(configure -> configure.userService(oAuth2UserDatabaseStrategy));

@@ -11,7 +11,7 @@ public class HashUtils {
     }
 
     public String generateRegistryHash(final int length) {
-        return RandomStringUtils.random(length);
+        return RandomStringUtils.randomAlphabetic(length);
     }
 
 }

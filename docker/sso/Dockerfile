@@ -1,4 +1,4 @@
-FROM maven:3.8.5-openjdk-17 as build
+FROM maven:3.8.7-eclipse-temurin-19 as build
 
 COPY . .
 
@@ -12,7 +12,7 @@ RUN mvn clean package \
      -D REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL  \
      -D REACT_APP_VERSION=$REACT_APP_VERSION
 
-FROM openjdk:17.0.2-jdk-slim-buster
+FROM eclipse-temurin:19
 
 # delete the pizdec
 

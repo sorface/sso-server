@@ -66,7 +66,13 @@ public class DefaultSignupFacade implements SignupFacade {
 
         log.info("The hash token {} created for account", registryToken.getHash().substring(0, 5).concat("..."));
 
-        return new UserRegisteredHash(savedUser.getId(), savedUser.getEmail(), registryToken.getHash());
+        return new UserRegisteredHash(
+                savedUser.getId(),
+                savedUser.getEmail(),
+                registryToken.getHash(),
+                savedUser.getFirstName(),
+                savedUser.getLastName()
+        );
     }
 
     @Override
@@ -129,7 +135,13 @@ public class DefaultSignupFacade implements SignupFacade {
 
         final UserEntity user = registryToken.getUser();
 
-        return new UserRegisteredHash(user.getId(), user.getEmail(), registryToken.getHash());
+        return new UserRegisteredHash(
+                user.getId(),
+                user.getEmail(),
+                registryToken.getHash(),
+                user.getFirstName(),
+                user.getLastName()
+        );
     }
 
 }

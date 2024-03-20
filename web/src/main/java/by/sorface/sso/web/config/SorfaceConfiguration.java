@@ -2,6 +2,7 @@ package by.sorface.sso.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,7 +16,7 @@ import java.util.List;
 @Configuration
 @EnableJpaAuditing
 @EnableGlobalAuthentication
-public class SfConfiguration {
+public class SorfaceConfiguration {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -41,6 +42,17 @@ public class SfConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
+    }
+
+    @Bean
+    public ResourceBundleMessageSource resourceBundleMessageSource() {
+        final var source = new ResourceBundleMessageSource();
+        {
+            source.setBasename("language/messages");
+            source.setDefaultEncoding("UTF-8");
+        }
+
+        return source;
     }
 
 }

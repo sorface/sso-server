@@ -102,6 +102,7 @@ spring:
       flush-mode: on_save
       namespace: sorface:session
       save-mode: on_set_attribute
+      repository-type: indexed
 
   liquibase:
     enabled: true
@@ -112,7 +113,7 @@ spring:
 
   data:
     redis:
-      client-type: jedis
+      client-type: lettuce
       database: 0
       host: ${REDIS_HOST}
       port: 6379
