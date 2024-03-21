@@ -1,12 +1,14 @@
 import {FunctionComponent} from 'react';
-import {Captions, pathnames} from '../../constants';
-import {Link} from 'react-router-dom';
+import {Captions, IconNames} from '../../constants';
+import { Icon } from '../../components/Icon/Icon';
+
+import './NotFound.css';
 
 export const NotFound: FunctionComponent = () => {
     return (
-        <div>
-            <p>{Captions.NotFound}</p>
-            <p><Link to={pathnames.account}>{Captions.Account}</Link></p>
+        <div className='not-found'>
+            <Icon name={IconNames.None} />
+            <h2>{Captions.NotFound}</h2>
         </div>
     );
 };
