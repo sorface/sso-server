@@ -24,8 +24,7 @@ public enum UrlPatternEnum {
     FRONTEND(
             List.of(
                     "/account/signin",
-                    "/account/signup",
-                    "/account"
+                    "/account/signup"
             )
     );
 

@@ -4,6 +4,7 @@ import {AppRoutes} from './routes/AppRoutes';
 
 import './App.css';
 import {REACT_APP_VERSION} from './config';
+import {Footer} from "./components/Footer/Footer";
 
 function App() {
     return (
@@ -12,9 +13,7 @@ function App() {
                 <div className="App-content">
                     <AppRoutes/>
                 </div>
-                <footer>
-                    <div>{REACT_APP_VERSION}</div>
-                </footer>
+                <Footer version={REACT_APP_VERSION}/>
             </div>
         </BrowserRouter>
     );

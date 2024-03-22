@@ -75,13 +75,12 @@ spring:
             userInfoUri: https://api.twitch.tv/helix/users/
             user-info-authentication-method: GET
             user-name-attribute: data
-      resourceserver:
-        opaquetoken:
-          introspection-uri: "/oauth2/introspect"
-          client-id: charp
-          client-secret: password
 
     sorface:
+      cookie:
+        domain-pattern: '^.+?\.(\w+\.[a-z]+)$'
+        path: '/'
+        name: 'JSESSIONID'
       sso:
         issuer-url: ${OAUTH_SERVER_ISSUER_URL}
 

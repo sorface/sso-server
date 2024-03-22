@@ -2,7 +2,6 @@ version: '3.9'
 
 services:
   redis:
-#    image: redis/redis-stack:latest
     build:
       context: .
       dockerfile: redis/Dockerfile
@@ -16,25 +15,25 @@ services:
   postgresql:
     container_name: "postgres"
     build:
-      context: .
-      dockerfile: postgresql/Dockerfile
+      context: postgresql
+      dockerfile: Dockerfile
     ports:
       - "5432:5432"
     env_file:
       - .docker.pgsql.env
 
-  platform-sso:
-    container_name: "sso-sorface"
-    build:
-      context: ../
-      dockerfile: docker/sso/Dockerfile
-      args:
-        - REACT_APP_BACKEND_URL=${APP_BACKEND_URL}
-        - REACT_APP_VERSION=${APP_VERSION}
-    depends_on:
-      - redis
-      - postgresql
-    ports:
-      - '8080:8080'
-    env_file:
-      - .docker.sso.env
+#  platform-sso:
+#    container_name: "sso-sorface"
+#    build:
+#      context: ../
+#      dockerfile: docker/sso/Dockerfile
+#      args:
+#        - REACT_APP_BACKEND_URL=${APP_BACKEND_URL}
+#        - REACT_APP_VERSION=${APP_VERSION}
+#    depends_on:
+#      - redis
+#      - postgresql
+#    ports:
+#      - '8080:8080'
+#    env_file:
+#      - .docker.sso.env

@@ -45,6 +45,18 @@
     {
       "name": "spring.mvc.endpoint.uri-api-logout",
       "type": "java.lang.String"
+    },
+    {
+      "name": "spring.security.sorface.cookie.domain-pattern",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.security.sorface.cookie.path",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.security.sorface.cookie.name",
+      "type": "java.lang.String"
     }
   ]
 }

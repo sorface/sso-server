@@ -1,38 +1,45 @@
 package by.sorface.sso.web.config.handlers;
 
 import by.sorface.sso.web.config.properties.MvcEndpointProperties;
-import jakarta.servlet.ServletException;
+import by.sorface.sso.web.constants.SessionAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class SavedRequestRedisSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-
-    public static final String SORFACE_NEXT_LOCATION = "Sorface-Next-Location";
+public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTargetUrlRequestHandler
+        implements AuthenticationSuccessHandler {
 
     private final MvcEndpointProperties mvcEndpointProperties;
 
-    private RequestCache requestCache = new HttpSessionRequestCache();
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws ServletException, IOException {
-        final var savedRequest = this.requestCache.getRequest(request, response);
+                                        Authentication authentication) throws IOException {
+        final var requestAttributes = RequestContextHolder.currentRequestAttributes();
 
-        if (savedRequest == null) {
-            response.setHeader(SORFACE_NEXT_LOCATION, mvcEndpointProperties.getUriPageProfile());
+        final var savedRequest = (SavedRequest) requestAttributes.getAttribute(SessionAttributes.SAVED_REQUEST, RequestAttributes.SCOPE_SESSION);
 
-            super.onAuthenticationSuccess(request, response, authentication);
+        final String unknown = Optional.ofNullable(request.getHeader(HttpHeaders.USER_AGENT)).orElse("unknown");
+
+        requestAttributes.setAttribute(SessionAttributes.USER_AGENT, unknown, RequestAttributes.SCOPE_SESSION);
+
+        if (Objects.isNull(savedRequest)) {
+            response.sendRedirect(mvcEndpointProperties.getUriPageProfile());
+            response.setStatus(HttpServletResponse.SC_FOUND);
 
             return;
         }
@@ -40,18 +47,25 @@ public class SavedRequestRedisSuccessHandler extends SimpleUrlAuthenticationSucc
         String targetUrlParameter = getTargetUrlParameter();
 
         if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
-            this.requestCache.removeRequest(request, response);
-            super.onAuthenticationSuccess(request, response, authentication);
             return;
         }
-        clearAuthenticationAttributes(request);
-        // Use the DefaultSavedRequest URL
+
+        clearAuthenticationAttributes(requestAttributes);
         String targetUrl = savedRequest.getRedirectUrl();
+
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
-    public void setRequestCache(RequestCache requestCache) {
-        this.requestCache = requestCache;
+    public void clearAuthenticationAttributes(RequestAttributes requestAttributes) {
+        Object attribute = requestAttributes.getAttribute(SessionAttributes.AUTHENTICATION_EXCEPTION, RequestAttributes.SCOPE_SESSION);
+
+        if (Objects.nonNull(attribute)) {
+            requestAttributes.removeAttribute(SessionAttributes.AUTHENTICATION_EXCEPTION, RequestAttributes.SCOPE_SESSION);
+        }
     }
 
+    @Override
+    protected boolean isAlwaysUseDefaultTargetUrl() {
+        return false;
+    }
 }

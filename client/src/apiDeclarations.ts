@@ -4,7 +4,7 @@ export type SignUpBody = Record<string, FormDataEntryValue>;
 
 export interface ConfirmBody {
     token: string;
-};
+}
 
 export const accountsApiDeclaration = {
     signup: (body: SignUpBody): ApiContractPost => ({
@@ -21,4 +21,13 @@ export const accountsApiDeclaration = {
         baseUrl: '/api/account/confirm',
         body,
     }),
+    getCurrentSession: (): ApiContractGet => ({
+        method: 'GET',
+        baseUrl: '/api/sessions',
+    }),
+    logout: (): ApiContractPost => ({
+        method: 'POST',
+        baseUrl: '/api/accounts/logout',
+        body: ''
+    })
 };
