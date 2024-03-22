@@ -3,8 +3,6 @@ import {Captions} from '../../constants';
 import {FormWrapper} from './FormWrapper';
 import {FormFields} from './FormFields';
 
-import './Form.css';
-
 export interface Field extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
     name: string;
     error?: string | null;
