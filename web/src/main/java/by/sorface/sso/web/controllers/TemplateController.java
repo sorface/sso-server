@@ -15,7 +15,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class TemplateController {
 
-    @GetMapping({"/account/sessions", "/account/signup", "/account"})
+    @GetMapping({"/account/sessions", "/account/signup", "/account", "/account/activate"})
     public String getUserPage() {
         return "index";
     }
