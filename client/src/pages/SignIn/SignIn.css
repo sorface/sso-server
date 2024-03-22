@@ -1,8 +1,3 @@
-.page-sign {
-    display: flex;
-    justify-content: center;
-}
-
 .page-sign .form-additional-content {
     padding-top: 0rem;
 }
@@ -24,7 +19,7 @@
 .signin-container {
     display: flex;
     flex-direction: column;
-    width: 400px;
+    width: 100%;
     padding-bottom: 1rem;
 }
 
