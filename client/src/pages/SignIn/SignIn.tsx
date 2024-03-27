@@ -3,7 +3,6 @@ import {Captions} from '../../constants';
 import {Field} from '../../components/Form/Form';
 import githubLogo from './img/github.svg';
 import yandexLogo from './img/yandex.svg';
-import googleLogo from './img/google.svg';
 import twitchLogo from './img/twitch.svg';
 import emailLogo from './img/email-svgrepo-com.svg';
 import {FormWrapper} from '../../components/Form/FormWrapper';
@@ -31,11 +30,6 @@ export const SignIn: FunctionComponent = () => {
     const [withEmail, setWithEmail] = useState(false);
 
     const signinItems = [
-        {
-            name: 'Google',
-            href: '/oauth2/authorization/google',
-            logo: googleLogo,
-        },
         {
             name: 'Yandex',
             href: '/oauth2/authorization/yandex',
