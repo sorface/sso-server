@@ -10,6 +10,9 @@ export const enum IconNames {
     None = 'alert-circle',
     Time = 'time',
     Checkmark = 'checkmark-circle',
+    Exit = 'exit',
+    Person = 'person-circle',
+    List = 'list-circle',
 }
 
 export const enum IconThemePostfix {
