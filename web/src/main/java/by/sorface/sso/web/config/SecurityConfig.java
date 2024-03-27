@@ -1,23 +1,22 @@
 package by.sorface.sso.web.config;
 
+import by.sorface.sso.web.config.handlers.RedisSessionLogoutHandler;
 import by.sorface.sso.web.config.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.config.handlers.TokenAuthenticationSuccessHandler;
 import by.sorface.sso.web.config.properties.MvcEndpointProperties;
+import by.sorface.sso.web.config.properties.SorfaceCookieCsrfProperties;
 import by.sorface.sso.web.config.properties.SorfaceCookieProperties;
 import by.sorface.sso.web.constants.FrontendUrlPattern;
 import by.sorface.sso.web.constants.UrlPatternEnum;
-import by.sorface.sso.web.records.responses.OperationError;
 import by.sorface.sso.web.services.providers.OAuth2UserDatabaseStrategy;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationService;
-import by.sorface.sso.web.utils.json.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,11 +25,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.web.util.UriUtils;
-
-import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,6 +51,12 @@ public class SecurityConfig {
     private final MvcEndpointProperties mvcEndpointProperties;
 
     private final SorfaceCookieProperties sorfaceCookieProperties;
+
+    private final RedisSessionLogoutHandler redisSessionLogoutHandler;
+
+    private final AuthenticationFailureHandler authenticationFailureHandler;
+
+    private final SorfaceCookieCsrfProperties sorfaceCookieCsrfProperties;
 
     /**
      * Configuration OAuth2 Spring Security
@@ -87,7 +92,6 @@ public class SecurityConfig {
                     configure.requestMatchers(UrlPatternEnum.toArray()).permitAll();
                     configure.anyRequest().authenticated();
                 })
-                .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
                 .exceptionHandling(configurer -> {
                     final var loginUrlAuthenticationEntryPoint =
                             new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn());
@@ -109,10 +113,7 @@ public class SecurityConfig {
             configurer.loginPage(mvcEndpointProperties.getUriPageSignIn());
 
             configurer.successHandler(savedRequestRedisSuccessHandler);
-            configurer.failureHandler((request, response, exception) -> {
-                OperationError operationError = new OperationError("ERROR", exception.getMessage(), 400);
-                response.sendRedirect("forward:" + mvcEndpointProperties.getUriPageSignIn() + "?error=" + Json.stringify(operationError));
-            });
+            configurer.failureHandler(authenticationFailureHandler);
         });
 
         return httpSecurity
@@ -128,9 +129,10 @@ public class SecurityConfig {
                             .anyRequest().authenticated();
                 })
                 .logout(configurer -> {
-                    configurer.clearAuthentication(true);
                     configurer.invalidateHttpSession(true);
+                    configurer.clearAuthentication(true);
 
+                    configurer.addLogoutHandler(redisSessionLogoutHandler);
                     configurer.logoutUrl(mvcEndpointProperties.getUriApiLogout());
                     configurer.deleteCookies(sorfaceCookieProperties.getName());
                 })
@@ -139,19 +141,7 @@ public class SecurityConfig {
                     configurer.loginProcessingUrl(mvcEndpointProperties.getUriApiLogin());
 
                     configurer.successHandler(savedRequestRedisSuccessHandler);
-                    configurer.failureHandler((request, response, exception) -> {
-                        String error;
-                        if (exception instanceof BadCredentialsException) {
-                            error = "password.or.username.invalid";
-                        } else {
-                            error = "unknown.error";
-                        }
-
-                        final var encode = UriUtils.encode(error, StandardCharsets.US_ASCII);
-                        final var source = mvcEndpointProperties.getUriPageSignIn() + "?error=" + encode;
-
-                        response.sendRedirect(source);
-                    });
+                    configurer.failureHandler(authenticationFailureHandler);
                 })
                 .build();
     }
@@ -159,6 +149,16 @@ public class SecurityConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
+    }
+
+    public CsrfTokenRepository csrfTokenRepository() {
+        final var cookieCsrfTokenRepository = new CookieCsrfTokenRepository();
+
+        cookieCsrfTokenRepository.setCookieName(sorfaceCookieCsrfProperties.getName());
+        cookieCsrfTokenRepository.setCookieHttpOnly(false);
+        cookieCsrfTokenRepository.setCookiePath(sorfaceCookieCsrfProperties.getPath());
+
+        return cookieCsrfTokenRepository;
     }
 
 }

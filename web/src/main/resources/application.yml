@@ -81,6 +81,10 @@ spring:
         domain-pattern: '^.+?\.(\w+\.[a-z]+)$'
         path: '/'
         name: 'JSESSIONID'
+      cookie-csrf:
+        domain-pattern: '^.+?\.(\w+\.[a-z]+)$'
+        path: '/'
+        name: 'sorface_x_csrf_token'
       sso:
         issuer-url: ${OAUTH_SERVER_ISSUER_URL}
 
@@ -102,7 +106,6 @@ spring:
       namespace: sorface:session
       save-mode: on_set_attribute
       repository-type: indexed
-
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/master.yaml

@@ -55,7 +55,15 @@
       "type": "java.lang.String"
     },
     {
-      "name": "spring.security.sorface.cookie.name",
+      "name": "spring.security.sorface.cookie-csrf.name",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.security.sorface.cookie-csrf.domain-pattern",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.security.sorface.cookie-csrf.path",
       "type": "java.lang.String"
     }
   ]
