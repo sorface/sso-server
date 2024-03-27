@@ -6,6 +6,7 @@ import defaultAvatarImage from './img/anonymus_avatar.png';
 import './Account.css';
 import {Link} from "react-router-dom";
 import {Captions, pathnames} from "../../constants";
+import { useLogout } from '../../hooks/useLogout';
 
 export interface Profile {
 
@@ -22,11 +23,8 @@ export interface Profile {
 }
 
 export const Account: FunctionComponent = () => {
+    const { logoutData, logoutFetch } = useLogout();
     const {apiMethodState, fetchData} = useApiMethod<Profile, undefined>(accountsApiDeclaration.current);
-    const {
-        apiMethodState: logoutMethodState,
-        fetchData: logoutFetch
-    } = useApiMethod<Profile, undefined>(accountsApiDeclaration.logout);
 
     const {
         process: {
@@ -36,17 +34,9 @@ export const Account: FunctionComponent = () => {
         data
     } = apiMethodState;
 
-    const {
-        process: {
-            loading: logoutLoading,
-            error: logoutError
-        },
-        data: logoutData
-    } = logoutMethodState;
-
     useEffect(() => {
         fetchData(undefined);
-    }, []);
+    }, [fetchData]);
 
     useEffect(() => {
         if (!data) {

@@ -16,11 +16,8 @@ function App() {
                     <div className="App-content">
                         <AppRoutes />
                     </div>
-                    <footer>
-                        <div>{REACT_APP_VERSION}</div>
-                    </footer>
+                    <Footer version={REACT_APP_VERSION}/>
                 </div>
-                <Footer version={REACT_APP_VERSION}/>
             </div>
         </BrowserRouter>
     );
