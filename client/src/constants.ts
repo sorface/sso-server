@@ -13,6 +13,8 @@ export const enum IconNames {
     Exit = 'exit',
     Person = 'person-circle',
     List = 'list-circle',
+    Create = 'create',
+    Close = 'close-circle',
 }
 
 export const enum IconThemePostfix {
@@ -45,4 +47,6 @@ export const enum Captions {
     InvalidToken = 'Invalid token',
     YouWillBeRedirected = 'You will be redirected in :redirectTimeoutSec seconds',
     PleaseWait = 'Please wait...',
+    Unknown = 'unknown',
+    Logout = 'Logout',
 }

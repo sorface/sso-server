@@ -1,3 +1,11 @@
+.account-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 .user-data-table {
     border-collapse: collapse;
     width: 50%;
@@ -9,7 +17,7 @@
 .user-data-table td,
 .user-data-table th {
     border: none;
-    padding: 20px;
+    padding: 1.25rem;
     cursor: pointer;
 }
 
@@ -21,24 +29,31 @@
     text-align: left;
 }
 
-.user-data-table th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: left;
-    background-color: #4CAF50;
-    color: white;
-}
-
 .user-data-table td.bold {
     font-weight: bold;
 }
 
 .user-data-table td.right {
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.user-data-table td.right .field-value {
+    margin-right: 0.25rem;
+}
+
+.user-data-table td.right .field-action {
+    height: 1.25rem;
+}
+
+.user-data-table td.right .field-action ion-icon {
+    font-size: 1.25rem;
+    margin-left: 0.25rem;
 }
 
 .avatar {
-    margin-bottom: 100px;
+    margin-bottom: 4.25rem;
 }
 
 .avatar img {
@@ -51,15 +66,6 @@
 }
 
 .exit-button {
-    position: relative;
-    display: inline-block;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #dd5c6f;
-    color: white;
-    cursor: pointer;
-    max-width: 100px;
-    margin-top: 50px;
-    font-weight: bold;
+    width: 8rem !important;
+    margin-top: 1rem;
 }
