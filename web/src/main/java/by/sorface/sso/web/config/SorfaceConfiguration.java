@@ -1,5 +1,8 @@
 package by.sorface.sso.web.config;
 
+import by.sorface.sso.web.config.properties.SorfaceCookieProperties;
+import lombok.RequiredArgsConstructor;
+import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -7,6 +10,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -16,7 +21,10 @@ import java.util.List;
 @Configuration
 @EnableJpaAuditing
 @EnableGlobalAuthentication
+@RequiredArgsConstructor
 public class SorfaceConfiguration {
+
+    private final SorfaceCookieProperties sorfaceCookieProperties;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -32,6 +40,18 @@ public class SorfaceConfiguration {
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
+    }
+
+    @Bean
+    public CookieSerializer cookieSerializer() {
+        final var serializer = new DefaultCookieSerializer();
+        {
+            serializer.setCookieName(sorfaceCookieProperties.getName());
+            serializer.setCookiePath(sorfaceCookieProperties.getPath());
+            serializer.setDomainNamePattern(sorfaceCookieProperties.getDomainPattern());
+        }
+
+        return serializer;
     }
 
     /**
@@ -53,6 +73,11 @@ public class SorfaceConfiguration {
         }
 
         return source;
+    }
+
+    @Bean
+    public UserAgentAnalyzer userAgentAnalyzer() {
+        return UserAgentAnalyzer.newBuilder().hideMatcherLoadStats().withCache(10000).build();
     }
 
 }

@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from './routes/AppRoutes';
 import { REACT_APP_VERSION } from './config';
 import { Menu } from './components/Menu/Menu';
+import {Footer} from "./components/Footer/Footer";
 
 import './App.css';
 
@@ -19,6 +20,7 @@ function App() {
                         <div>{REACT_APP_VERSION}</div>
                     </footer>
                 </div>
+                <Footer version={REACT_APP_VERSION}/>
             </div>
         </BrowserRouter>
     );

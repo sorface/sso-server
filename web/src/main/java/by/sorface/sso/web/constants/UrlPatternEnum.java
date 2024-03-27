@@ -25,7 +25,7 @@ public enum UrlPatternEnum {
             List.of(
                     "/account/signin",
                     "/account/signup",
-                    "/account"
+                    "/account/activate"
             )
     );
 

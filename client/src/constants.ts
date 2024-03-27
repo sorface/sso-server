@@ -1,5 +1,6 @@
 export const pathnames = {
     account: '/account',
+    session: '/account/sessions',
     signUp: '/account/signup',
     signIn: '/account/signin',
     activate: '/account/activate',
@@ -22,8 +23,9 @@ export const enum Captions {
     AppTitle = 'sso sorface',
     Loading = 'Loading',
     Error = 'Error',
-    NotFound = 'Not Found',
+    NotFound = '404 Not Found',
     Account = 'Account',
+    ActiveSessions = 'Active Sessions',
     SignUp = 'Sign up',
     SignUpLink = 'You do not have an account? Register!',
     SignInLink = 'You have an account? Sign In!',

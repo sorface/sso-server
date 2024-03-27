@@ -17,6 +17,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -39,23 +41,23 @@ public class AccountController {
     public ProfileRecord getSelf() {
         final var auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (Objects.isNull(auth) || !auth.isAuthenticated()) {
+        if (Objects.isNull(auth) || !auth.isAuthenticated() || (auth instanceof AnonymousAuthenticationToken)) {
             throw new UnauthorizedException("unauthorized");
         }
 
         final var principal = (DefaultPrincipal) auth.getPrincipal();
 
-        return new ProfileRecord(principal.getId(), principal.getEmail(), principal.getFirstName(), principal.getLastName());
+        return new ProfileRecord(principal.getId(), principal.getEmail(), principal.getFirstName(), principal.getLastName(), principal.getAvatarUrl());
     }
 
-    //    @PostMapping(
-//            value = "/signup",
-//            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-//            produces = MediaType.APPLICATION_JSON_VALUE
-//    )
+    @PostMapping(
+            value = "/signup",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public AccountSignupResponse signupWithSignIn(final AccountSignup accountSignup,
                                                   final HttpServletRequest request,
-                                                  final HttpServletResponse response) throws ServletException, IOException {
+                                                  final HttpServletResponse response) throws IOException {
         signupEmailFacade.signup(accountSignup);
 
         try {

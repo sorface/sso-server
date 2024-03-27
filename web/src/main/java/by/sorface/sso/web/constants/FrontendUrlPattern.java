@@ -11,6 +11,8 @@ public enum FrontendUrlPattern {
 
     PAGE_SIGNUP("/account/signup"),
 
+    PAGE_SESSIONS("/account/sessions"),
+
     PAGE_PROFILE("/account"),
 
     ;

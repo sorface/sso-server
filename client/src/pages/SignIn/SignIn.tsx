@@ -1,5 +1,5 @@
 import React, {Fragment, FunctionComponent, MouseEvent, useState} from 'react';
-import {Captions, pathnames} from '../../constants';
+import {Captions} from '../../constants';
 import {Field} from '../../components/Form/Form';
 import githubLogo from './img/github.svg';
 import yandexLogo from './img/yandex.svg';
@@ -7,9 +7,9 @@ import googleLogo from './img/google.svg';
 import twitchLogo from './img/twitch.svg';
 import emailLogo from './img/email-svgrepo-com.svg';
 import {FormWrapper} from '../../components/Form/FormWrapper';
-import {Link} from 'react-router-dom';
 
 import './SignIn.css';
+
 
 const emailFields: Field[] = [
     {
@@ -53,7 +53,7 @@ export const SignIn: FunctionComponent = () => {
         },
         {
             name: 'Email',
-            disabled: false,
+            disabled: true,
             href: '#',
             logo: emailLogo,
             fields: withEmail ? emailFields : null,
@@ -87,7 +87,7 @@ export const SignIn: FunctionComponent = () => {
                                             <input type="submit" value="Войти"/>
                                         </div>
                                     </form>
-                                    <Link className="signUp-link" to={pathnames.signUp}>{Captions.SignUpLink}</Link>
+                                    {/*<Link className="signUp-link" to={pathnames.signUp}>{Captions.SignUpLink}</Link>*/}
                                 </>
                             ) : (
                                 <a

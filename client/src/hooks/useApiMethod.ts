@@ -1,7 +1,6 @@
 import {useCallback, useReducer} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {REACT_APP_BACKEND_URL} from '../config';
-import {pathnames} from '../constants';
 import {ApiContract} from '../types/apiContracts';
 
 interface ApiMethodState<ResponseData = any> {
@@ -131,16 +130,10 @@ export const useApiMethod = <ResponseData, RequestData = AnyObject>(apiContractC
                 createFetchUrl(apiContract),
                 createFetchRequestInit(apiContract),
             );
-            if (response.status === unauthorizedHttpCode) {
-                navigate(pathnames.account);
-                return;
-            }
-            if (response.headers.has("Sorface-Next-Location")) {
-                // @ts-ignore
-                window.location = response.headers.get("Sorface-Next-Location");
-
-                return;
-            }
+            // if (response.status === unauthorizedHttpCode) {
+            //     navigate(pathnames.signIn);
+            //     return;
+            // }
 
             const responseData = await getResponseContent(response);
             if (!response.ok) {

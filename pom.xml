@@ -21,7 +21,6 @@
 
     <modules>
         <module>web</module>
-        <module>migration</module>
     </modules>
 
     <parent>
