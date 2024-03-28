@@ -1,24 +1,57 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from './routes/AppRoutes';
 import { REACT_APP_VERSION } from './config';
 import { Menu } from './components/Menu/Menu';
-import {Footer} from "./components/Footer/Footer";
+import { Footer } from "./components/Footer/Footer";
+import { Loader } from './components/Loader/Loader';
+import { AuthContext } from './context/AuthContext';
+import { useGetAccountApi } from './hooks/useGetAccount';
+import { Captions } from './constants';
 
 import './App.css';
 
 function App() {
-    return (
-        <BrowserRouter>
+    const { accountState, loadAccount } = useGetAccountApi();
+    const {
+        process: {
+            loading,
+            error,
+        },
+        account,
+    } = accountState;
+    const accountWillLoad = !account && !error;
+
+    useEffect(() => {
+        loadAccount();
+    }, [loadAccount]);
+
+    if (loading || accountWillLoad) {
+        return (
             <div className="App-container">
-                <Menu />
                 <div className="App">
                     <div className="App-content">
-                        <AppRoutes />
+                        <p>{Captions.Loading}...</p>
+                        <Loader />
                     </div>
-                    <Footer version={REACT_APP_VERSION}/>
                 </div>
             </div>
+        );
+    }
+
+    return (
+        <BrowserRouter>
+            <AuthContext.Provider value={account}>
+                <div className="App-container">
+                    <Menu />
+                    <div className="App">
+                        <div className="App-content">
+                            <AppRoutes />
+                        </div>
+                        <Footer version={REACT_APP_VERSION} />
+                    </div>
+                </div>
+            </AuthContext.Provider>
         </BrowserRouter>
     );
 }

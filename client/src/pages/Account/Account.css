@@ -8,7 +8,8 @@
 
 .user-data-table {
     border-collapse: collapse;
-    width: 50%;
+    width: 100%;
+    max-width: 800px;
     margin: 0 auto;
     border: 0;
     border-spacing: 0;

@@ -1,7 +1,8 @@
 import {useCallback, useReducer} from 'react';
-import {useNavigate} from 'react-router-dom';
 import {REACT_APP_BACKEND_URL} from '../config';
 import {ApiContract} from '../types/apiContracts';
+import { useNavigate } from 'react-router-dom';
+import { pathnames } from '../constants';
 
 interface ApiMethodState<ResponseData = any> {
     process: {
@@ -130,10 +131,10 @@ export const useApiMethod = <ResponseData, RequestData = AnyObject>(apiContractC
                 createFetchUrl(apiContract),
                 createFetchRequestInit(apiContract),
             );
-            // if (response.status === unauthorizedHttpCode) {
-            //     navigate(pathnames.signIn);
-            //     return;
-            // }
+            if (response.status === unauthorizedHttpCode) {
+                navigate(pathnames.signIn);
+                return;
+            }
 
             const responseData = await getResponseContent(response);
             if (!response.ok) {

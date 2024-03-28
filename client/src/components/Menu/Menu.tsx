@@ -1,17 +1,18 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { IconNames, pathnames } from '../../constants';
 import { Icon } from '../Icon/Icon';
 import { useLogout } from '../../hooks/useLogout';
+import { AuthContext } from '../../context/AuthContext';
 
 import './Menu.css';
 
 
 export const Menu: FunctionComponent = () => {
+  const account = useContext(AuthContext);
   const { logoutFetch } = useLogout();
 
-  // TODO: Check user auth
-  const disabled = false;
+  const disabled = !account;
 
   if (disabled) {
     return <></>;

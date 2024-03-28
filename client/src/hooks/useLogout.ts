@@ -1,12 +1,12 @@
 import { accountsApiDeclaration } from '../apiDeclarations';
-import { Profile } from '../pages/Account/Account';
 import { useApiMethod } from './useApiMethod';
+import { Account } from '../types/account';
 
 export const useLogout = () => {
   const {
     apiMethodState: logoutMethodState,
     fetchData: logoutFetch
-  } = useApiMethod<Profile, undefined>(accountsApiDeclaration.logout);
+  } = useApiMethod<Account, undefined>(accountsApiDeclaration.logout);
 
   const {
     process: {

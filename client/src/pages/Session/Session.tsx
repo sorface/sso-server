@@ -43,7 +43,7 @@ export const Session: FunctionComponent = () => {
 
     useEffect(() => {
         fetchData(undefined);
-    }, []);
+    }, [fetchData]);
 
     useEffect(() => {
         if (!data) {

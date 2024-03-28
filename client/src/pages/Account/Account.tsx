@@ -1,11 +1,9 @@
-import { ChangeEvent, FunctionComponent, useEffect, useState } from 'react';
-import { useApiMethod } from '../../hooks/useApiMethod';
-import { accountsApiDeclaration } from '../../apiDeclarations';
+import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from 'react';
 import defaultAvatarImage from './img/anonymus_avatar.png';
 import { useLogout } from '../../hooks/useLogout';
 import { Captions, IconNames, pathnames } from "../../constants";
 import { Icon } from '../../components/Icon/Icon';
-import { Loader } from '../../components/Loader/Loader';
+import { AuthContext } from '../../context/AuthContext';
 
 import './Account.css';
 
@@ -15,43 +13,11 @@ interface ProfileField {
     editable: boolean;
 }
 
-export interface Profile {
-
-    id: string;
-
-    email: string;
-
-    firstName: string;
-
-    lastName: string;
-
-    avatar: string;
-
-}
-
 export const Account: FunctionComponent = () => {
+    const account = useContext(AuthContext);
     const { logoutData, logoutFetch } = useLogout();
-    const { apiMethodState, fetchData } = useApiMethod<Profile, undefined>(accountsApiDeclaration.current);
     const [editedFieldName, setEditedFieldName] = useState('');
     const [editedFieldValue, setEditedFieldValue] = useState('');
-
-    const {
-        process: {
-            loading,
-            error
-        },
-        data
-    } = apiMethodState;
-
-    useEffect(() => {
-        fetchData(undefined);
-    }, [fetchData]);
-
-    useEffect(() => {
-        if (!data) {
-            return;
-        }
-    }, [data]);
 
     useEffect(() => {
         if (!logoutData) {
@@ -86,50 +52,43 @@ export const Account: FunctionComponent = () => {
     const fields: ProfileField[] = [
         {
             name: 'id',
-            value: data?.id,
+            value: account?.id,
             editable: false,
         },
         {
             name: 'email',
-            value: data?.email,
+            value: account?.email,
             editable: false,
         },
         {
             name: 'first name',
-            value: data?.firstName,
+            value: account?.firstName,
             editable: true,
         },
         {
             name: 'last name',
-            value: data?.lastName,
+            value: account?.lastName,
             editable: true,
         },
     ];
 
-    if (loading) {
-        return (
-            <>
-                <p>{Captions.Loading}...</p>
-                <Loader />
-            </>
-        );
-    }
-
     return (
         <div className='account-page'>
             <div className="avatar">
-                <img src={data?.avatar ? data?.avatar : defaultAvatarImage} alt="avatar" />
+                <img src={account?.avatar || defaultAvatarImage} alt="avatar" />
             </div>
             <table className="user-data-table">
-                {fields.map(({ name, value }) => (
+                {fields.map(({ name, value, editable }) => (
                     <tr key={name}>
                         <td className="bold left">{name}</td>
                         {name !== editedFieldName ? (
                             <td className="right">
                                 <div className="field-value">{value || Captions.Unknown}</div>
-                                <div className="field-action" onClick={() => handleEditField(name, value || '')}>
-                                    <Icon name={IconNames.Create} />
-                                </div>
+                                {editable && (
+                                    <div className="field-action" onClick={() => handleEditField(name, value || '')}>
+                                        <Icon name={IconNames.Create} />
+                                    </div>
+                                )}
                             </td>
                         ) : (
                             <td className="right">
