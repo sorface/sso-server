@@ -1,11 +1,12 @@
 import React, {Fragment, FunctionComponent, MouseEvent, useState} from 'react';
 import {Captions} from '../../constants';
-import {Field} from '../../components/Form/Form';
+import {Field, Form} from '../../components/Form/Form';
 import githubLogo from './img/github.svg';
 import yandexLogo from './img/yandex.svg';
 import twitchLogo from './img/twitch.svg';
 import emailLogo from './img/email-svgrepo-com.svg';
 import {FormWrapper} from '../../components/Form/FormWrapper';
+import { useQueryFromErrors } from '../../hooks/useQueryFromErrors';
 
 import './SignIn.css';
 
@@ -13,7 +14,7 @@ import './SignIn.css';
 const emailFields: Field[] = [
     {
         name: 'username',
-        placeholder: Captions.Email,
+        placeholder: Captions.EmailOrUsername,
         autoComplete: 'username',
         required: true,
     },
@@ -28,6 +29,7 @@ const emailFields: Field[] = [
 
 export const SignIn: FunctionComponent = () => {
     const [withEmail, setWithEmail] = useState(false);
+    const { queryFromErrors } = useQueryFromErrors();
 
     const signinItems = [
         {
@@ -68,19 +70,13 @@ export const SignIn: FunctionComponent = () => {
                             {signinItem.fields ? (
                                 <>
                                     <hr/>
-                                    <form action="/api/accounts/signin" method="post">
-                                        <div>
-                                            <label htmlFor="name">Email or Username: </label>
-                                            <input type="text" name="username" id="name" required/>
-                                        </div>
-                                        <div className="form-example">
-                                            <label htmlFor="password">Password: </label>
-                                            <input type="password" name="password" id="password" required/>
-                                        </div>
-                                        <div className="form-example">
-                                            <input type="submit" value="Войти"/>
-                                        </div>
-                                    </form>
+                                    <Form
+                                        htmlMethod='POST'
+                                        htmlAction='/api/accounts/signin'
+                                        fields={signinItem.fields}
+                                        fieldErrors={queryFromErrors}
+                                        submitCaption={Captions.SignIn}
+                                    />
                                     {/*<Link className="signUp-link" to={pathnames.signUp}>{Captions.SignUpLink}</Link>*/}
                                 </>
                             ) : (

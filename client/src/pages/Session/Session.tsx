@@ -3,7 +3,7 @@ import './Session.css';
 import {useApiMethod} from "../../hooks/useApiMethod";
 import {accountsApiDeclaration} from "../../apiDeclarations";
 
-export interface Session {
+export interface SessionType {
 
     id: string;
 
@@ -23,7 +23,7 @@ export interface Session {
 
 export interface SessionContext {
 
-    sessions: Session[];
+    sessions: SessionType[];
 
 }
 

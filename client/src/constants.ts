@@ -34,7 +34,9 @@ export const enum Captions {
     Signin = 'Signin',
     SignIn = 'Sign in',
     Password = 'Password',
-    Email = 'Email',
+    InvalidPassword = 'Invalid password',
+    EmailOrUsername = 'Email or Username',
+    InvalidEmailOrUsername = 'Invalid email or username',
     FirstName = 'First Name',
     LastName = 'Last Name',
     LogoAlt = 'logo',
@@ -48,5 +50,6 @@ export const enum Captions {
     YouWillBeRedirected = 'You will be redirected in :redirectTimeoutSec seconds',
     PleaseWait = 'Please wait...',
     Unknown = 'unknown',
+    UnknownError = 'Unknown error',
     Logout = 'Logout',
 }
