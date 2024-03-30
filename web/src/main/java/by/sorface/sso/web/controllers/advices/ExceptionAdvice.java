@@ -1,11 +1,14 @@
 package by.sorface.sso.web.controllers.advices;
 
 import by.sorface.sso.web.controllers.AccountController;
+import by.sorface.sso.web.controllers.AccountSessionController;
+import by.sorface.sso.web.controllers.ApplicationClientController;
 import by.sorface.sso.web.exceptions.NotFoundException;
 import by.sorface.sso.web.exceptions.ObjectExpiredException;
 import by.sorface.sso.web.exceptions.UnauthorizedException;
 import by.sorface.sso.web.exceptions.UserRequestException;
 import by.sorface.sso.web.records.responses.OperationError;
+import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -13,7 +16,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(
         basePackageClasses = {
-                AccountController.class
+                AccountController.class,
+                AccountSessionController.class,
+                ApplicationClientController.class
         }
 )
 public class ExceptionAdvice {
@@ -40,6 +45,12 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public OperationError handleUnauthorizedException(final UnauthorizedException e) {
         return buildError(HttpStatus.UNAUTHORIZED, e);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public OperationError handleException(final ValidationException e) {
+        return buildError(HttpStatus.BAD_REQUEST, e);
     }
 
     @ExceptionHandler(RuntimeException.class)

@@ -22,6 +22,12 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
+                  name: C_CREATEDBY
+                  type: UUID
+              - column:
+                  name: C_MODIFIEDBY
+                  type: UUID
+              - column:
                   name: C_CREATEDDDATE
                   type: TIMESTAMP
               - column:

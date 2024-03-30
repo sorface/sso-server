@@ -6,11 +6,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class DefaultUserService implements UserService {
 
     private final UserRepository userRepository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserEntity findById(final UUID id) {
+        return userRepository.findById(id).orElse(null);
+    }
 
     @Override
     @Transactional(readOnly = true)

@@ -27,13 +27,11 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Slf4j
 @RequiredArgsConstructor
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @EnableMethodSecurity
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
@@ -68,36 +66,21 @@ public class SecurityConfig {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authServerSecurityFilterChain(final HttpSecurity httpSecurity) throws Exception {
-        final var authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
-        {
-            authorizationServerConfigurer.setBuilder(httpSecurity);
-
-            authorizationServerConfigurer.tokenIntrospectionEndpoint(configurer ->
-                    configurer.introspectionResponseHandler(tokenAuthenticationSuccessHandler));
-
-            authorizationServerConfigurer.authorizationService(redisOAuth2AuthorizationService);
-            authorizationServerConfigurer.authorizationConsentService(redisOAuth2AuthorizationConsentService);
-        }
-
+        final var authorizationServerConfigurer = oAuth2AuthorizationServerConfigurer(httpSecurity);
         final RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         httpSecurity
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(configure -> {
-                    configure.requestMatchers(
-                                    FrontendUrlPattern.PAGE_PROFILE.getEndpoint(),
-                                    FrontendUrlPattern.PAGE_SESSIONS.getEndpoint()
-                            )
-                            .authenticated();
+                    configure.requestMatchers(FrontendUrlPattern.PAGE_PROFILE.getEndpoint(), FrontendUrlPattern.PAGE_SESSIONS.getEndpoint()).authenticated();
                     configure.requestMatchers(UrlPatternEnum.toArray()).permitAll();
                     configure.anyRequest().authenticated();
                 })
                 .exceptionHandling(configurer -> {
-                    final var loginUrlAuthenticationEntryPoint =
-                            new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn());
-
+                    final var loginUrlAuthenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn());
                     configurer.authenticationEntryPoint(loginUrlAuthenticationEntryPoint);
                 })
+                .csrf(AbstractHttpConfigurer::disable)
                 .apply(authorizationServerConfigurer);
 
         return httpSecurity.build();
@@ -151,14 +134,15 @@ public class SecurityConfig {
         return AuthorizationServerSettings.builder().build();
     }
 
-    public CsrfTokenRepository csrfTokenRepository() {
-        final var cookieCsrfTokenRepository = new CookieCsrfTokenRepository();
+    private OAuth2AuthorizationServerConfigurer oAuth2AuthorizationServerConfigurer(final HttpSecurity httpSecurity) {
+        final var authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
-        cookieCsrfTokenRepository.setCookieName(sorfaceCookieCsrfProperties.getName());
-        cookieCsrfTokenRepository.setCookieHttpOnly(false);
-        cookieCsrfTokenRepository.setCookiePath(sorfaceCookieCsrfProperties.getPath());
+        authorizationServerConfigurer.setBuilder(httpSecurity);
+        authorizationServerConfigurer.tokenIntrospectionEndpoint(configurer -> configurer.introspectionResponseHandler(tokenAuthenticationSuccessHandler));
+        authorizationServerConfigurer.authorizationService(redisOAuth2AuthorizationService);
+        authorizationServerConfigurer.authorizationConsentService(redisOAuth2AuthorizationConsentService);
 
-        return cookieCsrfTokenRepository;
+        return authorizationServerConfigurer;
     }
 
 }

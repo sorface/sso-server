@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,6 +28,16 @@ public class DefaultOAuth2ClientService implements OAuth2ClientService {
     @Override
     public OAuth2Client findById(final UUID id) {
         return oAuth2ClientRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<OAuth2Client> findAllByUserId(final UUID id) {
+        return oAuth2ClientRepository.findAllByCreatedBy_Id(id);
+    }
+
+    @Override
+    public OAuth2Client findByIdAndUserId(final UUID id, final UUID userId) {
+        return oAuth2ClientRepository.findByIdAndCreatedBy_Id(id, userId);
     }
 
 }

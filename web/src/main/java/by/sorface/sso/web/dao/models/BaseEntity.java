@@ -1,14 +1,13 @@
 package by.sorface.sso.web.dao.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -34,5 +33,17 @@ public abstract class BaseEntity {
     @LastModifiedDate
     @Column(name = "C_MODIFIEDDATE")
     private LocalDateTime modifiedDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @CreatedBy
+    @JoinColumn(name = "C_CREATEDBY")
+    @ToString.Exclude
+    private UserEntity createdBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @LastModifiedBy
+    @JoinColumn(name = "C_MODIFIEDBY")
+    @ToString.Exclude
+    private UserEntity modifiedBy;
 
 }

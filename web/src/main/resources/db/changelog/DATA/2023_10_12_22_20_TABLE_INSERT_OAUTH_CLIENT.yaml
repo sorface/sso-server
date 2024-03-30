@@ -23,7 +23,7 @@ databaseChangeLog:
                   value: Клиент C# backend
               - column:
                   name: C_REDIRECTURIS
-                  value: http://localhost:5043/oauth2/sorface;https://localcode.sorface.com
+                  value: http://localhost:5043/oauth2/sorface
               - column:
                   name: C_CLIENTIDISSUEDAT
                   value: "2072-11-09 20:20:39.000000"
