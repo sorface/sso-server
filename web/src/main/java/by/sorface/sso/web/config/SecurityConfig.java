@@ -4,7 +4,6 @@ import by.sorface.sso.web.config.handlers.RedisSessionLogoutHandler;
 import by.sorface.sso.web.config.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.config.handlers.TokenAuthenticationSuccessHandler;
 import by.sorface.sso.web.config.properties.MvcEndpointProperties;
-import by.sorface.sso.web.config.properties.SorfaceCookieCsrfProperties;
 import by.sorface.sso.web.config.properties.SorfaceCookieProperties;
 import by.sorface.sso.web.constants.FrontendUrlPattern;
 import by.sorface.sso.web.constants.UrlPatternEnum;
@@ -26,7 +25,9 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Slf4j
@@ -54,8 +55,6 @@ public class SecurityConfig {
 
     private final AuthenticationFailureHandler authenticationFailureHandler;
 
-    private final SorfaceCookieCsrfProperties sorfaceCookieCsrfProperties;
-
     /**
      * Configuration OAuth2 Spring Security
      *
@@ -77,8 +76,8 @@ public class SecurityConfig {
                     configure.anyRequest().authenticated();
                 })
                 .exceptionHandling(configurer -> {
-                    final var loginUrlAuthenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn());
-                    configurer.authenticationEntryPoint(loginUrlAuthenticationEntryPoint);
+                    configurer.defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/api/**"));
+                    configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn()));
                 })
                 .csrf(AbstractHttpConfigurer::disable)
                 .apply(authorizationServerConfigurer);
@@ -102,20 +101,15 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(configure -> {
-                    configure.requestMatchers(
-                                    FrontendUrlPattern.PAGE_PROFILE.getEndpoint(),
-                                    FrontendUrlPattern.PAGE_SESSIONS.getEndpoint()
-                            )
-                            .authenticated();
-                    configure
-                            .requestMatchers(UrlPatternEnum.toArray()).permitAll()
-                            .anyRequest().authenticated();
+                    configure.requestMatchers(FrontendUrlPattern.PAGE_PROFILE.getEndpoint(), FrontendUrlPattern.PAGE_SESSIONS.getEndpoint()).authenticated();
+                    configure.requestMatchers(UrlPatternEnum.toArray()).permitAll().anyRequest().authenticated();
                 })
                 .logout(configurer -> {
                     configurer.invalidateHttpSession(true);
                     configurer.clearAuthentication(true);
 
                     configurer.addLogoutHandler(redisSessionLogoutHandler);
+
                     configurer.logoutUrl(mvcEndpointProperties.getUriApiLogout());
                     configurer.deleteCookies(sorfaceCookieProperties.getName());
                 })

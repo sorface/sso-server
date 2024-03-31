@@ -49,7 +49,7 @@ POST http://localhost:8080/token?
 ```http request
 POST http://localhost:8080/oauth2/introspect
 
-Authorization: Basic ************************ # clientId:secretId base64
+Authorization: Basic ************************ # clientId:secretId in base64
 Content-Type: application/json
 
 {
@@ -85,5 +85,41 @@ Content-Type: application/json
     "email": "***************@yandex.ru",
     "authorities": []
   }
-}"
+}
 ```
+
+## Locale i18
+
+Доступен выбор двух вариантов языков приложения
+
+* Русский
+* Английский
+
+**По умолчанию используется английский язык (en-US)**
+
+Язык определяется на основе переданного в Http Header Accept-Language:
+
+```http request
+GET ....
+Accept-Language: ru-RU # русский
+Accept-Language: en-US # английский
+```
+
+Влияет язык на:
+
+* Возвращаемые ошибки (ru/en)
+* На отправляемые email (ru/en)
+
+На отдаваемые контент язык НЕ влияет
+
+Заполняемые пользователем данные отдается в оригинальном виде
+
+Пример:
+
+Accept-Language en-US:
+
+![locale.validate-error-en.png](imgs%2Flocale.validate-error-en.png)
+
+Accept-Language ru-RU:
+
+![locale.validate-error-ru.png](imgs%2Flocale.validate-error-ru.png)

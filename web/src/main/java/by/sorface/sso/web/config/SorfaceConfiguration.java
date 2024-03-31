@@ -1,6 +1,7 @@
 package by.sorface.sso.web.config;
 
 import by.sorface.sso.web.config.properties.SorfaceCookieProperties;
+import by.sorface.sso.web.config.resolvers.HttpI18LocaleResolver;
 import lombok.RequiredArgsConstructor;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.LocaleResolver;
 
 import java.util.List;
 
@@ -78,4 +80,8 @@ public class SorfaceConfiguration {
         return UserAgentAnalyzer.newBuilder().hideMatcherLoadStats().withCache(10000).build();
     }
 
+    @Bean
+    public LocaleResolver localeResolver() {
+        return new HttpI18LocaleResolver();
+    }
 }

@@ -8,11 +8,17 @@ import by.sorface.sso.web.exceptions.ObjectExpiredException;
 import by.sorface.sso.web.exceptions.UnauthorizedException;
 import by.sorface.sso.web.exceptions.UserRequestException;
 import by.sorface.sso.web.records.responses.OperationError;
-import jakarta.validation.ValidationException;
+import by.sorface.sso.web.records.responses.ValidateOperationError;
+import by.sorface.sso.web.services.locale.LocaleI18Service;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
 
 @RestControllerAdvice(
         basePackageClasses = {
@@ -21,7 +27,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
                 ApplicationClientController.class
         }
 )
+@RequiredArgsConstructor
 public class ExceptionAdvice {
+
+    private final LocaleI18Service localeI18Service;
 
     @ExceptionHandler(UserRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -47,10 +56,22 @@ public class ExceptionAdvice {
         return buildError(HttpStatus.UNAUTHORIZED, e);
     }
 
-    @ExceptionHandler(ValidationException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public OperationError handleException(final ValidationException e) {
-        return buildError(HttpStatus.BAD_REQUEST, e);
+    public ValidateOperationError handleException(final MethodArgumentNotValidException e) {
+        final List<ValidateOperationError.ValidateError> errors = e.getBindingResult().getAllErrors().stream()
+                .map(error -> {
+                    final var validateError = new ValidateOperationError.ValidateError();
+                    {
+                        validateError.setField(((FieldError) error).getField());
+                        validateError.setMessage(localeI18Service.getMessage(error.getDefaultMessage()));
+                    }
+
+                    return validateError;
+                })
+                .toList();
+
+        return buildValidateError(HttpStatus.BAD_REQUEST, errors);
     }
 
     @ExceptionHandler(RuntimeException.class)
@@ -67,6 +88,10 @@ public class ExceptionAdvice {
 
     private OperationError buildError(final HttpStatus status, final Exception exception) {
         return new OperationError(exception.getMessage(), status.getReasonPhrase(), status.value());
+    }
+
+    private ValidateOperationError buildValidateError(final HttpStatus status, final List<ValidateOperationError.ValidateError> errors) {
+        return new ValidateOperationError(localeI18Service.getMessage("validate.error"), errors, status.value());
     }
 
 }
