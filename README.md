@@ -88,6 +88,44 @@ Content-Type: application/json
 }
 ```
 
+## OAuth2 создание приложений-клиентов пользователя
+
+Пользователю доступно создание приложение-клинтов с сервером авторизации [sorface](https://sso.sorface.com)
+
+Для создания клиента необходимо быть авторизированных пользователем.
+
+Выполнить следующий запрос:
+
+```http request
+POST http://localhost:8080/api/applications
+Cookie: JSESSIONID=************************
+Content-Type: application/json
+
+{
+	"name": "myapp",
+	"redirectionUrls": [
+		"http://localhost:8080/callback"
+	]
+}
+```
+
+Ответ:
+
+```json
+
+{
+  "id": "2d5db191-1edf-47aa-bb04-777123db0092", // идентификатор приложения
+  "clientId": "YexwrISIWiVMJNvGsfHmXbHnpeVBdbqypUoHaVueIcFieUrArURowJk@sorface.oauth.client", // clientId приложения
+  "clientSecret": "uwnwqCUzpynvRmPGbOytdDKZNjyOREoUeqjuapqNeCtNhMgfjklArfe", // clientSecret приложения (выдается только на время получения) дальше будет недоступен
+  "clientName": "myapp", // название приложения
+  "issueTime": "2024-03-31T12:13:27.273255", // дата запроса приложения
+  "expiresAt": "2025-01-25T12:13:27.273296", // дата завершения действия clientSecret
+  "redirectUrls": [ // OAuth Redirect URL кода будет перенаправлен запрос после аутентификации пользователя
+    "http://localhost:8080/callback"
+  ]
+}
+```
+
 ## Locale i18
 
 Доступен выбор двух вариантов языков приложения

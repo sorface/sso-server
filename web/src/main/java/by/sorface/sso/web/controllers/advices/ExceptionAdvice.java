@@ -12,6 +12,9 @@ import by.sorface.sso.web.records.responses.ValidateOperationError;
 import by.sorface.sso.web.services.locale.LocaleI18Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -53,7 +56,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public OperationError handleUnauthorizedException(final UnauthorizedException e) {
-        return buildError(HttpStatus.UNAUTHORIZED, e);
+        return buildError(HttpStatus.UNAUTHORIZED, "exception.access.denied");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -74,6 +77,24 @@ public class ExceptionAdvice {
         return buildValidateError(HttpStatus.BAD_REQUEST, errors);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public OperationError handleAccessDenied(final AccessDeniedException e) {
+        return buildError(HttpStatus.UNAUTHORIZED, "exception.access.denied");
+    }
+
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public OperationError handleInsufficientAuthentication(final InsufficientAuthenticationException e) {
+        return buildError(HttpStatus.UNAUTHORIZED, "exception.access.denied");
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public OperationError handleAuthenticationException(final AuthenticationException e) {
+        return buildError(HttpStatus.FORBIDDEN, "exception.access.denied");
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public OperationError handleNotFoundException(final RuntimeException e) {
@@ -87,7 +108,11 @@ public class ExceptionAdvice {
     }
 
     private OperationError buildError(final HttpStatus status, final Exception exception) {
-        return new OperationError(exception.getMessage(), status.getReasonPhrase(), status.value());
+        return new OperationError(localeI18Service.getMessage(exception.getMessage()), status.getReasonPhrase(), status.value());
+    }
+
+    private OperationError buildError(final HttpStatus status, final String message) {
+        return new OperationError(localeI18Service.getMessage(message), status.getReasonPhrase(), status.value());
     }
 
     private ValidateOperationError buildValidateError(final HttpStatus status, final List<ValidateOperationError.ValidateError> errors) {

@@ -17,4 +17,8 @@ public interface OAuth2ClientService {
 
     OAuth2Client findByIdAndUserId(final UUID id, final UUID userId);
 
+    boolean isExists(final UUID id);
+
+    void delete(final UUID id);
+
 }

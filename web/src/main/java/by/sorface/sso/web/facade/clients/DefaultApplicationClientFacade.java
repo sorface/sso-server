@@ -4,6 +4,7 @@ import by.sorface.sso.web.converters.OAuth2ClientConverter;
 import by.sorface.sso.web.dao.models.OAuth2Client;
 import by.sorface.sso.web.exceptions.NotFoundException;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
+import by.sorface.sso.web.records.requests.ApplicationClientDelete;
 import by.sorface.sso.web.records.requests.ApplicationRegistry;
 import by.sorface.sso.web.records.responses.ApplicationClient;
 import by.sorface.sso.web.records.responses.ApplicationClientRefreshSecret;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -82,6 +84,17 @@ public class DefaultApplicationClientFacade implements ApplicationClientFacade {
                 .clientSecret(clientSecret)
                 .expiresAt(buildDefaultClientSecretExpire())
                 .build();
+    }
+
+    @Override
+    public void delete(final ApplicationClientDelete applicationClientDelete) {
+        final var applicationId = UUID.fromString(applicationClientDelete.id());
+
+        if (!oAuth2ClientService.isExists(applicationId)) {
+            throw new NotFoundException("client.not.found.by.id", Map.of("id", applicationClientDelete.id()));
+        }
+
+        oAuth2ClientService.delete(applicationId);
     }
 
     @Override

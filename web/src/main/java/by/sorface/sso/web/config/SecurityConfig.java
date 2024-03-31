@@ -1,5 +1,6 @@
 package by.sorface.sso.web.config;
 
+import by.sorface.sso.web.config.handlers.ApiAuthenticationEntryPoint;
 import by.sorface.sso.web.config.handlers.RedisSessionLogoutHandler;
 import by.sorface.sso.web.config.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.config.handlers.TokenAuthenticationSuccessHandler;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,15 +27,14 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Slf4j
 @RequiredArgsConstructor
 @EnableWebSecurity(debug = true)
 @EnableMethodSecurity
+@EnableGlobalAuthentication
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
 
@@ -55,6 +56,8 @@ public class SecurityConfig {
 
     private final AuthenticationFailureHandler authenticationFailureHandler;
 
+    private final ApiAuthenticationEntryPoint apiAuthenticationEntryPoint;
+
     /**
      * Configuration OAuth2 Spring Security
      *
@@ -75,10 +78,7 @@ public class SecurityConfig {
                     configure.requestMatchers(UrlPatternEnum.toArray()).permitAll();
                     configure.anyRequest().authenticated();
                 })
-                .exceptionHandling(configurer -> {
-                    configurer.defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/api/**"));
-                    configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn()));
-                })
+                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn())))
                 .csrf(AbstractHttpConfigurer::disable)
                 .apply(authorizationServerConfigurer);
 
@@ -102,7 +102,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(configure -> {
                     configure.requestMatchers(FrontendUrlPattern.PAGE_PROFILE.getEndpoint(), FrontendUrlPattern.PAGE_SESSIONS.getEndpoint()).authenticated();
-                    configure.requestMatchers(UrlPatternEnum.toArray()).permitAll().anyRequest().authenticated();
+                    configure.requestMatchers(UrlPatternEnum.toArray()).permitAll()
+                            .anyRequest()
+                            .authenticated();
                 })
                 .logout(configurer -> {
                     configurer.invalidateHttpSession(true);
@@ -119,6 +121,9 @@ public class SecurityConfig {
 
                     configurer.successHandler(savedRequestRedisSuccessHandler);
                     configurer.failureHandler(authenticationFailureHandler);
+                })
+                .exceptionHandling(exceptionHandlingConfigurer -> {
+                    exceptionHandlingConfigurer.authenticationEntryPoint(apiAuthenticationEntryPoint);
                 })
                 .build();
     }

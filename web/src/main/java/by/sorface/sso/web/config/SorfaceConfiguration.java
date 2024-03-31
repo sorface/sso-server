@@ -7,7 +7,6 @@ import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.web.http.CookieSerializer;
@@ -20,7 +19,6 @@ import org.springframework.web.servlet.LocaleResolver;
 import java.util.List;
 
 @Configuration
-@EnableGlobalAuthentication
 @RequiredArgsConstructor
 public class SorfaceConfiguration {
 
@@ -30,13 +28,15 @@ public class SorfaceConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         final var configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(List.of("*"));
 
         final var source = new UrlBasedCorsConfigurationSource();
 
+        source.setAllowInitLookupPath(true);
         source.registerCorsConfiguration("/**", configuration);
 
         return source;

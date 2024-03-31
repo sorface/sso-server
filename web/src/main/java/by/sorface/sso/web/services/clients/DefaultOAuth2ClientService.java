@@ -26,18 +26,33 @@ public class DefaultOAuth2ClientService implements OAuth2ClientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OAuth2Client findById(final UUID id) {
         return oAuth2ClientRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OAuth2Client> findAllByUserId(final UUID id) {
         return oAuth2ClientRepository.findAllByCreatedBy_Id(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OAuth2Client findByIdAndUserId(final UUID id, final UUID userId) {
         return oAuth2ClientRepository.findByIdAndCreatedBy_Id(id, userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isExists(UUID id) {
+        return oAuth2ClientRepository.existsById(id);
+    }
+
+    @Override
+    @Transactional
+    public void delete(UUID id) {
+        oAuth2ClientRepository.deleteById(id);
     }
 
 }
