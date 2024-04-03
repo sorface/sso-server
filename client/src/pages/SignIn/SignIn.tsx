@@ -10,7 +10,6 @@ import { useQueryFromErrors } from '../../hooks/useQueryFromErrors';
 
 import './SignIn.css';
 
-
 const emailFields: Field[] = [
     {
         name: 'username',
@@ -49,7 +48,7 @@ export const SignIn: FunctionComponent = () => {
         },
         {
             name: 'Email',
-            disabled: true,
+            disabled: false,
             href: '#',
             logo: emailLogo,
             fields: withEmail ? emailFields : null,

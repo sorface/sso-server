@@ -15,9 +15,7 @@
 
     <properties>
         <lombok.version>1.18.30</lombok.version>
-
         <liquibase.version>4.20.0</liquibase.version>
-
         <build-client.skip>true</build-client.skip>
     </properties>
 
@@ -142,7 +140,7 @@
             <id>run.context.development</id>
 
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
 
             <properties>
@@ -160,6 +158,10 @@
 
         <profile>
             <id>run.context.production</id>
+
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
 
             <properties>
                 <postgresql.version>42.5.1</postgresql.version>

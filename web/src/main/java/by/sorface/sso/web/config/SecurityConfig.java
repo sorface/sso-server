@@ -78,7 +78,7 @@ public class SecurityConfig {
                     configure.requestMatchers(UrlPatternEnum.toArray()).permitAll();
                     configure.anyRequest().authenticated();
                 })
-                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn())))
+                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUrlPageSignIn())))
                 .csrf(AbstractHttpConfigurer::disable)
                 .apply(authorizationServerConfigurer);
 
@@ -92,7 +92,7 @@ public class SecurityConfig {
         httpSecurity.oauth2Login(configurer -> {
             configurer.userInfoEndpoint(configure -> configure.userService(oAuth2UserDatabaseStrategy));
 
-            configurer.loginPage(mvcEndpointProperties.getUriPageSignIn());
+            configurer.loginPage(mvcEndpointProperties.getUrlPageSignIn());
 
             configurer.successHandler(savedRequestRedisSuccessHandler);
             configurer.failureHandler(authenticationFailureHandler);
@@ -116,7 +116,7 @@ public class SecurityConfig {
                     configurer.deleteCookies(sorfaceCookieProperties.getName());
                 })
                 .formLogin(configurer -> {
-                    configurer.loginPage(mvcEndpointProperties.getUriPageSignIn());
+                    configurer.loginPage(mvcEndpointProperties.getUrlPageSignIn());
                     configurer.loginProcessingUrl(mvcEndpointProperties.getUriApiLogin());
 
                     configurer.successHandler(savedRequestRedisSuccessHandler);

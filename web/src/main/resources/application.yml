@@ -1,5 +1,9 @@
 # common properties
 
+sorface:
+  client:
+    domain: ${CLIENT_SERVER_DOMAIN}
+
 spring:
   application:
     name: sorface-sso
@@ -12,10 +16,10 @@ spring:
     static-path-pattern: /static/**
 
     endpoint:
-      uri-page-signin: '/account/signin'
-      uri-page-signup: '/account/signup'
-      uri-page-not-found: '/account/404'
-      uri-page-profile: '/account'
+      url-page-signin: '${sorface.client.domain}/account/signin'
+      url-page-signup: '${sorface.client.domain}/account/signup'
+      url-page-not-found: '${sorface.client.domain}/account/404'
+      url-page-profile: '${sorface.client.domain}/account'
       uri-api-login: "/api/accounts/signin"
       uri-api-logout: "/api/accounts/logout"
 
@@ -106,6 +110,7 @@ spring:
       namespace: sorface:session
       save-mode: on_set_attribute
       repository-type: indexed
+
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/master.yaml

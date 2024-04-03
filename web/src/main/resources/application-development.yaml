@@ -3,10 +3,6 @@ server:
   port: 8080
 
 spring:
-  config:
-    activate:
-      on-profile: development
-
   jpa:
     show-sql: true
     database: h2
@@ -20,4 +16,4 @@ spring:
 
 logging:
   level:
-    root: debug
+    root: info

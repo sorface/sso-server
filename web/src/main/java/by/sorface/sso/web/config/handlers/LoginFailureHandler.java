@@ -27,7 +27,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String error = (exception instanceof BadCredentialsException) ? "password.or.username.invalid" : "authentication.invalid";
 
-        String redirectUri = BUILDER_URL.apply(error, mvcEndpointProperties.getUriPageSignIn());
+        String redirectUri = BUILDER_URL.apply(error, mvcEndpointProperties.getUrlPageSignIn());
 
         response.sendRedirect(redirectUri);
     }

@@ -131,7 +131,7 @@ export const useApiMethod = <ResponseData, RequestData = AnyObject>(apiContractC
                 createFetchUrl(apiContract),
                 createFetchRequestInit(apiContract),
             );
-            if (response.status === unauthorizedHttpCode) {
+            if (apiContract.baseUrl.startsWith("/api/accounts/current") && response.status === unauthorizedHttpCode) {
                 navigate(pathnames.signIn);
                 return;
             }

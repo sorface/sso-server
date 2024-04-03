@@ -38,7 +38,7 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
         requestAttributes.setAttribute(SessionAttributes.USER_AGENT, unknown, RequestAttributes.SCOPE_SESSION);
 
         if (Objects.isNull(savedRequest)) {
-            response.sendRedirect(mvcEndpointProperties.getUriPageProfile());
+            response.sendRedirect(mvcEndpointProperties.getUrlPageProfile());
             response.setStatus(HttpServletResponse.SC_FOUND);
 
             return;

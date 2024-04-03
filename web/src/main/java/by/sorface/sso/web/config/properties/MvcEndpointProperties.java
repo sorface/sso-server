@@ -11,24 +11,24 @@ import org.springframework.context.annotation.Configuration;
 public class MvcEndpointProperties {
 
     /**
-     * uri signin page
+     * url signin page
      */
-    private String uriPageSignIn;
+    private String urlPageSignIn;
 
     /**
-     * uri signup page
+     * url signup page
      */
-    private String uriPageSignUp;
+    private String urlPageSignUp;
 
     /**
-     * uri profile page
+     * url profile page
      */
-    private String uriPageProfile;
+    private String urlPageProfile;
 
     /**
-     * uri not found page
+     * url not found page
      */
-    private String uriPageNotFound;
+    private String urlPageNotFound;
 
     /**
      * uri api signin
