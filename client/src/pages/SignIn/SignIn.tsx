@@ -6,7 +6,7 @@ import yandexLogo from './img/yandex.svg';
 import twitchLogo from './img/twitch.svg';
 import emailLogo from './img/email-svgrepo-com.svg';
 import {FormWrapper} from '../../components/Form/FormWrapper';
-import { useQueryFromErrors } from '../../hooks/useQueryFromErrors';
+import {useQueryFromErrors} from '../../hooks/useQueryFromErrors';
 
 import './SignIn.css';
 
@@ -49,7 +49,7 @@ export const SignIn: FunctionComponent = () => {
         },
         {
             name: 'Email',
-            disabled: true,
+            disabled: false,
             href: '#',
             logo: emailLogo,
             fields: withEmail ? emailFields : null,

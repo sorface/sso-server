@@ -98,6 +98,7 @@ public class SecurityConfig {
 
                     configurer.authenticationEntryPoint(loginUrlAuthenticationEntryPoint);
                 })
+                .csrf(AbstractHttpConfigurer::disable)
                 .apply(authorizationServerConfigurer);
 
         return httpSecurity.build();
