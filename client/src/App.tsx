@@ -28,7 +28,7 @@ function App() {
 
     if (loading || accountWillLoad) {
         return (
-            <div className="App-container">
+            <div className="App-container" data-testid="App-container">
                 <div className="App">
                     <div className="App-content">
                         <p>{Captions.Loading}...</p>
@@ -42,7 +42,7 @@ function App() {
     return (
         <BrowserRouter>
             <AuthContext.Provider value={account}>
-                <div className="App-container">
+                <div className="App-container" data-testid="App-container">
                     <Menu />
                     <div className="App">
                         <div className="App-content">
