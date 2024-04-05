@@ -35,8 +35,7 @@ export const Session: FunctionComponent = () => {
 
     const {
         process: {
-            loading,
-            error
+            loading
         },
         data
     } = apiMethodState;
