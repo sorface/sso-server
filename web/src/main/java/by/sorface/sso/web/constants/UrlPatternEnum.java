@@ -11,10 +11,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum UrlPatternEnum {
 
-    API(
-            List.of("/api/**", "/login/**")
-    ),
-
     STATIC(
             List.of(
                     "/static/**"

@@ -10,7 +10,6 @@ import {useQueryFromErrors} from '../../hooks/useQueryFromErrors';
 
 import './SignIn.css';
 
-
 const emailFields: Field[] = [
     {
         name: 'username',

@@ -1,6 +1,7 @@
-package by.sorface.sso.web.services.clients;
+package by.sorface.sso.web.services.providers;
 
 import by.sorface.sso.web.dao.models.OAuth2Client;
+import by.sorface.sso.web.services.clients.OAuth2ClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -20,9 +21,13 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class ClientService implements RegisteredClientRepository {
+public class ApplicationClientProvider implements RegisteredClientRepository {
 
-    public static final String REDIRECT_URL_SPLITERATOR = ";";
+    public static final String REDIRECT_URL_SPLITERATOR;
+
+    static {
+        REDIRECT_URL_SPLITERATOR = ";";
+    }
 
     private final OAuth2ClientService oAuth2ClientService;
 
@@ -78,6 +83,7 @@ public class ClientService implements RegisteredClientRepository {
 
     private RegisteredClient buildClient(final OAuth2Client oAuth2Client) {
         final var redirectUrls = this.getRedirectUrls(oAuth2Client.getRedirectUris());
+
         final var scopes = Set.of("scope.read", "scope.write");
 
         final var tokenSettings = TokenSettings.builder()
@@ -115,7 +121,7 @@ public class ClientService implements RegisteredClientRepository {
     }
 
     private List<String> getRedirectUrls(final String value) {
-        return Arrays.stream(value.split(ClientService.REDIRECT_URL_SPLITERATOR)).toList();
+        return Arrays.stream(value.split(ApplicationClientProvider.REDIRECT_URL_SPLITERATOR)).toList();
     }
 
 }

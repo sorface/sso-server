@@ -1,13 +1,12 @@
 package by.sorface.sso.web.config;
 
 import by.sorface.sso.web.config.properties.SorfaceCookieProperties;
+import by.sorface.sso.web.config.resolvers.HttpI18LocaleResolver;
 import lombok.RequiredArgsConstructor;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.web.http.CookieSerializer;
@@ -15,12 +14,11 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.LocaleResolver;
 
 import java.util.List;
 
 @Configuration
-@EnableJpaAuditing
-@EnableGlobalAuthentication
 @RequiredArgsConstructor
 public class SorfaceConfiguration {
 
@@ -30,13 +28,15 @@ public class SorfaceConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         final var configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(List.of("*"));
 
         final var source = new UrlBasedCorsConfigurationSource();
 
+        source.setAllowInitLookupPath(true);
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
@@ -80,4 +80,8 @@ public class SorfaceConfiguration {
         return UserAgentAnalyzer.newBuilder().hideMatcherLoadStats().withCache(10000).build();
     }
 
+    @Bean
+    public LocaleResolver localeResolver() {
+        return new HttpI18LocaleResolver();
+    }
 }

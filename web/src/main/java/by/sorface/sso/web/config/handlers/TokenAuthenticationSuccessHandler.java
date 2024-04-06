@@ -32,7 +32,7 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
     private final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+    public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
         final var token = getToken((OAuth2TokenIntrospectionAuthenticationToken) authentication);
         final var message = new ServletServerHttpResponse(response);
 
@@ -75,8 +75,8 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
             return tokenRecordBuilder.build();
         }
 
-        if (attributeAuth.getPrincipal() instanceof DefaultPrincipal authorizedUser) {
-            final var introspectionPrincipal = IntrospectionPrincipal.from(authorizedUser);
+        if (attributeAuth.getPrincipal() instanceof DefaultPrincipal principal) {
+            final var introspectionPrincipal = IntrospectionPrincipal.from(principal);
 
             tokenRecordBuilder.principal(introspectionPrincipal);
         } else {

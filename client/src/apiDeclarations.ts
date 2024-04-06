@@ -9,7 +9,7 @@ export interface ConfirmBody {
 export const accountsApiDeclaration = {
     signup: (body: SignUpBody): ApiContractPost => ({
         method: 'POST',
-        baseUrl: '/api/accounts/signup',
+        baseUrl: '/accounts/signup',
         body,
     }),
     current: (): ApiContractGet => ({
