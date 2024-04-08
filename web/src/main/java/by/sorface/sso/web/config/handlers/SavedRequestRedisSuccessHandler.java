@@ -50,7 +50,7 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
         if (Objects.isNull(savedRequest)) {
             log.info("saved request is NULL for session [id -> {}]", request.getRequestedSessionId());
 
-            response.sendRedirect(mvcEndpointProperties.getUrlPageProfile());
+            response.sendRedirect(mvcEndpointProperties.getUriPageProfile());
             response.setStatus(HttpServletResponse.SC_FOUND);
 
             return;
@@ -79,7 +79,7 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
         if (url.getHost().equals(new URL(issuerUrl).getHost()) && url.getPath().startsWith("/api")) {
             log.info("redirect to account. Local auth for session [id -> {}]", request.getRequestedSessionId());
 
-            response.sendRedirect(mvcEndpointProperties.getUrlPageProfile());
+            response.sendRedirect(mvcEndpointProperties.getUriPageProfile());
             response.setStatus(HttpServletResponse.SC_FOUND);
 
             return;

@@ -47,6 +47,7 @@ services:
 
   sorface.security.proxy:
     container_name: "sorface.security.proxy"
+    restart: always
     build:
       context: ../
       dockerfile: docker/proxy/Dockerfile
@@ -55,5 +56,7 @@ services:
         - REACT_APP_VERSION=1.0.0-Docker
         - NGINX_DOMAIN=localhost
         - NGINX_SECURITY_BACKEND_URL=http://sorface.security:8080
+    depends_on:
+      - sorface.security
     ports:
       - "8080:80"
