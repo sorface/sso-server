@@ -15,12 +15,6 @@ public enum UrlPatternEnum {
             List.of(
                     "/static/**"
             )
-    ),
-
-    API_OAUTH2(
-            List.of(
-                    "/api/accounts/**"
-            )
     );
 
     private final List<String> patterns;

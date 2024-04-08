@@ -73,7 +73,6 @@ public class SecurityConfig {
         httpSecurity
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(configure -> {
-                    configure.requestMatchers(UrlPatternEnum.API_OAUTH2.getPatterns().toArray(String[]::new)).authenticated();
                     configure.requestMatchers(UrlPatternEnum.toArray()).permitAll();
                     configure.anyRequest().authenticated();
                 })
@@ -99,12 +98,9 @@ public class SecurityConfig {
 
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(configure -> {
-                    configure.requestMatchers(UrlPatternEnum.API_OAUTH2.getPatterns().toArray(String[]::new)).authenticated();
-                    configure.requestMatchers(UrlPatternEnum.toArray()).permitAll()
-                            .anyRequest()
-                            .authenticated();
-                })
+                .authorizeHttpRequests(configure -> configure.requestMatchers(UrlPatternEnum.toArray()).permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .logout(configurer -> {
                     configurer.invalidateHttpSession(true);
                     configurer.clearAuthentication(true);
