@@ -13,22 +13,22 @@ public class MvcEndpointProperties {
     /**
      * url signin page
      */
-    private String urlPageSignIn;
+    private String uriPageSignIn;
 
     /**
      * url signup page
      */
-    private String urlPageSignUp;
+    private String uriPageSignUp;
 
     /**
      * url profile page
      */
-    private String urlPageProfile;
+    private String uriPageProfile;
 
     /**
      * url not found page
      */
-    private String urlPageNotFound;
+    private String uriPageNotFound;
 
     /**
      * uri api signin
