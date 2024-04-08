@@ -18,6 +18,7 @@ public class SecurityAuditorAware implements AuditorAware<UserEntity> {
 
     private final UserService userService;
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public Optional<UserEntity> getCurrentAuditor() {
         final var authentication = SecurityContextHolder.getContext().getAuthentication();

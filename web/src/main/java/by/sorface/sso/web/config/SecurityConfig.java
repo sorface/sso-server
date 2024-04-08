@@ -6,7 +6,6 @@ import by.sorface.sso.web.config.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.config.handlers.TokenAuthenticationSuccessHandler;
 import by.sorface.sso.web.config.properties.MvcEndpointProperties;
 import by.sorface.sso.web.config.properties.SorfaceCookieProperties;
-import by.sorface.sso.web.constants.FrontendUrlPattern;
 import by.sorface.sso.web.constants.UrlPatternEnum;
 import by.sorface.sso.web.services.providers.OAuth2UserDatabaseStrategy;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
@@ -32,7 +31,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Slf4j
 @RequiredArgsConstructor
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableMethodSecurity
 @EnableGlobalAuthentication
 @Configuration(proxyBeanMethods = false)
@@ -74,11 +73,10 @@ public class SecurityConfig {
         httpSecurity
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(configure -> {
-                    configure.requestMatchers(FrontendUrlPattern.PAGE_PROFILE.getEndpoint(), FrontendUrlPattern.PAGE_SESSIONS.getEndpoint()).authenticated();
                     configure.requestMatchers(UrlPatternEnum.toArray()).permitAll();
                     configure.anyRequest().authenticated();
                 })
-                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUrlPageSignIn())))
+                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn())))
                 .csrf(AbstractHttpConfigurer::disable)
                 .apply(authorizationServerConfigurer);
 
@@ -92,7 +90,7 @@ public class SecurityConfig {
         httpSecurity.oauth2Login(configurer -> {
             configurer.userInfoEndpoint(configure -> configure.userService(oAuth2UserDatabaseStrategy));
 
-            configurer.loginPage(mvcEndpointProperties.getUrlPageSignIn());
+            configurer.loginPage(mvcEndpointProperties.getUriPageSignIn());
 
             configurer.successHandler(savedRequestRedisSuccessHandler);
             configurer.failureHandler(authenticationFailureHandler);
@@ -100,12 +98,9 @@ public class SecurityConfig {
 
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(configure -> {
-                    configure.requestMatchers(FrontendUrlPattern.PAGE_PROFILE.getEndpoint(), FrontendUrlPattern.PAGE_SESSIONS.getEndpoint()).authenticated();
-                    configure.requestMatchers(UrlPatternEnum.toArray()).permitAll()
-                            .anyRequest()
-                            .authenticated();
-                })
+                .authorizeHttpRequests(configure -> configure.requestMatchers(UrlPatternEnum.toArray()).permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .logout(configurer -> {
                     configurer.invalidateHttpSession(true);
                     configurer.clearAuthentication(true);
@@ -116,7 +111,7 @@ public class SecurityConfig {
                     configurer.deleteCookies(sorfaceCookieProperties.getName());
                 })
                 .formLogin(configurer -> {
-                    configurer.loginPage(mvcEndpointProperties.getUrlPageSignIn());
+                    configurer.loginPage(mvcEndpointProperties.getUriPageSignIn());
                     configurer.loginProcessingUrl(mvcEndpointProperties.getUriApiLogin());
 
                     configurer.successHandler(savedRequestRedisSuccessHandler);

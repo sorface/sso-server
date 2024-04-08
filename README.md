@@ -4,6 +4,36 @@
 
 С проектом можно ознакомится на странице https://sorface.com
 
+## Docker запуск
+
+Запусти команду из корневой папки проекта:
+
+```shell
+docker-compose -f docker/docker-compose.yaml up -d
+```
+
+```text
+sh-3.2$ docker-compose -f docker/docker-compose.yaml up -d
+[+] Running 4/5
+ ⠧ Network docker_default            Created                                                                                                                                                                                                                                                              0.7s 
+ ✔ Container redis                   Started                                                                                                                                                                                                                                                              0.4s 
+ ✔ Container postgres                Started                                                                                                                                                                                                                                                              0.4s 
+ ✔ Container sorface.security        Started                                                                                                                                                                                                                                                              0.5s 
+ ✔ Container sorface.security.proxy  Started   
+```
+
+Перейди по ссылке из браузера:
+
+```url
+http://localhost:8080
+```
+
+Для управления конфигурацией проекта в docker:
+
+- [.docker.backend.env](docker%2F.docker.backend.env) # конфигурация сервера аутентификации
+- [.docker.redis.env](docker%2F.docker.redis.env) # конфигурация redis
+- [.docker.pgsql.env](docker%2F.docker.pgsql.env) # конфигурация PostgreSQL
+
 ### Интеграции OAuth 2.0
 
 - google

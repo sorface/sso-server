@@ -15,14 +15,6 @@ public enum UrlPatternEnum {
             List.of(
                     "/static/**"
             )
-    ),
-
-    FRONTEND(
-            List.of(
-                    "/account/signin",
-                    "/account/signup",
-                    "/account/activate"
-            )
     );
 
     private final List<String> patterns;

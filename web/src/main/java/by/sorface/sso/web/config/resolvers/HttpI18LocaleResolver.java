@@ -11,9 +11,10 @@ import java.util.Locale;
 
 public class HttpI18LocaleResolver extends AcceptHeaderLocaleResolver {
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public Locale resolveLocale(final HttpServletRequest request) {
-        if (StringUtils.isEmpty(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE))) {
+        if (StringUtils.hasLength(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE))) {
             return SupportedLocales.EN;
         }
 

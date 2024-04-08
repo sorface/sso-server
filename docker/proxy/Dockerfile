@@ -16,18 +16,14 @@ RUN npm ci
 
 RUN npm run build
 
-FROM nginx:1.23.1-alpine
+FROM nginx:alpine
 
-ARG NGINX_SECURITY_BACKEND_URL
-ARG NGINX_DOMAIN
+COPY --from=sso-front /source/build  /usr/share/nginx/html
 
-ENV NGINX_SECURITY_BACKEND_URL ${NGINX_SECURITY_BACKEND_URL}
-ENV NGINX_DOMAIN ${NGINX_DOMAIN}
+RUN rm /etc/nginx/conf.d/default.conf
 
-WORKDIR /usr/share/nginx/html
-
-COPY docker/proxy/nginx.conf /etc/nginx/templates/nginx.conf.template
-COPY --from=sso-front /source/build/  /home/html/
+COPY docker/proxy/nginx.conf /etc/nginx/conf.d
+COPY docker/proxy/mime.conf /etc/nginx/mime.types
 
 EXPOSE 80
 
