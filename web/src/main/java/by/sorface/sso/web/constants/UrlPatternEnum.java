@@ -17,11 +17,9 @@ public enum UrlPatternEnum {
             )
     ),
 
-    FRONTEND(
+    API_OAUTH2(
             List.of(
-                    "/account/signin",
-                    "/account/signup",
-                    "/account/activate"
+                    "/api/accounts/**"
             )
     );
 

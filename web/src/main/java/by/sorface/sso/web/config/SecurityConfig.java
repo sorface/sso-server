@@ -6,7 +6,6 @@ import by.sorface.sso.web.config.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.config.handlers.TokenAuthenticationSuccessHandler;
 import by.sorface.sso.web.config.properties.MvcEndpointProperties;
 import by.sorface.sso.web.config.properties.SorfaceCookieProperties;
-import by.sorface.sso.web.constants.FrontendUrlPattern;
 import by.sorface.sso.web.constants.UrlPatternEnum;
 import by.sorface.sso.web.services.providers.OAuth2UserDatabaseStrategy;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
@@ -74,7 +73,7 @@ public class SecurityConfig {
         httpSecurity
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(configure -> {
-                    configure.requestMatchers(FrontendUrlPattern.PAGE_PROFILE.getEndpoint(), FrontendUrlPattern.PAGE_SESSIONS.getEndpoint()).authenticated();
+                    configure.requestMatchers(UrlPatternEnum.API_OAUTH2.getPatterns().toArray(String[]::new)).authenticated();
                     configure.requestMatchers(UrlPatternEnum.toArray()).permitAll();
                     configure.anyRequest().authenticated();
                 })
@@ -101,7 +100,7 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(configure -> {
-                    configure.requestMatchers(FrontendUrlPattern.PAGE_PROFILE.getEndpoint(), FrontendUrlPattern.PAGE_SESSIONS.getEndpoint()).authenticated();
+                    configure.requestMatchers(UrlPatternEnum.API_OAUTH2.getPatterns().toArray(String[]::new)).authenticated();
                     configure.requestMatchers(UrlPatternEnum.toArray()).permitAll()
                             .anyRequest()
                             .authenticated();
