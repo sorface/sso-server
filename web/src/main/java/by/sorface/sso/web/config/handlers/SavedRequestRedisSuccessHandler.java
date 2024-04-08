@@ -35,7 +35,7 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        log.debug("request session id -> {}", request.getRequestedSessionId());
+        log.info("request session id -> {}", request.getRequestedSessionId());
 
         final var requestAttributes = RequestContextHolder.currentRequestAttributes();
 
@@ -48,7 +48,7 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
         requestAttributes.setAttribute(SessionAttributes.USER_AGENT, userAgent, RequestAttributes.SCOPE_SESSION);
 
         if (Objects.isNull(savedRequest)) {
-            log.debug("saved request is NULL for session [id -> {}]", request.getRequestedSessionId());
+            log.info("saved request is NULL for session [id -> {}]", request.getRequestedSessionId());
 
             response.sendRedirect(mvcEndpointProperties.getUrlPageProfile());
             response.setStatus(HttpServletResponse.SC_FOUND);
@@ -56,17 +56,17 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
             return;
         }
 
-        log.debug("found saved request [url -> {}]. session [id -> {}]", savedRequest.getRedirectUrl(), request.getRequestedSessionId());
+        log.info("found saved request [url -> {}]. session [id -> {}]", savedRequest.getRedirectUrl(), request.getRequestedSessionId());
 
         String targetUrlParameter = getTargetUrlParameter();
 
-        log.debug("Target url parameter [{}], session [id -> {}]", targetUrlParameter, request.getRequestedSessionId());
+        log.info("Target url parameter [{}], session [id -> {}]", targetUrlParameter, request.getRequestedSessionId());
 
         if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
             return;
         }
 
-        log.debug("Clean session authentication for session [id -> {}]", request.getRequestedSessionId());
+        log.info("Clean session authentication for session [id -> {}]", request.getRequestedSessionId());
 
         clearAuthenticationAttributes(requestAttributes);
 
@@ -77,7 +77,7 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
         String issuerUrl = sorfaceSsoProperties.getIssuerUrl();
 
         if (url.getHost().equals(new URL(issuerUrl).getHost()) && url.getPath().startsWith("/api")) {
-            log.debug("redirect to account. Local auth for session [id -> {}]", request.getRequestedSessionId());
+            log.info("redirect to account. Local auth for session [id -> {}]", request.getRequestedSessionId());
 
             response.sendRedirect(mvcEndpointProperties.getUrlPageProfile());
             response.setStatus(HttpServletResponse.SC_FOUND);
@@ -85,7 +85,7 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
             return;
         }
 
-        log.debug("oauth2 redirect to target url -> {}. session [id -> {}]", targetUrl, request.getRequestedSessionId());
+        log.info("oauth2 redirect to target url -> {}. session [id -> {}]", targetUrl, request.getRequestedSessionId());
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
