@@ -23,19 +23,19 @@
       "type": "java.lang.Long"
     },
     {
-      "name": "spring.mvc.endpoint.uri-page-signin",
+      "name": "spring.mvc.endpoint.url-page-signin",
       "type": "java.lang.String"
     },
     {
-      "name": "spring.mvc.endpoint.uri-page-signup",
+      "name": "spring.mvc.endpoint.url-page-signup",
       "type": "java.lang.String"
     },
     {
-      "name": "spring.mvc.endpoint.uri-page-not-found",
+      "name": "spring.mvc.endpoint.url-page-not-found",
       "type": "java.lang.String"
     },
     {
-      "name": "spring.mvc.endpoint.uri-page-profile",
+      "name": "spring.mvc.endpoint.url-page-profile",
       "type": "java.lang.String"
     },
     {

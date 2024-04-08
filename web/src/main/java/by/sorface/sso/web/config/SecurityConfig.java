@@ -31,7 +31,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Slf4j
 @RequiredArgsConstructor
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableMethodSecurity
 @EnableGlobalAuthentication
 @Configuration(proxyBeanMethods = false)
