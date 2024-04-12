@@ -1,6 +1,6 @@
 package by.sorface.sso.web.services.redis;
 
-import by.sorface.sso.web.config.properties.RedisOAuth2Properties;
+import by.sorface.sso.web.config.properties.OAuth2Options;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -30,13 +30,13 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
 
     private final ValueOperations<String, OAuth2Authorization> authorizations;
 
-    private final RedisOAuth2Properties redisOAuth2Properties;
+    private final OAuth2Options oAuth2Options;
 
     public RedisOAuth2AuthorizationService(final RedisTemplate<String, OAuth2Authorization> redisTemplate,
-                                           final RedisOAuth2Properties redisOAuth2Properties) {
+                                           final OAuth2Options oAuth2Options) {
         this.redisTemplate = redisTemplate;
         this.authorizations = redisTemplate.opsForValue();
-        this.redisOAuth2Properties = redisOAuth2Properties;
+        this.oAuth2Options = oAuth2Options;
     }
 
     private static boolean isComplete(OAuth2Authorization authorization) {
@@ -117,7 +117,7 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
 
         log.info("saved user's authorization object with id {}", authorization.getId());
 
-        this.authorizations.set(key, authorization, redisOAuth2Properties.getTtl(), TimeUnit.MILLISECONDS);
+        this.authorizations.set(key, authorization, oAuth2Options.getRedis().getTtl(), TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -144,10 +144,10 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
     public OAuth2Authorization findById(String id) {
         Assert.hasText(id, "id cannot be empty");
 
-        final var oAuth2Authorization = this.findById(id, redisOAuth2Properties.getCompletePrefix());
+        final var oAuth2Authorization = this.findById(id, oAuth2Options.getRedis().getCompletePrefix());
 
         return Optional.ofNullable(oAuth2Authorization)
-                .orElseGet(() -> this.findById(id, redisOAuth2Properties.getInitPrefix()));
+                .orElseGet(() -> this.findById(id, oAuth2Options.getRedis().getInitPrefix()));
     }
 
     private OAuth2Authorization findById(final String id, final String prefix) {
@@ -171,10 +171,10 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
     public OAuth2Authorization findByToken(String token, @Nullable OAuth2TokenType tokenType) {
         Assert.hasText(token, "token cannot be empty");
 
-        final var oAuth2Authorization = this.findByToken(token, tokenType, redisOAuth2Properties.getCompletePrefix());
+        final var oAuth2Authorization = this.findByToken(token, tokenType, oAuth2Options.getRedis().getCompletePrefix());
 
         return Optional.ofNullable(oAuth2Authorization)
-                .orElseGet(() -> this.findByToken(token, tokenType, redisOAuth2Properties.getInitPrefix()));
+                .orElseGet(() -> this.findByToken(token, tokenType, oAuth2Options.getRedis().getInitPrefix()));
     }
 
     private OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType, final String prefixKey) {
@@ -190,11 +190,11 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
     }
 
     private String toComplete(final String id) {
-        return redisOAuth2Properties.getCompletePrefix() + id;
+        return oAuth2Options.getRedis().getCompletePrefix() + id;
     }
 
     private String toInit(final String id) {
-        return redisOAuth2Properties.getInitPrefix() + id;
+        return oAuth2Options.getRedis().getInitPrefix() + id;
     }
 
 }

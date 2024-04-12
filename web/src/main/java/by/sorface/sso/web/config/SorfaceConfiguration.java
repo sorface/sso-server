@@ -1,54 +1,78 @@
 package by.sorface.sso.web.config;
 
-import by.sorface.sso.web.config.properties.SorfaceCookieProperties;
+import by.sorface.sso.web.config.properties.CookieOptions;
+import by.sorface.sso.web.config.properties.CorsOptions;
 import by.sorface.sso.web.config.resolvers.HttpI18LocaleResolver;
+import by.sorface.sso.web.utils.json.Json;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.LocaleResolver;
 
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class SorfaceConfiguration {
 
-    private final SorfaceCookieProperties sorfaceCookieProperties;
+    public static final String I18_BUNDLE_LOCATION = "language/messages";
+
+    private final CorsOptions corsOptions;
+
+    private final CookieOptions cookieOptions;
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        final var configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(List.of("*"));
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public FilterRegistrationBean<CorsFilter> corsConfigurationSource() {
+        log.debug("cors sorface filter");
 
         final var source = new UrlBasedCorsConfigurationSource();
 
-        source.setAllowInitLookupPath(true);
-        source.registerCorsConfiguration("/**", configuration);
+        corsOptions.getOptions().forEach(configProps -> {
+            final var config = new CorsConfiguration();
 
-        return source;
+            config.setAllowCredentials(configProps.isAllowCredentials());
+            config.addAllowedOrigin(configProps.getAllowedOrigins());
+            config.addAllowedOriginPattern(configProps.getAllowedOriginPatterns());
+            config.addAllowedHeader(configProps.getAllowedHeaders());
+            config.addExposedHeader(configProps.getExposedHeaders());
+            config.addAllowedMethod(configProps.getAllowedMethods());
+
+            log.debug("{}", Json.lazyStringify(config));
+
+            source.registerCorsConfiguration(configProps.getPattern(), config);
+        });
+
+        final var bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        {
+            bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        }
+
+        return bean;
     }
 
     @Bean
     public CookieSerializer cookieSerializer() {
         final var serializer = new DefaultCookieSerializer();
         {
-            serializer.setCookieName(sorfaceCookieProperties.getName());
-            serializer.setCookiePath(sorfaceCookieProperties.getPath());
-            serializer.setDomainNamePattern(sorfaceCookieProperties.getDomainPattern());
+            serializer.setCookieName(cookieOptions.getSession().getName());
+            serializer.setCookiePath(cookieOptions.getSession().getPath());
+            serializer.setDomainNamePattern(cookieOptions.getSession().getDomainPattern());
+            serializer.setUseHttpOnlyCookie(cookieOptions.getSession().isHttpOnly());
         }
 
         return serializer;
@@ -68,8 +92,8 @@ public class SorfaceConfiguration {
     public ResourceBundleMessageSource resourceBundleMessageSource() {
         final var source = new ResourceBundleMessageSource();
         {
-            source.setBasename("language/messages");
-            source.setDefaultEncoding("UTF-8");
+            source.setBasename(I18_BUNDLE_LOCATION);
+            source.setDefaultEncoding(StandardCharsets.UTF_8.name());
         }
 
         return source;

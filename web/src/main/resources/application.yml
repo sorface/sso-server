@@ -4,6 +4,41 @@ sorface:
   client:
     domain: ${CLIENT_SERVER_DOMAIN}
 
+  cors:
+    options:
+      - pattern: /**
+        allowed-origins: http://localhost:3000, http://localhost:5043
+        allowed-headers: "*"
+        allowed-methods: "*"
+        exposed-headers: "*"
+        allow-credentials: true
+
+  cookie:
+    session:
+      domain-pattern: '^.+?\.(\w+\.[a-z]+)$'
+      path: '/'
+      name: 'JSESSIONID'
+      http-only: false
+    csrf:
+      domain-pattern: '^.+?\.(\w+\.[a-z]+)$'
+      path: '/'
+      name: 'sorface_x_csrf_token'
+
+  endpoint:
+    uri-page-signin: '${sorface.client.domain}/account/signin'
+    uri-page-signup: '${sorface.client.domain}/account/signup'
+    uri-page-not-found: '${sorface.client.domain}/account/404'
+    uri-page-profile: '${sorface.client.domain}/account'
+    uri-api-login: "/api/accounts/signin"
+    uri-api-logout: "/api/accounts/logout"
+
+  oauth2:
+    issuer-url: ${OAUTH_SERVER_ISSUER_URL}
+    redis:
+      complete-prefix: 'oauth2_auth_complete:'
+      init-prefix: 'oauth2_auth_init:'
+      ttl: 72000
+
 spring:
   application:
     name: sorface-sso
@@ -15,24 +50,9 @@ spring:
   mvc:
     static-path-pattern: /static/**
 
-    endpoint:
-      uri-page-signin: '${sorface.client.domain}/account/signin'
-      uri-page-signup: '${sorface.client.domain}/account/signup'
-      uri-page-not-found: '${sorface.client.domain}/account/404'
-      uri-page-profile: '${sorface.client.domain}/account'
-      uri-api-login: "/api/accounts/signin"
-      uri-api-logout: "/api/accounts/logout"
-
   web:
     resources:
       static-locations: classpath:static
-
-  redis:
-    sorface:
-      auth:
-        complete-prefix: 'oauth2_auth_complete:'
-        init-prefix: 'oauth2_auth_init:'
-        ttl: 72000
 
   security:
     oauth2:
@@ -79,18 +99,6 @@ spring:
             userInfoUri: https://api.twitch.tv/helix/users/
             user-info-authentication-method: GET
             user-name-attribute: data
-
-    sorface:
-      cookie:
-        domain-pattern: '^.+?\.(\w+\.[a-z]+)$'
-        path: '/'
-        name: 'JSESSIONID'
-      cookie-csrf:
-        domain-pattern: '^.+?\.(\w+\.[a-z]+)$'
-        path: '/'
-        name: 'sorface_x_csrf_token'
-      sso:
-        issuer-url: ${OAUTH_SERVER_ISSUER_URL}
 
   mail:
     username: ${MAIL_NOTIFICATOR_USERNAME}

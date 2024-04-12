@@ -4,8 +4,8 @@ import by.sorface.sso.web.config.handlers.ApiAuthenticationEntryPoint;
 import by.sorface.sso.web.config.handlers.RedisSessionLogoutHandler;
 import by.sorface.sso.web.config.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.config.handlers.TokenAuthenticationSuccessHandler;
-import by.sorface.sso.web.config.properties.MvcEndpointProperties;
-import by.sorface.sso.web.config.properties.SorfaceCookieProperties;
+import by.sorface.sso.web.config.properties.CookieOptions;
+import by.sorface.sso.web.config.properties.EndpointOptions;
 import by.sorface.sso.web.constants.UrlPatternEnum;
 import by.sorface.sso.web.services.providers.OAuth2UserDatabaseStrategy;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -47,9 +48,9 @@ public class SecurityConfig {
 
     private final TokenAuthenticationSuccessHandler tokenAuthenticationSuccessHandler;
 
-    private final MvcEndpointProperties mvcEndpointProperties;
+    private final EndpointOptions endpointOptions;
 
-    private final SorfaceCookieProperties sorfaceCookieProperties;
+    private final CookieOptions cookieOptions;
 
     private final RedisSessionLogoutHandler redisSessionLogoutHandler;
 
@@ -73,11 +74,13 @@ public class SecurityConfig {
         httpSecurity
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(configure -> {
+                    configure.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                     configure.requestMatchers(UrlPatternEnum.toArray()).permitAll();
                     configure.anyRequest().authenticated();
                 })
-                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(mvcEndpointProperties.getUriPageSignIn())))
+                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(endpointOptions.getUriPageSignIn())))
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
                 .apply(authorizationServerConfigurer);
 
         return httpSecurity.build();
@@ -90,7 +93,7 @@ public class SecurityConfig {
         httpSecurity.oauth2Login(configurer -> {
             configurer.userInfoEndpoint(configure -> configure.userService(oAuth2UserDatabaseStrategy));
 
-            configurer.loginPage(mvcEndpointProperties.getUriPageSignIn());
+            configurer.loginPage(endpointOptions.getUriPageSignIn());
 
             configurer.successHandler(savedRequestRedisSuccessHandler);
             configurer.failureHandler(authenticationFailureHandler);
@@ -98,7 +101,9 @@ public class SecurityConfig {
 
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(configure -> configure.requestMatchers(UrlPatternEnum.toArray()).permitAll()
+                .authorizeHttpRequests(configure -> configure
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(UrlPatternEnum.toArray()).permitAll()
                         .anyRequest()
                         .authenticated())
                 .logout(configurer -> {
@@ -107,12 +112,12 @@ public class SecurityConfig {
 
                     configurer.addLogoutHandler(redisSessionLogoutHandler);
 
-                    configurer.logoutUrl(mvcEndpointProperties.getUriApiLogout());
-                    configurer.deleteCookies(sorfaceCookieProperties.getName());
+                    configurer.logoutUrl(endpointOptions.getUriApiLogout());
+                    configurer.deleteCookies(cookieOptions.getSession().getName(), cookieOptions.getCsrf().getName());
                 })
                 .formLogin(configurer -> {
-                    configurer.loginPage(mvcEndpointProperties.getUriPageSignIn());
-                    configurer.loginProcessingUrl(mvcEndpointProperties.getUriApiLogin());
+                    configurer.loginPage(endpointOptions.getUriPageSignIn());
+                    configurer.loginProcessingUrl(endpointOptions.getUriApiLogin());
 
                     configurer.successHandler(savedRequestRedisSuccessHandler);
                     configurer.failureHandler(authenticationFailureHandler);

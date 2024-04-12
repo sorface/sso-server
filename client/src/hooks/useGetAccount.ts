@@ -1,6 +1,6 @@
-import { useCallback, useReducer } from 'react';
-import { REACT_APP_BACKEND_URL } from '../config';
-import { Account } from '../types/account';
+import {useCallback, useReducer} from 'react';
+import {REACT_APP_BACKEND_URL} from '../config';
+import {Account} from '../types/account';
 
 interface GetMeState {
   process: {
@@ -63,16 +63,30 @@ export const useGetAccountApi = () => {
   const [accountState, dispatch] = useReducer(getMeReducer, initialState);
 
   const loadAccount = useCallback(async () => {
-    dispatch({ name: 'startLoad' });
-    // dispatch({ name: 'setAccount', payload: { id: 'id', avatar: '', email: 'email', firstName: 'firstName', lastName: 'lastName' } }); return;
-    try {
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/accounts/current`);
-      if (!response.ok) {
-        throw new Error('UserApi error');
-      }
-      const responseJson = await response.json();
-      dispatch({ name: 'setAccount', payload: responseJson });
-    } catch (err: any) {
+      dispatch({name: 'startLoad'});
+
+      // const cookie = getCookie('JSESSIONID');
+
+      const headers = new Headers();
+
+
+      // if (cookie) {
+      //   headers.set('Cookie', `JSESSIONID=${cookie}`);
+      // }
+      //
+      // console.log(cookie);
+      // dispatch({ name: 'setAccount', payload: { id: 'id', avatar: '', email: 'email', firstName: 'firstName', lastName: 'lastName' } }); return;
+      try {
+          const response = await fetch(`${REACT_APP_BACKEND_URL}/api/accounts/current`, {
+              headers,
+              credentials: 'include'
+          });
+          if (!response.ok) {
+              throw new Error('UserApi error');
+          }
+          const responseJson = await response.json();
+          dispatch({name: 'setAccount', payload: responseJson});
+      } catch (err: any) {
       dispatch({
         name: 'setError',
         payload: err.message || 'Failed to get me',

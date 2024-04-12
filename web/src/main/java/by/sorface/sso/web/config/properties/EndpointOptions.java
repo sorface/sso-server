@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "spring.mvc.endpoint")
-public class MvcEndpointProperties {
+@ConfigurationProperties(prefix = "sorface.endpoint")
+public class EndpointOptions {
 
     /**
      * url signin page

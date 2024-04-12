@@ -1,6 +1,6 @@
 package by.sorface.sso.web.services.redis;
 
-import by.sorface.sso.web.config.properties.RedisOAuth2Properties;
+import by.sorface.sso.web.config.properties.OAuth2Options;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.lang.Nullable;
@@ -20,13 +20,13 @@ public final class RedisOAuth2AuthorizationConsentService implements OAuth2Autho
 
     private final ValueOperations<String, OAuth2AuthorizationConsent> authorizationConsents;
 
-    private final RedisOAuth2Properties redisOAuth2Properties;
+    private final OAuth2Options oAuth2Options;
 
     public RedisOAuth2AuthorizationConsentService(final RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplate,
-                                                  final RedisOAuth2Properties redisOAuth2Properties) {
+                                                  final OAuth2Options oAuth2Options) {
         this.redisTemplate = redisTemplate;
         this.authorizationConsents = redisTemplate.opsForValue();
-        this.redisOAuth2Properties = redisOAuth2Properties;
+        this.oAuth2Options = oAuth2Options;
     }
 
     private static String getId(final String registeredClientId, final String principalName) {
@@ -42,7 +42,7 @@ public final class RedisOAuth2AuthorizationConsentService implements OAuth2Autho
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");
         String id = getId(authorizationConsent);
 
-        this.authorizationConsents.set(KEY_PREFIX + id, authorizationConsent, redisOAuth2Properties.getTtl(), TimeUnit.MILLISECONDS);
+        this.authorizationConsents.set(KEY_PREFIX + id, authorizationConsent, oAuth2Options.getRedis().getTtl(), TimeUnit.MILLISECONDS);
     }
 
     @Override

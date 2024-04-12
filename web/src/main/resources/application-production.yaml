@@ -25,3 +25,5 @@ spring:
 logging:
   level:
     root: info
+    by.sorface.sso.web: debug
+    nl.basjes: off

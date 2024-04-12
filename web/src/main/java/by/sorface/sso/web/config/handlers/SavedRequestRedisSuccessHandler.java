@@ -1,7 +1,7 @@
 package by.sorface.sso.web.config.handlers;
 
-import by.sorface.sso.web.config.properties.MvcEndpointProperties;
-import by.sorface.sso.web.config.properties.SorfaceSsoProperties;
+import by.sorface.sso.web.config.properties.EndpointOptions;
+import by.sorface.sso.web.config.properties.OAuth2Options;
 import by.sorface.sso.web.constants.SessionAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,9 +28,9 @@ import java.util.Optional;
 public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTargetUrlRequestHandler
         implements AuthenticationSuccessHandler {
 
-    private final MvcEndpointProperties mvcEndpointProperties;
+    private final EndpointOptions endpointOptions;
 
-    private final SorfaceSsoProperties sorfaceSsoProperties;
+    private final OAuth2Options oAuth2Options;
 
 
     @Override
@@ -50,7 +50,7 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
         if (Objects.isNull(savedRequest)) {
             log.info("saved request is NULL for session [id -> {}]", request.getRequestedSessionId());
 
-            response.sendRedirect(mvcEndpointProperties.getUriPageProfile());
+            response.sendRedirect(endpointOptions.getUriPageProfile());
             response.setStatus(HttpServletResponse.SC_FOUND);
 
             return;
@@ -74,12 +74,12 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
 
         final var url = new URL(targetUrl);
 
-        String issuerUrl = sorfaceSsoProperties.getIssuerUrl();
+        String issuerUrl = oAuth2Options.getIssuerUrl();
 
         if (url.getHost().equals(new URL(issuerUrl).getHost()) && url.getPath().startsWith("/api")) {
             log.info("redirect to account. Local auth for session [id -> {}]", request.getRequestedSessionId());
 
-            response.sendRedirect(mvcEndpointProperties.getUriPageProfile());
+            response.sendRedirect(endpointOptions.getUriPageProfile());
             response.setStatus(HttpServletResponse.SC_FOUND);
 
             return;
