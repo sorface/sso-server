@@ -7,6 +7,7 @@ import by.sorface.sso.web.utils.json.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
+@EnableConfigurationProperties
 public class SorfaceConfiguration {
 
     public static final String I18_BUNDLE_LOCATION = "language/messages";

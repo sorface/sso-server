@@ -18,7 +18,6 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -71,19 +70,6 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
         clearAuthenticationAttributes(requestAttributes);
 
         String targetUrl = savedRequest.getRedirectUrl();
-
-        final var url = new URL(targetUrl);
-
-        String issuerUrl = oAuth2Options.getIssuerUrl();
-
-        if (url.getHost().equals(new URL(issuerUrl).getHost()) && url.getPath().startsWith("/api")) {
-            log.info("redirect to account. Local auth for session [id -> {}]", request.getRequestedSessionId());
-
-            response.sendRedirect(endpointOptions.getUriPageProfile());
-            response.setStatus(HttpServletResponse.SC_FOUND);
-
-            return;
-        }
 
         log.info("oauth2 redirect to target url -> {}. session [id -> {}]", targetUrl, request.getRequestedSessionId());
 

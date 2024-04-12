@@ -17,12 +17,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -36,11 +38,18 @@ public class AccountController {
     private final SavedRequestRedisSuccessHandler savedRequestRedisSuccessHandler;
 
     @GetMapping("/current")
-    @PreAuthorize("isAuthenticated()")
     public ProfileRecord getSelf() {
         final var auth = SecurityContextHolder.getContext().getAuthentication();
 
+        if (Objects.isNull(auth) || auth instanceof AnonymousAuthenticationToken) {
+            throw new AccessDeniedException("exception.access.denied");
+        }
+
         final var principal = (DefaultPrincipal) auth.getPrincipal();
+
+        if (Objects.isNull(principal)) {
+            throw new AccessDeniedException("exception.access.denied");
+        }
 
         return new ProfileRecord(principal.getId(), principal.getEmail(), principal.getFirstName(), principal.getLastName(), principal.getAvatarUrl());
     }

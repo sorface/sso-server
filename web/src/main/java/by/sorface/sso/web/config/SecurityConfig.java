@@ -75,6 +75,7 @@ public class SecurityConfig {
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(configure -> {
                     configure.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+                    configure.requestMatchers(HttpMethod.GET, "/api/accounts/current").permitAll();
                     configure.requestMatchers(UrlPatternEnum.toArray()).permitAll();
                     configure.anyRequest().authenticated();
                 })
@@ -103,6 +104,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(configure -> configure
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/accounts/current").permitAll()
                         .requestMatchers(UrlPatternEnum.toArray()).permitAll()
                         .anyRequest()
                         .authenticated())
