@@ -11,6 +11,8 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -22,6 +24,10 @@ public class RedisSessionLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        if (Objects.isNull(authentication)) {
+            return;
+        }
+
         final var authorizedId = ((DefaultPrincipal) authentication.getPrincipal()).getId();
 
         final String expiresKey = redisSessionProperties.getNamespace() + ":expires:" + request.getRequestedSessionId();
