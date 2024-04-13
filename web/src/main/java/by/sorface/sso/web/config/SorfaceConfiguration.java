@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.web.http.CookieSerializer;
@@ -38,7 +37,6 @@ public class SorfaceConfiguration {
     private final CookieOptions cookieOptions;
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
     public FilterRegistrationBean<CorsFilter> corsConfigurationSource() {
         log.debug("cors sorface filter");
 
@@ -54,7 +52,7 @@ public class SorfaceConfiguration {
             config.addExposedHeader(configProps.getExposedHeaders());
             config.addAllowedMethod(configProps.getAllowedMethods());
 
-            log.debug("{}", Json.lazyStringify(config));
+            log.debug("{}{}", System.lineSeparator(), Json.lazyStringify(config));
 
             source.registerCorsConfiguration(configProps.getPattern(), config);
         });

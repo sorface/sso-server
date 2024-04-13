@@ -7,7 +7,7 @@ sorface:
   cors:
     options:
       - pattern: /**
-        allowed-origins: http://localhost:3000, http://localhost:5043
+        allowed-origins: ${CLIENT_SERVER_DOMAIN}
         allowed-headers: "*"
         allowed-methods: "*"
         exposed-headers: "*"

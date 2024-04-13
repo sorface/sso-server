@@ -93,6 +93,7 @@ const createFetchUrl = (apiContract: ApiContract) => {
 const createFetchRequestInit = (apiContract: ApiContract): RequestInit => {
     if (apiContract.method === 'GET') {
         return {
+            method: apiContract.method,
             credentials: 'include'
         };
     }

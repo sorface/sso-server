@@ -56,9 +56,7 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
         }
 
         log.info("found saved request [url -> {}]. session [id -> {}]", savedRequest.getRedirectUrl(), request.getRequestedSessionId());
-
         String targetUrlParameter = getTargetUrlParameter();
-
         log.info("Target url parameter [{}], session [id -> {}]", targetUrlParameter, request.getRequestedSessionId());
 
         if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
@@ -66,13 +64,9 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
         }
 
         log.info("Clean session authentication for session [id -> {}]", request.getRequestedSessionId());
-
         clearAuthenticationAttributes(requestAttributes);
-
         String targetUrl = savedRequest.getRedirectUrl();
-
         log.info("oauth2 redirect to target url -> {}. session [id -> {}]", targetUrl, request.getRequestedSessionId());
-
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
