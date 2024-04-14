@@ -46,10 +46,6 @@ http://localhost:8080
 
 Ознакомиться с конфигурацией можно в файле [application.yml](web%2Fsrc%2Fmain%2Fresources%2Fapplication.yml)
 
-Главная страница входа
-
-![login-page.png](imgs%2Flogin-page.png)
-
 ## OAuth2
 
 Запрос аутентификации пользователя
@@ -184,13 +180,3 @@ Accept-Language: en-US # английский
 На отдаваемые контент язык НЕ влияет
 
 Заполняемые пользователем данные отдается в оригинальном виде
-
-Пример:
-
-Accept-Language en-US:
-
-![locale.validate-error-en.png](imgs%2Flocale.validate-error-en.png)
-
-Accept-Language ru-RU:
-
-![locale.validate-error-ru.png](imgs%2Flocale.validate-error-ru.png)

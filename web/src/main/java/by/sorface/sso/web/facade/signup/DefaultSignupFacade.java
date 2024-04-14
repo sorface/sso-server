@@ -13,7 +13,7 @@ import by.sorface.sso.web.records.responses.UserConfirm;
 import by.sorface.sso.web.records.responses.UserRegisteredHash;
 import by.sorface.sso.web.services.tokens.TokenService;
 import by.sorface.sso.web.services.users.UserService;
-import by.sorface.sso.web.utils.HashUtils;
+import by.sorface.sso.web.utils.json.mask.MaskerFields;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,6 +42,7 @@ public class DefaultSignupFacade implements SignupFacade {
 
         if (Objects.nonNull(foundUserByEmail)) {
             log.warn("A user with [id {}] and [email {}] already exists", foundUserByEmail.getId(), foundUserByEmail.getEmail());
+
             throw new UserRequestException("The user already exists with this email");
         }
 
@@ -78,7 +79,7 @@ public class DefaultSignupFacade implements SignupFacade {
     @Override
     @Transactional
     public UserConfirm confirm(final ConfirmEmail confirmEmail) {
-        log.info("Request for account confirmation using a token {}", HashUtils.shortHash(confirmEmail.token()));
+        log.info("Request for account confirmation using a token {}", MaskerFields.TOKEN.mask(confirmEmail.token()));
 
         final var token = tokenService.findByHash(confirmEmail.token());
 
@@ -88,16 +89,7 @@ public class DefaultSignupFacade implements SignupFacade {
             throw new ObjectInvalidException("The token is invalid");
         }
 
-        log.info("The token received {}", HashUtils.shortHash(token.getHash()));
-
-        final LocalDateTime expiredDate = token.getModifiedDate().plusDays(30);
-
-        if (expiredDate.isBefore(LocalDateTime.now())) {
-            log.warn("The token's lifetime has expired. Token expired on  {}. The token belongs to the user with the id {}",
-                    expiredDate, token.getUser().getId());
-
-            throw new ObjectExpiredException("The token's lifetime has expired");
-        }
+        this.validateTokenExpiredDate(token);
 
         final UserEntity user = token.getUser();
 
@@ -105,8 +97,7 @@ public class DefaultSignupFacade implements SignupFacade {
 
         final UserEntity savedUser = userService.save(user);
 
-        log.info("Account with ID {} confirmed by token hash {}", token.getUser().getId(),
-                HashUtils.shortHash(token.getHash()));
+        log.info("Account with ID {} confirmed by token hash {}", token.getUser().getId(), MaskerFields.TOKEN.mask(token.getHash()));
 
         return new UserConfirm(savedUser.getId(), savedUser.getEmail(), savedUser.isEnabled());
     }
@@ -122,16 +113,7 @@ public class DefaultSignupFacade implements SignupFacade {
             throw new NotFoundException("User not found by email");
         }
 
-        log.info("The token received {}", HashUtils.shortHash(registryToken.getHash()));
-
-        final LocalDateTime expiredDate = registryToken.getModifiedDate().plusDays(30);
-
-        if (expiredDate.isBefore(LocalDateTime.now())) {
-            log.warn("The token's lifetime has expired. Token expired on  {}. The token belongs to the user with the id {}",
-                    expiredDate, registryToken.getUser().getId());
-
-            throw new ObjectExpiredException("The token's lifetime has expired");
-        }
+        this.validateTokenExpiredDate(registryToken);
 
         final UserEntity user = registryToken.getUser();
 
@@ -142,6 +124,19 @@ public class DefaultSignupFacade implements SignupFacade {
                 user.getFirstName(),
                 user.getLastName()
         );
+    }
+
+    private void validateTokenExpiredDate(TokenEntity registryToken) {
+        log.info("The token received {}", MaskerFields.TOKEN.mask(registryToken.getHash()));
+
+        final LocalDateTime expiredDate = registryToken.getModifiedDate().plusDays(30);
+
+        if (expiredDate.isBefore(LocalDateTime.now())) {
+            log.warn("The token's lifetime has expired. Token expired on  {}. The token belongs to the user with the id {}",
+                    expiredDate, registryToken.getUser().getId());
+
+            throw new ObjectExpiredException("The token's lifetime has expired");
+        }
     }
 
 }

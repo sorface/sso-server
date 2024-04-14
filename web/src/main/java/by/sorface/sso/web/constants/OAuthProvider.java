@@ -2,10 +2,10 @@ package by.sorface.sso.web.constants;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.util.Assert;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,8 +28,9 @@ public enum OAuthProvider {
     private final String name;
 
     public static OAuthProvider findByName(final String name) {
-        Assert.notNull(name, "Name must not is null");
-        Assert.hasText(name, "Name must not is empty");
+        if (Objects.isNull(name)) {
+            return UNKNOWN;
+        }
 
         return PROVIDER_MAP.getOrDefault(name.toLowerCase(), UNKNOWN);
     }

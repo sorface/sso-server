@@ -53,6 +53,16 @@ public class SorfaceConfiguration {
         return UserAgentAnalyzer.newBuilder().hideMatcherLoadStats().withCache(10000).build();
     }
 
+    /**
+     * The localeResolver function is a bean that returns an instance of the HttpI18LocaleResolver class.
+     * This class implements the LocaleResolver interface, which provides methods for resolving a locale from
+     * a request and setting it in response. The HttpI18LocaleResolver class resolves locales based on HTTP requests,
+     * using either cookies or session attributes to store them between requests. It also supports changing the locale
+     * by adding a parameter to URLs (e.g., <a href="http://localhost:8080/index?lang=en">...</a>). In this case, we are not configuring
+     * any
+     *
+     * @return A httpi18localeresolver object
+     */
     @Bean
     public LocaleResolver localeResolver() {
         return new HttpI18LocaleResolver();
