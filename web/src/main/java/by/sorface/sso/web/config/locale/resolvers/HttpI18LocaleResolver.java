@@ -25,7 +25,7 @@ public class HttpI18LocaleResolver extends AcceptHeaderLocaleResolver {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (Objects.nonNull(authentication) && !(authentication instanceof AnonymousAuthenticationToken)) {
-            RequestContextHolder.currentRequestAttributes().setAttribute("SECURITY_LOCALE", locale, RequestAttributes.SCOPE_SESSION);
+            RequestContextHolder.currentRequestAttributes().setAttribute("USER_LOCALE", locale, RequestAttributes.SCOPE_SESSION);
         }
 
         return locale;
