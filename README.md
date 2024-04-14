@@ -1,7 +1,7 @@
 # Sorface auth server
 
 [![Java CI with Maven](https://github.com/sorface/sso-server/actions/workflows/maven.yml/badge.svg)](https://github.com/sorface/sso-server/actions/workflows/maven.yml)
-![jacoco.svg](.github%2Fbadges%2Fjacoco.svg)
+![jacoco.svg](https://github.com/sorface/sso-server/blob/master/.github/badges/jacoco.svg)
 
 Система единого входа для платформы sorface.
 
