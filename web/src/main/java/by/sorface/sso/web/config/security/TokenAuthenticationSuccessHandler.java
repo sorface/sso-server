@@ -1,4 +1,4 @@
-package by.sorface.sso.web.config.handlers;
+package by.sorface.sso.web.config.security;
 
 import by.sorface.sso.web.exceptions.ObjectInvalidException;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
@@ -31,6 +31,18 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
 
     private final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
+    /**
+     * The onAuthenticationSuccess function is called when the authentication process succeeds.
+     * It takes in a request, response, and authentication object as parameters.
+     * The function then creates a token using the getToken function (which we will define later).
+     * Then it creates an HttpMessageConverter that can convert Java objects to JSON strings.
+     *
+     * @param request        Get the httpservletrequest object
+     * @param response       Write the token to the response body
+     * @param authentication Get the token
+     *                       private tokenresponse gettoken(final oauth2tokenintrospectionauthenticationtoken authentication) {
+     *                       final var principal = (oauth2user) authentication
+     */
     @Override
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
         final var token = getToken((OAuth2TokenIntrospectionAuthenticationToken) authentication);
@@ -39,6 +51,19 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
         mappingJackson2HttpMessageConverter.write(token, MediaType.APPLICATION_JSON, message);
     }
 
+    /**
+     * The getToken function is responsible for retrieving the token record from the database.
+     * <p>
+     * The function takes in an OAuth2TokenIntrospectionAuthenticationToken object and returns a TokenRecord object.
+     * The function first creates a new TokenRecordBuilder object, which will be used to build our final TokenRecord object.
+     * <p>
+     * Next, we check if the token is active by checking if it's active property is true or false.
+     * If it's not active, then we return an empty TokenRecordBuilder with its &quot;active&quot; property set to false (line 12).
+     * Otherwise, we continue on with building our final token record (lines 14-15)
+     *
+     * @param authenticationToken Get the token claims
+     * @return An object of type tokenrecord
+     */
     private TokenRecord getToken(final OAuth2TokenIntrospectionAuthenticationToken authenticationToken) {
         final var tokenRecordBuilder = TokenRecord.builder().active(false);
 

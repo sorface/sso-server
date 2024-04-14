@@ -94,7 +94,7 @@ const createFetchRequestInit = (apiContract: ApiContract): RequestInit => {
     if (apiContract.method === 'GET') {
         return {
             method: apiContract.method,
-            credentials: 'include'
+            mode: "cors"
         };
     }
 
@@ -102,7 +102,7 @@ const createFetchRequestInit = (apiContract: ApiContract): RequestInit => {
 
     return {
         method: method,
-        credentials: 'include',
+        mode: "cors",
         body: body instanceof FormData ? body : JSON.stringify(body),
     } as RequestInit;
 };

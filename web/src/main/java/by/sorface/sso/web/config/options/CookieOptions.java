@@ -1,4 +1,4 @@
-package by.sorface.sso.web.config.properties;
+package by.sorface.sso.web.config.options;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -29,7 +29,7 @@ public class CookieOptions {
     @Data
     public static class CsrfCookieOptions {
 
-        private String domainPattern;
+        private String domain;
 
         private String path;
 

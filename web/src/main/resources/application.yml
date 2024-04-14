@@ -20,9 +20,10 @@ sorface:
       name: 'JSESSIONID'
       http-only: false
     csrf:
-      domain-pattern: '^.+?\.(\w+\.[a-z]+)$'
+      domain: 'localhost'
       path: '/'
-      name: 'sorface_x_csrf_token'
+      name: 'x_csrf_token'
+      http-only: true
 
   endpoint:
     uri-page-signin: '${sorface.client.domain}/account/signin'
@@ -43,9 +44,9 @@ spring:
   application:
     name: sorface-sso
 
-  thymeleaf:
-    prefix: classpath:/templates/
-    suffix: .html
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/master.yaml
 
   mvc:
     static-path-pattern: /static/**
@@ -53,6 +54,9 @@ spring:
   web:
     resources:
       static-locations: classpath:static
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
 
   security:
     oauth2:
@@ -118,13 +122,6 @@ spring:
       namespace: sorface:session
       save-mode: on_set_attribute
       repository-type: indexed
-
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/master.yaml
-
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
 
   data:
     redis:

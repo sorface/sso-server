@@ -1,6 +1,6 @@
 package by.sorface.sso.web.facade.signup;
 
-import by.sorface.sso.web.config.properties.OAuth2Options;
+import by.sorface.sso.web.config.options.OAuth2Options;
 import by.sorface.sso.web.records.mails.MailImage;
 import by.sorface.sso.web.records.mails.MailTemplate;
 import by.sorface.sso.web.records.requests.AccountSignup;

@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class UserRequestException extends RuntimeException {
 
-    private Map<String, String> args = new HashMap<>();
+    private final Map<String, String> args = new HashMap<>();
 
     public UserRequestException(final String message) {
         super(message);

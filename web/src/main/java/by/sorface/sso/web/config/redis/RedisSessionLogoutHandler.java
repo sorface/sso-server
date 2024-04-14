@@ -1,4 +1,4 @@
-package by.sorface.sso.web.config.handlers;
+package by.sorface.sso.web.config.redis;
 
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +22,17 @@ public class RedisSessionLogoutHandler implements LogoutHandler {
 
     private final RedisSessionProperties redisSessionProperties;
 
+    /**
+     * The logout function is responsible for deleting the session from Redis.
+     * It does this by first deleting the expires key, which is a key that contains
+     * an expiration time for the session. This prevents any future access to this
+     * session in Redis, even if it's still valid (i.e., not expired). Next, we delete
+     * the index key and then finally delete the actual session data itself from Redis.
+     *
+     * @param request        Get the session id from the request
+     * @param response       Set the cookie to expire
+     * @param authentication Get the user's id
+     */
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         if (Objects.isNull(authentication)) {

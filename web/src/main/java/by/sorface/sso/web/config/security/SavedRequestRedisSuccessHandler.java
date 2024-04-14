@@ -1,7 +1,7 @@
-package by.sorface.sso.web.config.handlers;
+package by.sorface.sso.web.config.security;
 
-import by.sorface.sso.web.config.properties.EndpointOptions;
-import by.sorface.sso.web.config.properties.OAuth2Options;
+import by.sorface.sso.web.config.options.EndpointOptions;
+import by.sorface.sso.web.config.options.OAuth2Options;
 import by.sorface.sso.web.constants.SessionAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

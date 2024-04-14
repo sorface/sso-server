@@ -1,25 +1,13 @@
 package by.sorface.sso.web.config;
 
-import by.sorface.sso.web.config.properties.CookieOptions;
-import by.sorface.sso.web.config.properties.CorsOptions;
-import by.sorface.sso.web.config.resolvers.HttpI18LocaleResolver;
-import by.sorface.sso.web.utils.json.Json;
+import by.sorface.sso.web.config.locale.resolvers.HttpI18LocaleResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.Ordered;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.session.web.http.CookieSerializer;
-import org.springframework.session.web.http.DefaultCookieSerializer;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.LocaleResolver;
 
 import java.nio.charset.StandardCharsets;
@@ -32,62 +20,13 @@ public class SorfaceConfiguration {
 
     public static final String I18_BUNDLE_LOCATION = "language/messages";
 
-    private final CorsOptions corsOptions;
-
-    private final CookieOptions cookieOptions;
-
-    @Bean
-    public FilterRegistrationBean<CorsFilter> corsConfigurationSource() {
-        log.debug("cors sorface filter");
-
-        final var source = new UrlBasedCorsConfigurationSource();
-
-        corsOptions.getOptions().forEach(configProps -> {
-            final var config = new CorsConfiguration();
-
-            config.setAllowCredentials(configProps.isAllowCredentials());
-            config.addAllowedOrigin(configProps.getAllowedOrigins());
-            config.addAllowedOriginPattern(configProps.getAllowedOriginPatterns());
-            config.addAllowedHeader(configProps.getAllowedHeaders());
-            config.addExposedHeader(configProps.getExposedHeaders());
-            config.addAllowedMethod(configProps.getAllowedMethods());
-
-            log.debug("{}{}", System.lineSeparator(), Json.lazyStringify(config));
-
-            source.registerCorsConfiguration(configProps.getPattern(), config);
-        });
-
-        final var bean = new FilterRegistrationBean<>(new CorsFilter(source));
-        {
-            bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        }
-
-        return bean;
-    }
-
-    @Bean
-    public CookieSerializer cookieSerializer() {
-        final var serializer = new DefaultCookieSerializer();
-        {
-            serializer.setCookieName(cookieOptions.getSession().getName());
-            serializer.setCookiePath(cookieOptions.getSession().getPath());
-            serializer.setDomainNamePattern(cookieOptions.getSession().getDomainPattern());
-            serializer.setUseHttpOnlyCookie(cookieOptions.getSession().isHttpOnly());
-        }
-
-        return serializer;
-    }
-
     /**
-     * Creating a password encoding component
+     * The resourceBundleMessageSource function creates a ResourceBundleMessageSource bean.
+     * This bean is used to resolve messages in the application, such as error messages.
+     * The resource bundle location is set to &quot;i18n/messages&quot;.
      *
-     * @return the password encoding component
+     * @return A resourcebundlemessagesource object
      */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
-
     @Bean
     public ResourceBundleMessageSource resourceBundleMessageSource() {
         final var source = new ResourceBundleMessageSource();
@@ -99,6 +38,16 @@ public class SorfaceConfiguration {
         return source;
     }
 
+    /**
+     * The userAgentAnalyzer function creates a new UserAgentAnalyzer object.
+     * The UserAgentAnalyzer class is part of the ua-parser library, which parses user agent strings into their component parts.
+     * <p>
+     * This function uses the builder pattern to create a new instance of this class with some custom settings:
+     * - hideMatcherLoadStats() hides log messages that are printed when the parser loads its data files (which happens on startup).
+     * - withCache(10000) sets up an in-memory cache for parsed user agents, so that parsing doesn't have to happen every time.
+     *
+     * @return A useragentanalyzer object
+     */
     @Bean
     public UserAgentAnalyzer userAgentAnalyzer() {
         return UserAgentAnalyzer.newBuilder().hideMatcherLoadStats().withCache(10000).build();

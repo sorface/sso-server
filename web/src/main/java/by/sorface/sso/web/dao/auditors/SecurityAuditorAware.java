@@ -18,6 +18,13 @@ public class SecurityAuditorAware implements AuditorAware<UserEntity> {
 
     private final UserService userService;
 
+    /**
+     * The getCurrentAuditor function is used to retrieve the current user from the SecurityContext.
+     * The function returns an Optional&lt;UserEntity&gt; object, which may or may not contain a UserEntity object.
+     * If there is no authenticated user in the SecurityContext, then an empty Optional will be returned.
+     *
+     * @return user entity
+     */
     @SuppressWarnings("NullableProblems")
     @Override
     public Optional<UserEntity> getCurrentAuditor() {

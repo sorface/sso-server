@@ -15,6 +15,14 @@ import java.util.Collections;
 
 public class OAuth2TwitchUserRequestEntityConverter extends OAuth2UserRequestEntityConverter {
 
+    /**
+     * The convert function is used to convert the OAuth2UserRequest into a RequestEntity.
+     * The RequestEntity will be used by the RestTemplate to make an HTTP request for user information.
+     * This function sets up the headers and URI of that request, which are then passed back to Spring Security's OAuth2LoginAuthenticationProvider class.
+     *
+     * @param OAuth2UserRequest userRequest Get the client registration and access token
+     * @return A requestentity which is then used to retrieve the user's information
+     */
     @Override
     public RequestEntity<?> convert(OAuth2UserRequest userRequest) {
         final var clientRegistration = userRequest.getClientRegistration();

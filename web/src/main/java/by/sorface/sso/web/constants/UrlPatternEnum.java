@@ -11,19 +11,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum UrlPatternEnum {
 
-    STATIC(
-            List.of(
-                    "/static/**"
-            )
-    );
+    OPTION_REQUEST(List.of("/**")),
+
+    API_ACCOUNT(List.of("/api/accounts/current"));
 
     private final List<String> patterns;
 
-    public static String[] toArray() {
-        return Arrays.stream(UrlPatternEnum.values())
-                .map(UrlPatternEnum::getPatterns)
-                .flatMap(Collection::stream)
-                .toArray(String[]::new);
+    public static String[] toArray(UrlPatternEnum... urlPatterns) {
+        return Arrays.stream(urlPatterns).map(UrlPatternEnum::getPatterns).flatMap(Collection::stream).toList().toArray(String[]::new);
     }
-
 }

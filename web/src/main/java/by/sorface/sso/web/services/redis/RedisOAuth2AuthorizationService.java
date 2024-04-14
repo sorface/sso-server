@@ -1,6 +1,6 @@
 package by.sorface.sso.web.services.redis;
 
-import by.sorface.sso.web.config.properties.OAuth2Options;
+import by.sorface.sso.web.config.options.OAuth2Options;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;

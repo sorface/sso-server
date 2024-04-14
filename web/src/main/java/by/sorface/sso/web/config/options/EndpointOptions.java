@@ -1,4 +1,4 @@
-package by.sorface.sso.web.config.properties;
+package by.sorface.sso.web.config.options;
 
 
 import lombok.Data;

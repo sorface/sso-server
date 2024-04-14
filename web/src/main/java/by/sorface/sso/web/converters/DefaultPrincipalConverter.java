@@ -16,6 +16,15 @@ import java.util.stream.Collectors;
 @Component
 public class DefaultPrincipalConverter implements PrincipalConverter {
 
+    /**
+     * The convert function is used to convert a UserEntity object into a DefaultPrincipal object.
+     * The function takes in the user entity and converts it into an array of GrantedAuthority objects,
+     * which are then passed to the constructor for DefaultPrincipal.  The password is also converted from
+     * an optional string (which may be null) to an empty string if it's null, or just returns the password if not.
+     *
+     * @param user Convert the userentity to a defaultprincipal
+     * @return A defaultprincipal object
+     */
     @Override
     public DefaultPrincipal convert(final UserEntity user) {
         final List<GrantedAuthority> authorities = this.convertRoles(user.getRoles());
@@ -37,6 +46,15 @@ public class DefaultPrincipalConverter implements PrincipalConverter {
         return sorfaceUser;
     }
 
+    /**
+     * The convertRoles function is a helper function that converts the roles of a user into
+     * GrantedAuthority objects. The GrantedAuthority object is used by Spring Security to determine
+     * what permissions are granted to the user. In this case, we're simply using the role name as
+     * the permission (i.e., &quot;ROLE_USER&quot; or &quot;ROLE_ADMIN&quot;). You could also use more complex logic if you wanted to.
+     *
+     * @param roles Convert the roles to a list of grantedauthority
+     * @return A list of grantedauthority objects
+     */
     private List<GrantedAuthority> convertRoles(final Collection<? extends RoleEntity> roles) {
         return Optional.ofNullable(roles).stream()
                 .flatMap(Collection::stream)

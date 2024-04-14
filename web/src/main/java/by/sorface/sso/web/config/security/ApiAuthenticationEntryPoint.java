@@ -1,4 +1,4 @@
-package by.sorface.sso.web.config.handlers;
+package by.sorface.sso.web.config.security;
 
 import by.sorface.sso.web.records.responses.OperationError;
 import by.sorface.sso.web.services.locale.LocaleI18Service;
@@ -20,6 +20,14 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final LocaleI18Service localeI18Service;
 
+    /**
+     * The commence function is called when the user attempts to access a resource that requires authentication.
+     * The function will return an error message in JSON format, and set the HTTP status code to 401 (Unauthorized).
+     *
+     * @param request       Get the request url and the httpservletresponse response parameter is used to set the response status code
+     * @param response      Set the response status code and content type
+     * @param authException Get the exception that caused the authentication process to fail
+     */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         final var operationError = buildError(HttpStatus.UNAUTHORIZED, "exception.access.denied");

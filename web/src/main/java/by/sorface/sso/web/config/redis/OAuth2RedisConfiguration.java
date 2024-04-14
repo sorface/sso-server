@@ -1,4 +1,4 @@
-package by.sorface.sso.web.config;
+package by.sorface.sso.web.config.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

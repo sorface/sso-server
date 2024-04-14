@@ -79,7 +79,7 @@ export const useGetAccountApi = () => {
       try {
           const response = await fetch(`${REACT_APP_BACKEND_URL}/api/accounts/current`, {
               headers,
-              credentials: 'include'
+              mode: "cors"
           });
           if (!response.ok) {
               throw new Error('UserApi error');

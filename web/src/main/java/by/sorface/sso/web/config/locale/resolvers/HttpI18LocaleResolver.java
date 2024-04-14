@@ -1,4 +1,4 @@
-package by.sorface.sso.web.config.resolvers;
+package by.sorface.sso.web.config.locale.resolvers;
 
 import by.sorface.sso.web.constants.SupportedLocales;
 import jakarta.servlet.http.HttpServletRequest;
