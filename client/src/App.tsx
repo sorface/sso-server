@@ -1,18 +1,21 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { AppRoutes } from './routes/AppRoutes';
-import { REACT_APP_VERSION } from './config';
-import { Menu } from './components/Menu/Menu';
-import { Footer } from "./components/Footer/Footer";
-import { Loader } from './components/Loader/Loader';
-import { AuthContext } from './context/AuthContext';
-import { useGetAccountApi } from './hooks/useGetAccount';
-import { Captions } from './constants';
+import React, {useEffect} from 'react';
+import {BrowserRouter} from 'react-router-dom';
+import {AppRoutes} from './routes/AppRoutes';
+import {REACT_APP_VERSION} from './config';
+import {Menu} from './components/Menu/Menu';
+import {Footer} from "./components/Footer/Footer";
+import {Loader} from './components/Loader/Loader';
+import {AuthContext} from './context/AuthContext';
+import {useCsrfApi, useGetAccountApi} from './hooks/useGetAccount';
+import {Captions} from './constants';
 
 import './App.css';
 
 function App() {
-    const { accountState, loadAccount } = useGetAccountApi();
+
+    const {csrfState, loadCsrf} = useCsrfApi();
+
+    const {accountState, loadAccount} = useGetAccountApi();
     const {
         process: {
             loading,
@@ -20,11 +23,19 @@ function App() {
         },
         account,
     } = accountState;
+
     const accountWillLoad = !account && !error;
 
     useEffect(() => {
+        loadCsrf();
+    }, [loadCsrf]);
+
+    useEffect(() => {
+        if (!csrfState.account) {
+            return;
+        }
         loadAccount();
-    }, [loadAccount]);
+    }, [csrfState.account, loadAccount]);
 
     if (loading || accountWillLoad) {
         return (
@@ -32,7 +43,7 @@ function App() {
                 <div className="App">
                     <div className="App-content">
                         <p>{Captions.Loading}...</p>
-                        <Loader />
+                        <Loader/>
                     </div>
                 </div>
             </div>

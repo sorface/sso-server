@@ -1,6 +1,6 @@
 package by.sorface.sso.web.controllers;
 
-import by.sorface.sso.web.config.security.SavedRequestRedisSuccessHandler;
+import by.sorface.sso.web.config.security.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.exceptions.UserRequestException;
 import by.sorface.sso.web.facade.signup.SignupEmailFacade;
 import by.sorface.sso.web.facade.signup.SignupFacade;

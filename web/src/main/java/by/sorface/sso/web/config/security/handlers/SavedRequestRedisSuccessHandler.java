@@ -1,8 +1,8 @@
-package by.sorface.sso.web.config.security;
+package by.sorface.sso.web.config.security.handlers;
 
 import by.sorface.sso.web.config.options.EndpointOptions;
-import by.sorface.sso.web.config.options.OAuth2Options;
 import by.sorface.sso.web.constants.SessionAttributes;
+import by.sorface.sso.web.utils.json.Json;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +29,10 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
 
     private final EndpointOptions endpointOptions;
 
-    private final OAuth2Options oAuth2Options;
-
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         log.info("request session id -> {}", request.getRequestedSessionId());
+        log.info("authorized user -> {}{}", System.lineSeparator(), Json.lazyStringify(authentication.getPrincipal()));
 
         final var requestAttributes = RequestContextHolder.currentRequestAttributes();
 
@@ -57,13 +55,13 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
 
         log.info("found saved request [url -> {}]. session [id -> {}]", savedRequest.getRedirectUrl(), request.getRequestedSessionId());
         String targetUrlParameter = getTargetUrlParameter();
-        log.info("Target url parameter [{}], session [id -> {}]", targetUrlParameter, request.getRequestedSessionId());
+        log.info("target url parameter [{}], session [id -> {}]", targetUrlParameter, request.getRequestedSessionId());
 
         if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
             return;
         }
 
-        log.info("Clean session authentication for session [id -> {}]", request.getRequestedSessionId());
+        log.info("clean session authentication for session [id -> {}]", request.getRequestedSessionId());
         clearAuthenticationAttributes(requestAttributes);
         String targetUrl = savedRequest.getRedirectUrl();
         log.info("oauth2 redirect to target url -> {}. session [id -> {}]", targetUrl, request.getRequestedSessionId());

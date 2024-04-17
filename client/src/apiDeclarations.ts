@@ -6,6 +6,13 @@ export interface ConfirmBody {
     token: string;
 }
 
+export const csrfApiDeclaration = {
+    csrf: (): ApiContractGet => ({
+        method: 'GET',
+        baseUrl: '/csrf'
+    })
+}
+
 export const accountsApiDeclaration = {
     signup: (body: SignUpBody): ApiContractPost => ({
         method: 'POST',

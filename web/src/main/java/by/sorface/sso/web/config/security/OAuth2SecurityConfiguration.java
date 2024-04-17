@@ -1,6 +1,7 @@
 package by.sorface.sso.web.config.security;
 
 import by.sorface.sso.web.config.options.EndpointOptions;
+import by.sorface.sso.web.config.security.handlers.TokenAuthenticationSuccessHandler;
 import by.sorface.sso.web.constants.UrlPatternEnum;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationService;

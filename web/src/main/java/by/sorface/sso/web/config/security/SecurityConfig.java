@@ -3,8 +3,7 @@ package by.sorface.sso.web.config.security;
 import by.sorface.sso.web.config.options.CookieOptions;
 import by.sorface.sso.web.config.options.EndpointOptions;
 import by.sorface.sso.web.config.redis.RedisSessionLogoutHandler;
-import by.sorface.sso.web.config.security.csrf.CsrfCookieFilter;
-import by.sorface.sso.web.config.security.csrf.SpaCsrfTokenRequestHandler;
+import by.sorface.sso.web.config.security.handlers.SavedRequestRedisSuccessHandler;
 import by.sorface.sso.web.constants.UrlPatternEnum;
 import by.sorface.sso.web.services.providers.OAuth2UserDatabaseStrategy;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +29,9 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,6 +41,28 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
 
+    /**
+     * The defaultSecurityFilterChain function is a Spring Security configuration function that configures the
+     * default security filter chain. The default security filter chain is used to protect all endpoints except those
+     * explicitly excluded by other functions in this class. This function configures the following:
+     * <p>
+     * &lt;ul&gt;
+     * &lt;li&gt;OAuth2 login&lt;/li&gt;
+     * &lt;li&gt;CSRF protection&lt;/li&gt;
+     * &lt;li&gt;&lt;a href=&quot;http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#authorize-requests&quot;&gt;Authorization manager request matcher registry customizer&lt;/
+     *
+     * @param httpSecurity                    Access the authenticationmanagerbuilder
+     * @param savedRequestRedisSuccessHandler Inject the bean into this method
+     * @param authenticationFailureHandler    Pass in the authenticationfailurehandler bean
+     * @param oAuth2UserDatabaseStrategy      Inject the oauth2userdatabasestrategy bean into this function
+     * @param redisSessionLogoutHandler       Logout the user from all sessions
+     * @param apiAuthenticationEntryPoint     Configure the exception handling
+     * @param csrfTokenRepository             Create a new cookiecsrftokenrepository object
+     * @param csrfTokenRequestHandler         Set the csrftokenrequesthandler
+     * @param cookieOptions                   Set the cookie options for the session
+     * @param endpointOptions                 Configure the endpoint url for oauth2 login
+     * @return The securityfilterchain
+     */
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(final HttpSecurity httpSecurity,
                                                           final SavedRequestRedisSuccessHandler savedRequestRedisSuccessHandler,
@@ -50,6 +71,7 @@ public class SecurityConfig {
                                                           final RedisSessionLogoutHandler redisSessionLogoutHandler,
                                                           final ApiAuthenticationEntryPoint apiAuthenticationEntryPoint,
                                                           final CookieCsrfTokenRepository csrfTokenRepository,
+                                                          final CsrfTokenRequestHandler csrfTokenRequestHandler,
                                                           final CookieOptions cookieOptions,
                                                           final EndpointOptions endpointOptions) throws Exception {
         httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
@@ -58,8 +80,7 @@ public class SecurityConfig {
         );
 
         return httpSecurity
-                .csrf(csrfConfigurerCustomizer(csrfTokenRepository))
-                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .csrf(csrfConfigurerCustomizer(csrfTokenRepository, csrfTokenRequestHandler))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistryCustomizer())
                 .logout(logoutConfigurerCustomizer(redisSessionLogoutHandler, endpointOptions, cookieOptions))
                 .formLogin(formLoginConfigurerCustomizer(endpointOptions, savedRequestRedisSuccessHandler, authenticationFailureHandler))
@@ -77,6 +98,15 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(10);
     }
 
+    /**
+     * The oAuth2LoginConfigurerCustomizer function is a Spring Boot
+     *
+     * @param oAuth2UserDatabaseStrategy   Create a user database strategy
+     * @param endpointOptions              Configure the login page
+     * @param authenticationSuccessHandler Redirect the user to a specific page after successful login
+     * @param authenticationFailureHandler Redirect the user to a page if they fail authentication
+     * @return An instance of customizer&lt;oauth2loginconfigurer&lt;httpsecurity&gt;&gt;
+     */
     private Customizer<OAuth2LoginConfigurer<HttpSecurity>> oAuth2LoginConfigurerCustomizer(final OAuth2UserDatabaseStrategy oAuth2UserDatabaseStrategy,
                                                                                             final EndpointOptions endpointOptions,
                                                                                             final AuthenticationSuccessHandler authenticationSuccessHandler,
@@ -113,11 +143,11 @@ public class SecurityConfig {
      *
      * @return customizer for csrf security
      */
-    private Customizer<CsrfConfigurer<HttpSecurity>> csrfConfigurerCustomizer(final CsrfTokenRepository csrfTokenRepository) {
+    private Customizer<CsrfConfigurer<HttpSecurity>> csrfConfigurerCustomizer(final CsrfTokenRepository csrfTokenRepository,
+                                                                              final CsrfTokenRequestHandler csrfTokenRequestHandler) {
         return csrfConfigurer -> {
-            csrfConfigurer.ignoringRequestMatchers(UrlPatternEnum.toArray(UrlPatternEnum.API_ACCOUNT));
             csrfConfigurer.csrfTokenRepository(csrfTokenRepository);
-            csrfConfigurer.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler());
+            csrfConfigurer.csrfTokenRequestHandler(csrfTokenRequestHandler);
             csrfConfigurer.sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
         };
     }
@@ -131,6 +161,7 @@ public class SecurityConfig {
         return configure -> configure
                 .requestMatchers(HttpMethod.OPTIONS, UrlPatternEnum.toArray(UrlPatternEnum.OPTION_REQUEST)).permitAll()
                 .requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.API_ACCOUNT)).permitAll()
+                .requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.CSRF)).permitAll()
                 .requestMatchers(UrlPatternEnum.toArray()).permitAll()
                 .anyRequest()
                 .authenticated();

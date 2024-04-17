@@ -6,6 +6,9 @@ spring:
   jpa:
     show-sql: true
     database: postgresql
+    properties:
+      hibernate:
+        format_sql: true
 
   datasource:
     url: ${DATABASE_URL}
@@ -24,6 +27,6 @@ spring:
 
 logging:
   level:
-    root: info
+    root: debug
     by.sorface.sso.web: debug
     nl.basjes: off

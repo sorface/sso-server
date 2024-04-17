@@ -3,6 +3,7 @@ import {REACT_APP_BACKEND_URL} from '../config';
 import {ApiContract} from '../types/apiContracts';
 import {useNavigate} from 'react-router-dom';
 import {pathnames} from '../constants';
+import {setupCsrf, X_CSRF_TOKEN_COOKIE_NAME} from "../utils/csrf";
 
 interface ApiMethodState<ResponseData = any> {
     process: {
@@ -12,15 +13,6 @@ interface ApiMethodState<ResponseData = any> {
     data: ResponseData | null;
 }
 
-export const getCookie = (name: String) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (!parts) {
-        return null;
-    }
-
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-}
 const initialState: ApiMethodState = {
     process: {
         loading: false,
@@ -91,10 +83,15 @@ const createFetchUrl = (apiContract: ApiContract) => {
 };
 
 const createFetchRequestInit = (apiContract: ApiContract): RequestInit => {
+    const headers = new Headers();
+
+    setupCsrf(X_CSRF_TOKEN_COOKIE_NAME, headers);
+
     if (apiContract.method === 'GET') {
         return {
             method: apiContract.method,
-            mode: "cors"
+            mode: "cors",
+            headers
         };
     }
 
@@ -103,6 +100,7 @@ const createFetchRequestInit = (apiContract: ApiContract): RequestInit => {
     return {
         method: method,
         mode: "cors",
+        headers,
         body: body instanceof FormData ? body : JSON.stringify(body),
     } as RequestInit;
 };
