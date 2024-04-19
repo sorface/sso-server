@@ -28,6 +28,10 @@ export const Menu: FunctionComponent = () => {
       icon: IconNames.List,
     },
     {
+      path: pathnames.clients,
+      icon: IconNames.Apps,
+    },
+    {
       path: pathnames.account,
       icon: IconNames.Exit,
       onClick: () => { logoutFetch(undefined); },

@@ -4,6 +4,9 @@ export const pathnames = {
     signUp: '/account/signup',
     signIn: '/account/signin',
     activate: '/account/activate',
+    clients: '/clients',
+    clientsAdd: '/clients/add',
+    clientsEdit: '/clients/:id/edit',
 };
 
 export const enum IconNames {
@@ -15,6 +18,9 @@ export const enum IconNames {
     List = 'list-circle',
     Create = 'create',
     Close = 'close-circle',
+    Apps = 'apps',
+    Add = 'add',
+    Remove = 'remove',
 }
 
 export const enum IconThemePostfix {
