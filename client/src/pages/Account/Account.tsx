@@ -1,7 +1,7 @@
-import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from 'react';
+import { ChangeEvent, FunctionComponent, useContext, useState } from 'react';
 import defaultAvatarImage from './img/anonymus_avatar.png';
 import { useLogout } from '../../hooks/useLogout';
-import { Captions, IconNames, pathnames } from "../../constants";
+import { Captions, IconNames } from "../../constants";
 import { Icon } from '../../components/Icon/Icon';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -15,17 +15,9 @@ interface ProfileField {
 
 export const Account: FunctionComponent = () => {
     const account = useContext(AuthContext);
-    const { logoutData, logoutFetch } = useLogout();
+    const { logoutFetch } = useLogout();
     const [editedFieldName, setEditedFieldName] = useState('');
     const [editedFieldValue, setEditedFieldValue] = useState('');
-
-    useEffect(() => {
-        if (!logoutData) {
-            return;
-        }
-
-        window.location.assign(pathnames.signIn)
-    }, [logoutData])
 
     const handleLogout = () => {
         logoutFetch(undefined)
