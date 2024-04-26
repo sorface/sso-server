@@ -1,4 +1,4 @@
-package by.sorface.sso.web.config.redis;
+package by.sorface.sso.web.config.security.redis;
 
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import jakarta.servlet.http.HttpServletRequest;

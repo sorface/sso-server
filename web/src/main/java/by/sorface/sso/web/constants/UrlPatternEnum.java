@@ -15,7 +15,13 @@ public enum UrlPatternEnum {
 
     API_ACCOUNT(List.of("/api/accounts/current")),
 
-    CSRF(List.of("/csrf")),
+    PERMIT_ALL_PATTERNS(List.of(
+            "/error**",
+            "/static/**",
+            "/account/**"
+    )),
+
+    CSRF(List.of("/api/csrf")),
     ;
 
     private final List<String> patterns;

@@ -1,11 +1,12 @@
-import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from 'react';
+import React, {ChangeEvent, FunctionComponent, useContext, useEffect, useState} from 'react';
 import defaultAvatarImage from './img/anonymus_avatar.png';
-import { useLogout } from '../../hooks/useLogout';
-import { Captions, IconNames, pathnames } from "../../constants";
-import { Icon } from '../../components/Icon/Icon';
-import { AuthContext } from '../../context/AuthContext';
+import {useLogout} from '../../hooks/useLogout';
+import {Captions, IconNames, pathnames} from "../../constants";
+import {Icon} from '../../components/Icon/Icon';
+import {AuthContext} from '../../context/AuthContext';
 
 import './Account.css';
+import {Form} from "../../components/Form/Form";
 
 interface ProfileField {
     name: string;
@@ -15,7 +16,7 @@ interface ProfileField {
 
 export const Account: FunctionComponent = () => {
     const account = useContext(AuthContext);
-    const { logoutData, logoutFetch } = useLogout();
+    const {logoutData, logoutFetch} = useLogout();
     const [editedFieldName, setEditedFieldName] = useState('');
     const [editedFieldValue, setEditedFieldValue] = useState('');
 
@@ -51,22 +52,22 @@ export const Account: FunctionComponent = () => {
 
     const fields: ProfileField[] = [
         {
-            name: 'id',
+            name: 'ID',
             value: account?.id,
             editable: false,
         },
         {
-            name: 'email',
+            name: 'Email',
             value: account?.email,
             editable: false,
         },
         {
-            name: 'first name',
+            name: 'Имя',
             value: account?.firstName,
             editable: true,
         },
         {
-            name: 'last name',
+            name: 'Фамилия',
             value: account?.lastName,
             editable: true,
         },
@@ -75,10 +76,10 @@ export const Account: FunctionComponent = () => {
     return (
         <div className='account-page'>
             <div className="avatar">
-                <img src={account?.avatar || defaultAvatarImage} alt="avatar" />
+                <img src={account?.avatar || defaultAvatarImage} alt="avatar"/>
             </div>
             <table className="user-data-table">
-                {fields.map(({ name, value, editable }) => (
+                {fields.map(({name, value, editable}) => (
                     <tr key={name}>
                         <td className="bold left">{name}</td>
                         {name !== editedFieldName ? (
@@ -86,18 +87,18 @@ export const Account: FunctionComponent = () => {
                                 <div className="field-value">{value || Captions.Unknown}</div>
                                 {editable && (
                                     <div className="field-action" onClick={() => handleEditField(name, value || '')}>
-                                        <Icon name={IconNames.Create} />
+                                        <Icon name={IconNames.Create}/>
                                     </div>
                                 )}
                             </td>
                         ) : (
                             <td className="right">
-                                <input className="field-value" type="text" value={editedFieldValue} onChange={handleEditedFieldChangeValue} />
+                                <input className="field-value" type="text" value={editedFieldValue} onChange={handleEditedFieldChangeValue}/>
                                 <div className="field-action" onClick={handleEditedFieldSave}>
-                                    <Icon name={IconNames.Checkmark} />
+                                    <Icon name={IconNames.Checkmark}/>
                                 </div>
                                 <div className="field-action" onClick={handleEditedFieldCancel}>
-                                    <Icon name={IconNames.Close} />
+                                    <Icon name={IconNames.Close}/>
                                 </div>
                             </td>
                         )}
@@ -105,7 +106,14 @@ export const Account: FunctionComponent = () => {
                 ))}
             </table>
 
-            <button className="exit-button danger" onClick={handleLogout}>{Captions.Logout}</button>
+            <Form
+                htmlMethod='POST'
+                htmlAction='/api/accounts/logout'
+                fields={[]}
+                fieldErrors={{'': ''}}
+                submitCaption={Captions.Logout}
+            />
+            {/*<button className="exit-button danger" onClick={handleLogout}>{Captions.Logout}</button>*/}
         </div>
     );
 };

@@ -1,7 +1,6 @@
 import {useCallback, useReducer} from 'react';
 import {REACT_APP_BACKEND_URL} from '../config';
 import {Account} from '../types/account';
-import {isPresentCsrfCookie, setupCsrf, X_CSRF_TOKEN_COOKIE_NAME} from "../utils/csrf";
 
 interface GetMeState {
     process: {
@@ -60,50 +59,6 @@ const getMeReducer = (state: GetMeState, action: GetMeAction): GetMeState => {
     }
 };
 
-export const useCsrfApi = () => {
-    const [csrfState, dispatch] = useReducer(getMeReducer, initialState);
-
-    const loadCsrf = useCallback(async () => {
-        dispatch({name: 'startLoad'});
-
-        if (isPresentCsrfCookie()) {
-            dispatch({
-                name: 'setAccount', payload: {
-                    id: '',
-                    email: '',
-                    firstName: '',
-                    lastName: '',
-                    avatar: ''
-                }
-            });
-            return;
-        }
-
-        try {
-            const response = await fetch(`${REACT_APP_BACKEND_URL}/csrf`, {
-                credentials: 'include',
-                mode: "cors"
-            });
-            if (!response.ok) {
-                throw new Error('UserApi error');
-            }
-            const responseJson = await response.json();
-            dispatch({name: 'setAccount', payload: responseJson});
-        } catch (err: any) {
-            dispatch({
-                name: 'setError',
-                payload: err.message || 'Failed to get me',
-            });
-        }
-    }, []);
-
-    return {
-        csrfState,
-        loadCsrf,
-    };
-};
-
-
 export const useGetAccountApi = () => {
     const [accountState, dispatch] = useReducer(getMeReducer, initialState);
 
@@ -112,12 +67,10 @@ export const useGetAccountApi = () => {
 
         const headers = new Headers();
 
-        setupCsrf(X_CSRF_TOKEN_COOKIE_NAME, headers);
-
         try {
             const response = await fetch(`${REACT_APP_BACKEND_URL}/api/accounts/current`, {
                 headers,
-                mode: "cors"
+                credentials: 'include'
             });
             if (!response.ok) {
                 throw new Error('UserApi error');

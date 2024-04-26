@@ -1,6 +1,7 @@
 package by.sorface.sso.web.config.options;
 
 import lombok.Data;
+import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,6 +22,8 @@ public class CookieOptions {
         private String path;
 
         private String name;
+
+        private SameSiteCookies sameSite;
 
         private boolean httpOnly = false;
 

@@ -2,6 +2,11 @@
 server:
   port: 8080
 
+sorface:
+  cookie:
+    session:
+      same-site: none
+
 spring:
   jpa:
     show-sql: true
@@ -16,4 +21,5 @@ spring:
 
 logging:
   level:
-    root: info
+    root: debug
+

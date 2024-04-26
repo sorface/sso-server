@@ -2,6 +2,11 @@
 server:
   port: 8080
 
+sorface:
+  cookie:
+    session:
+      same-site: lax
+
 spring:
   jpa:
     show-sql: true
@@ -27,6 +32,5 @@ spring:
 
 logging:
   level:
-    root: debug
-    by.sorface.sso.web: debug
-    nl.basjes: off
+    root: info
+    org.springframework.security.web.csrf.CsrfAuthenticationStrategy: debug

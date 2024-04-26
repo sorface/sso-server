@@ -24,6 +24,7 @@ public class CookieConfiguration {
             serializer.setCookiePath(session.getPath());
             serializer.setDomainNamePattern(session.getDomainPattern());
             serializer.setUseHttpOnlyCookie(session.isHttpOnly());
+            serializer.setSameSite(session.getSameSite().getValue());
         }
 
         log.debug("session cookie configured {}{}", System.lineSeparator(), Json.lazyStringify(session));

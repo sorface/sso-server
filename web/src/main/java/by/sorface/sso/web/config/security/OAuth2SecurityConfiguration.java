@@ -48,6 +48,7 @@ public class OAuth2SecurityConfiguration {
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(configure -> {
                     configure.requestMatchers(HttpMethod.OPTIONS, UrlPatternEnum.toArray(UrlPatternEnum.OPTION_REQUEST)).permitAll();
+                    configure.requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.CSRF)).permitAll();
                     configure.anyRequest().authenticated();
                 })
                 .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(endpointOptions.getUriPageSignIn())))

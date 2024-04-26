@@ -2,8 +2,9 @@ package by.sorface.sso.web.config.security;
 
 import by.sorface.sso.web.config.options.CookieOptions;
 import by.sorface.sso.web.config.options.EndpointOptions;
-import by.sorface.sso.web.config.redis.RedisSessionLogoutHandler;
+import by.sorface.sso.web.config.security.csrf.CsrfCookieFilter;
 import by.sorface.sso.web.config.security.handlers.SavedRequestRedisSuccessHandler;
+import by.sorface.sso.web.config.security.redis.RedisSessionLogoutHandler;
 import by.sorface.sso.web.constants.UrlPatternEnum;
 import by.sorface.sso.web.services.providers.OAuth2UserDatabaseStrategy;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
 
@@ -57,8 +59,6 @@ public class SecurityConfig {
      * @param oAuth2UserDatabaseStrategy      Inject the oauth2userdatabasestrategy bean into this function
      * @param redisSessionLogoutHandler       Logout the user from all sessions
      * @param apiAuthenticationEntryPoint     Configure the exception handling
-     * @param csrfTokenRepository             Create a new cookiecsrftokenrepository object
-     * @param csrfTokenRequestHandler         Set the csrftokenrequesthandler
      * @param cookieOptions                   Set the cookie options for the session
      * @param endpointOptions                 Configure the endpoint url for oauth2 login
      * @return The securityfilterchain
@@ -70,7 +70,7 @@ public class SecurityConfig {
                                                           final OAuth2UserDatabaseStrategy oAuth2UserDatabaseStrategy,
                                                           final RedisSessionLogoutHandler redisSessionLogoutHandler,
                                                           final ApiAuthenticationEntryPoint apiAuthenticationEntryPoint,
-                                                          final CookieCsrfTokenRepository csrfTokenRepository,
+                                                          final CookieCsrfTokenRepository cookieCsrfTokenRepository,
                                                           final CsrfTokenRequestHandler csrfTokenRequestHandler,
                                                           final CookieOptions cookieOptions,
                                                           final EndpointOptions endpointOptions) throws Exception {
@@ -80,7 +80,8 @@ public class SecurityConfig {
         );
 
         return httpSecurity
-                .csrf(csrfConfigurerCustomizer(csrfTokenRepository, csrfTokenRequestHandler))
+                .csrf(csrfConfigurerCustomizer(cookieCsrfTokenRepository, csrfTokenRequestHandler))
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistryCustomizer())
                 .logout(logoutConfigurerCustomizer(redisSessionLogoutHandler, endpointOptions, cookieOptions))
                 .formLogin(formLoginConfigurerCustomizer(endpointOptions, savedRequestRedisSuccessHandler, authenticationFailureHandler))
@@ -148,7 +149,7 @@ public class SecurityConfig {
         return csrfConfigurer -> {
             csrfConfigurer.csrfTokenRepository(csrfTokenRepository);
             csrfConfigurer.csrfTokenRequestHandler(csrfTokenRequestHandler);
-            csrfConfigurer.sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
+            csrfConfigurer.sessionAuthenticationStrategy(new CsrfAuthenticationStrategy(csrfTokenRepository));
         };
     }
 
@@ -160,8 +161,8 @@ public class SecurityConfig {
     private Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> authorizationManagerRequestMatcherRegistryCustomizer() {
         return configure -> configure
                 .requestMatchers(HttpMethod.OPTIONS, UrlPatternEnum.toArray(UrlPatternEnum.OPTION_REQUEST)).permitAll()
-                .requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.API_ACCOUNT)).permitAll()
                 .requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.CSRF)).permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/accounts/signin").permitAll()
                 .requestMatchers(UrlPatternEnum.toArray()).permitAll()
                 .anyRequest()
                 .authenticated();

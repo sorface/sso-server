@@ -6,14 +6,14 @@ import {Menu} from './components/Menu/Menu';
 import {Footer} from "./components/Footer/Footer";
 import {Loader} from './components/Loader/Loader';
 import {AuthContext} from './context/AuthContext';
-import {useCsrfApi, useGetAccountApi} from './hooks/useGetAccount';
+import {useGetAccountApi} from './hooks/useGetAccount';
 import {Captions} from './constants';
 
 import './App.css';
+import {useCsrfApi} from "./hooks/useGetCsrf";
 
 function App() {
-
-    const {csrfState, loadCsrf} = useCsrfApi();
+    const {csrfConfigState, loadCsrfConfig} = useCsrfApi();
 
     const {accountState, loadAccount} = useGetAccountApi();
     const {
@@ -27,15 +27,15 @@ function App() {
     const accountWillLoad = !account && !error;
 
     useEffect(() => {
-        loadCsrf();
-    }, [loadCsrf]);
+        loadCsrfConfig();
+    }, [loadCsrfConfig]);
 
     useEffect(() => {
-        if (!csrfState.account) {
+        if (!csrfConfigState.csrfConfig) {
             return;
         }
         loadAccount();
-    }, [csrfState.account, loadAccount]);
+    }, [csrfConfigState.csrfConfig, loadAccount]);
 
     if (loading || accountWillLoad) {
         return (
@@ -54,12 +54,12 @@ function App() {
         <BrowserRouter>
             <AuthContext.Provider value={account}>
                 <div className="App-container" data-testid="App-container">
-                    <Menu />
+                    <Menu/>
                     <div className="App">
                         <div className="App-content">
-                            <AppRoutes />
+                            <AppRoutes/>
                         </div>
-                        <Footer version={REACT_APP_VERSION} />
+                        <Footer version={REACT_APP_VERSION}/>
                     </div>
                 </div>
             </AuthContext.Provider>
