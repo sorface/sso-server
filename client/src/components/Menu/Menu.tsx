@@ -2,16 +2,13 @@ import { FunctionComponent, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { IconNames, pathnames } from '../../constants';
 import { Icon } from '../Icon/Icon';
-import { useLogout } from '../../hooks/useLogout';
 import { AuthContext } from '../../context/AuthContext';
+import { LogoutForm } from '../LogoutForm/LogoutForm';
 
 import './Menu.css';
 
-
 export const Menu: FunctionComponent = () => {
   const account = useContext(AuthContext);
-  const { logoutFetch } = useLogout();
-
   const disabled = !account;
 
   if (disabled) {
@@ -19,31 +16,29 @@ export const Menu: FunctionComponent = () => {
   }
 
   const items = [
-    {
-      path: pathnames.account,
-      icon: IconNames.Person,
-    },
-    {
-      path: pathnames.session,
-      icon: IconNames.List,
-    },
-    {
-      path: pathnames.account,
-      icon: IconNames.Exit,
-      onClick: () => { logoutFetch(undefined); },
-    },
+    <Link
+      to={pathnames.account}
+    >
+      <Icon name={IconNames.Person} />
+    </Link>,
+    <Link
+      to={pathnames.session}
+    >
+      <Icon name={IconNames.List} />
+    </Link>,
+    <LogoutForm
+      submitCaption={''}
+    >
+      <button type='submit'>
+        <Icon name={IconNames.Exit} />
+      </button>
+    </LogoutForm>
   ];
 
   return (
     <div className="menu">
-      {items.map(({ icon, path, onClick }, index) => (
-        <Link
-          key={index}
-          to={path}
-          {...(onClick && { onClick })}
-        >
-          <Icon name={icon} />
-        </Link>
+      {items.map((item, index) => (
+        <div key={index} className="menu-item">{item}</div>
       ))}
     </div>
   );

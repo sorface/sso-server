@@ -13,6 +13,7 @@ export interface FormProps {
     fieldErrors: FieldErrors;
     htmlAction: string;
     htmlMethod: string;
+    className?: string;
     loading?: boolean;
     error?: string | null;
     submitCaption?: string;
@@ -24,13 +25,14 @@ export const Form: FunctionComponent<FormProps> = ({
     fieldErrors,
     htmlAction,
     htmlMethod,
+    className,
     loading,
     error,
     submitCaption,
     children,
 }) => {
     return (
-        <form action={htmlAction} method={htmlMethod}>
+        <form action={htmlAction} method={htmlMethod} className={className}>
             <FormFields fields={fields} fieldErrors={fieldErrors} />
             {submitCaption && <input type="submit" value={submitCaption} />}
             <div className='form-status'>

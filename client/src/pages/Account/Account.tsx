@@ -1,12 +1,11 @@
-import React, {ChangeEvent, FunctionComponent, useContext, useEffect, useState} from 'react';
+import React, {ChangeEvent, FunctionComponent, useContext, useState} from 'react';
 import defaultAvatarImage from './img/anonymus_avatar.png';
-import {useLogout} from '../../hooks/useLogout';
-import {Captions, IconNames, pathnames} from "../../constants";
+import {Captions, IconNames} from "../../constants";
 import {Icon} from '../../components/Icon/Icon';
 import {AuthContext} from '../../context/AuthContext';
+import {LogoutForm} from '../../components/LogoutForm/LogoutForm';
 
 import './Account.css';
-import {Form} from "../../components/Form/Form";
 
 interface ProfileField {
     name: string;
@@ -16,21 +15,8 @@ interface ProfileField {
 
 export const Account: FunctionComponent = () => {
     const account = useContext(AuthContext);
-    const {logoutData, logoutFetch} = useLogout();
     const [editedFieldName, setEditedFieldName] = useState('');
     const [editedFieldValue, setEditedFieldValue] = useState('');
-
-    useEffect(() => {
-        if (!logoutData) {
-            return;
-        }
-
-        window.location.assign(pathnames.signIn)
-    }, [logoutData])
-
-    const handleLogout = () => {
-        logoutFetch(undefined)
-    }
 
     const handleEditField = (fieldName: string, initialValue: string) => {
         setEditedFieldName(fieldName);
@@ -105,15 +91,7 @@ export const Account: FunctionComponent = () => {
                     </tr>
                 ))}
             </table>
-
-            <Form
-                htmlMethod='POST'
-                htmlAction='/api/accounts/logout'
-                fields={[]}
-                fieldErrors={{'': ''}}
-                submitCaption={Captions.Logout}
-            />
-            {/*<button className="exit-button danger" onClick={handleLogout}>{Captions.Logout}</button>*/}
+            <LogoutForm />
         </div>
     );
 };
