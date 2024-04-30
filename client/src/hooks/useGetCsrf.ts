@@ -4,16 +4,16 @@ import {REACT_APP_BACKEND_URL} from "../config";
 
 interface CsrfConfigState {
     process: {
-        loading: boolean;
-        error: string | null;
+        csrfConfigLoading: boolean;
+        csrfConfigError: string | null;
     };
     csrfConfig: CsrfToken | null;
 }
 
 const initialState: CsrfConfigState = {
     process: {
-        loading: false,
-        error: null,
+        csrfConfigLoading: false,
+        csrfConfigError: null,
     },
     csrfConfig: null,
 };
@@ -33,8 +33,8 @@ const getCsrfConfigReducer = (state: CsrfConfigState, action: GetCsrfAction): Cs
         case 'startLoad':
             return {
                 process: {
-                    loading: true,
-                    error: null,
+                    csrfConfigLoading: true,
+                    csrfConfigError: null,
                 },
                 csrfConfig: null,
             };
@@ -42,15 +42,15 @@ const getCsrfConfigReducer = (state: CsrfConfigState, action: GetCsrfAction): Cs
             return {
                 ...state,
                 process: {
-                    loading: false,
-                    error: action.payload
+                    csrfConfigLoading: false,
+                    csrfConfigError: action.payload
                 }
             };
         case 'setCsrfConfig':
             return {
                 process: {
-                    loading: false,
-                    error: null,
+                    csrfConfigLoading: false,
+                    csrfConfigError: null,
                 },
                 csrfConfig: action.payload
             };
