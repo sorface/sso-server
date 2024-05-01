@@ -5,7 +5,7 @@ import {useNavigate} from 'react-router-dom';
 import {pathnames} from '../constants';
 import {setupCsrf, X_CSRF_TOKEN_COOKIE_NAME} from "../utils/csrf";
 
-interface ApiMethodState<ResponseData = any> {
+export interface ApiMethodState<ResponseData = any> {
     process: {
         loading: boolean;
         error: string | null;
@@ -105,7 +105,7 @@ const createFetchRequestInit = (apiContract: ApiContract): RequestInit => {
     } as RequestInit;
 };
 
-type AnyObject = Record<string, any>;
+export type AnyObject = Record<string, any>;
 
 const getResponseContent = async (response: Response): Promise<AnyObject | string> => {
     const contentType = response.headers.get('content-type');
