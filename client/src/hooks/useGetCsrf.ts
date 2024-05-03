@@ -1,6 +1,6 @@
-import {CsrfToken, isPresentCsrfCookie} from "../utils/csrf";
 import {useCallback, useReducer} from "react";
 import {REACT_APP_BACKEND_URL} from "../config";
+import { CsrfToken } from "../types/сsrf";
 
 interface CsrfConfigState {
     process: {
@@ -65,18 +65,6 @@ export const useCsrfApi = () => {
 
     const loadCsrfConfig = useCallback(async () => {
         dispatch({name: 'startLoad'});
-
-        if (isPresentCsrfCookie()) {
-            dispatch({
-                name: 'setCsrfConfig',
-                payload: {
-                    parameterName: '',
-                    token: '',
-                    headerName: ''
-                } as CsrfToken
-            });
-            return;
-        }
 
         try {
             const response = await fetch(`${REACT_APP_BACKEND_URL}/api/csrf`);
