@@ -26,10 +26,10 @@ export const useApiMethodCsrf = <ResponseData, RequestData = AnyObject>(apiContr
     if (!csrfConfig || lastRequestData === null) {
       return;
     }
-    const csrfHeaders = new Headers({
-      [csrfConfig.headerName]: csrfConfig.token,
-    });
-    fetchDataInternal(lastRequestData, csrfHeaders);
+    const csrfParams = {
+      [csrfConfig.parameterName]: csrfConfig.token,
+    };
+    fetchDataInternal(lastRequestData, csrfParams);
   }, [csrfConfig, lastRequestData, fetchDataInternal]);
 
   return {

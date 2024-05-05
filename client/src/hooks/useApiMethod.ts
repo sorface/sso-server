@@ -65,10 +65,14 @@ const unauthorizedHttpCode = 401;
 const createUrlParam = (name: string, value: string) =>
     `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
 
-const createFetchUrl = (apiContract: ApiContract) => {
-    if (apiContract.urlParams) {
+const createFetchUrl = (apiContract: ApiContract, additionalUrlParams?: object) => {
+    const urlParams: object = {
+        ...apiContract.urlParams,
+        ...additionalUrlParams,
+    };
+    if (Object.keys(urlParams).length) {
         const params =
-            Object.entries(apiContract.urlParams)
+            Object.entries(urlParams)
                 .map(([paramName, paramValue]) => {
                     if (Array.isArray(paramValue)) {
                         return paramValue.map(val => createUrlParam(paramName, val)).join('&');
@@ -81,11 +85,10 @@ const createFetchUrl = (apiContract: ApiContract) => {
     return `${REACT_APP_BACKEND_URL}${apiContract.baseUrl}`;
 };
 
-const createFetchRequestInit = (apiContract: ApiContract, additionalHeaders?: Headers): RequestInit => {
+const createFetchRequestInit = (apiContract: ApiContract): RequestInit => {
     const defaultRequestInit: RequestInit = {
         credentials: 'include',
         method: apiContract.method,
-        headers: additionalHeaders,
     };
 
     if (apiContract.method === 'GET') {
@@ -128,13 +131,13 @@ export const useApiMethod = <ResponseData, RequestData = AnyObject>(apiContractC
     const [apiMethodState, dispatch] = useReducer(apiMethodReducer, initialState);
     const navigate = useNavigate();
 
-    const fetchData = useCallback(async (requestData: RequestData, additionalHeaders?: Headers) => {
+    const fetchData = useCallback(async (requestData: RequestData, additionalUrlParams?: object) => {
         dispatch({name: 'startLoad'});
         const apiContract = apiContractCall(requestData);
         try {
             const response = await fetch(
-                createFetchUrl(apiContract),
-                createFetchRequestInit(apiContract, additionalHeaders),
+                createFetchUrl(apiContract, additionalUrlParams),
+                createFetchRequestInit(apiContract),
             );
             if (apiContract.baseUrl.startsWith("/api/accounts/current") && response.status === unauthorizedHttpCode) {
                 navigate(pathnames.signIn);
