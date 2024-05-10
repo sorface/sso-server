@@ -3,6 +3,8 @@ package by.sorface.sso.web.config.security.handlers;
 import by.sorface.sso.web.config.options.EndpointOptions;
 import by.sorface.sso.web.constants.SessionAttributes;
 import by.sorface.sso.web.utils.json.Json;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +31,14 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
 
     private final EndpointOptions endpointOptions;
 
+    @PostConstruct
+    public void init() {
+        setTargetUrlParameter("targetUrl");
+        setDefaultTargetUrl(endpointOptions.getUriPageProfile());
+    }
+
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         log.info("request session id -> {}", request.getRequestedSessionId());
         log.info("authorized user -> {}{}", System.lineSeparator(), Json.lazyStringify(authentication.getPrincipal()));
 
@@ -38,18 +46,20 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
 
         final var savedRequest = (SavedRequest) requestAttributes.getAttribute(SessionAttributes.SAVED_REQUEST, RequestAttributes.SCOPE_SESSION);
 
-        final String userAgent = Optional.ofNullable(request.getHeader(HttpHeaders.USER_AGENT)).orElse("unknown");
+        final Optional<String> userAgent = Optional.ofNullable(request.getHeader(HttpHeaders.USER_AGENT));
 
-        log.debug("user-agent [value -> {}] for session [id -> {}]", request.getRequestedSessionId(), userAgent);
+        if (userAgent.isPresent()) {
+            String userAgentLine = userAgent.get();
 
-        requestAttributes.setAttribute(SessionAttributes.USER_AGENT, userAgent, RequestAttributes.SCOPE_SESSION);
+            log.debug("user-agent [value -> {}] for session [id -> {}]", request.getRequestedSessionId(), userAgentLine);
+
+            requestAttributes.setAttribute(SessionAttributes.USER_AGENT, userAgentLine, RequestAttributes.SCOPE_SESSION);
+        }
 
         if (Objects.isNull(savedRequest)) {
             log.info("saved request is NULL for session [id -> {}]", request.getRequestedSessionId());
 
-            response.sendRedirect(endpointOptions.getUriPageProfile());
-            response.setStatus(HttpServletResponse.SC_FOUND);
-
+            super.handle(request, response, authentication);
             return;
         }
 
@@ -58,6 +68,7 @@ public class SavedRequestRedisSuccessHandler extends AbstractAuthenticationTarge
         log.info("target url parameter [{}], session [id -> {}]", targetUrlParameter, request.getRequestedSessionId());
 
         if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
+            super.handle(request, response, authentication);
             return;
         }
 

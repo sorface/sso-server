@@ -34,6 +34,8 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -80,6 +82,12 @@ public class SecurityConfig {
         );
 
         return httpSecurity
+                .requestCache(httpSecurityRequestCacheConfigurer -> {
+                    final var httpSessionRequestCache = new HttpSessionRequestCache();
+                    httpSessionRequestCache.setRequestMatcher(new AntPathRequestMatcher("/oauth2/**"));
+
+                    httpSecurityRequestCacheConfigurer.requestCache(httpSessionRequestCache);
+                })
                 .csrf(csrfConfigurerCustomizer(cookieCsrfTokenRepository, csrfTokenRequestHandler))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistryCustomizer())
@@ -133,7 +141,6 @@ public class SecurityConfig {
         return configurer -> {
             configurer.loginPage(endpointOptions.getUriPageSignIn());
             configurer.loginProcessingUrl(endpointOptions.getUriApiLogin());
-
             configurer.successHandler(authenticationSuccessHandler);
             configurer.failureHandler(authenticationFailureHandler);
         };
@@ -147,8 +154,11 @@ public class SecurityConfig {
     private Customizer<CsrfConfigurer<HttpSecurity>> csrfConfigurerCustomizer(final CsrfTokenRepository csrfTokenRepository,
                                                                               final CsrfTokenRequestHandler csrfTokenRequestHandler) {
         return csrfConfigurer -> {
+            csrfConfigurer.ignoringRequestMatchers(request -> HttpMethod.GET.name().equalsIgnoreCase(request.getMethod()));
+
             csrfConfigurer.csrfTokenRepository(csrfTokenRepository);
             csrfConfigurer.csrfTokenRequestHandler(csrfTokenRequestHandler);
+
             csrfConfigurer.sessionAuthenticationStrategy(new CsrfAuthenticationStrategy(csrfTokenRepository));
         };
     }
@@ -162,6 +172,7 @@ public class SecurityConfig {
         return configure -> configure
                 .requestMatchers(HttpMethod.OPTIONS, UrlPatternEnum.toArray(UrlPatternEnum.OPTION_REQUEST)).permitAll()
                 .requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.CSRF)).permitAll()
+                .requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.API_ACCOUNT)).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/accounts/signin").permitAll()
                 .requestMatchers(UrlPatternEnum.toArray()).permitAll()
                 .anyRequest()

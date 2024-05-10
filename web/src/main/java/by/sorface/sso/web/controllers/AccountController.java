@@ -39,18 +39,7 @@ public class AccountController {
 
     @GetMapping("/current")
     public ProfileRecord getSelf() {
-        final var auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (Objects.isNull(auth) || auth instanceof AnonymousAuthenticationToken) {
-            throw new AccessDeniedException("exception.access.denied");
-        }
-
-        final var principal = (DefaultPrincipal) auth.getPrincipal();
-
-        if (Objects.isNull(principal)) {
-            throw new AccessDeniedException("exception.access.denied");
-        }
-
+        final var principal = getCurrentUser();
         return new ProfileRecord(principal.getId(), principal.getEmail(), principal.getFirstName(), principal.getLastName(), principal.getAvatarUrl());
     }
 
@@ -61,7 +50,7 @@ public class AccountController {
     )
     public AccountSignupResponse signupWithSignIn(final AccountSignup accountSignup,
                                                   final HttpServletRequest request,
-                                                  final HttpServletResponse response) throws IOException {
+                                                  final HttpServletResponse response) throws IOException, ServletException {
         signupEmailFacade.signup(accountSignup);
 
         try {
@@ -88,4 +77,19 @@ public class AccountController {
         return signupEmailFacade.resendConfirmEmail(resendConfirmEmail);
     }
 
+    private DefaultPrincipal getCurrentUser() {
+        final var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (Objects.isNull(auth) || auth instanceof AnonymousAuthenticationToken) {
+            throw new AccessDeniedException("exception.access.denied");
+        }
+
+        final var principal = (DefaultPrincipal) auth.getPrincipal();
+
+        if (Objects.isNull(principal)) {
+            throw new AccessDeniedException("exception.access.denied");
+        }
+
+        return principal;
+    }
 }

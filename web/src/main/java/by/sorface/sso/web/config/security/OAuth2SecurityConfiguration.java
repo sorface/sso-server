@@ -49,9 +49,12 @@ public class OAuth2SecurityConfiguration {
                 .authorizeHttpRequests(configure -> {
                     configure.requestMatchers(HttpMethod.OPTIONS, UrlPatternEnum.toArray(UrlPatternEnum.OPTION_REQUEST)).permitAll();
                     configure.requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.CSRF)).permitAll();
+                    configure.requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.API_ACCOUNT)).permitAll();
                     configure.anyRequest().authenticated();
                 })
-                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(endpointOptions.getUriPageSignIn())))
+                .exceptionHandling(configurer -> {
+                    configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(endpointOptions.getUriPageSignIn()));
+                })
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .apply(authorizationServerConfigurer);
