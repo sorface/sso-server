@@ -26,12 +26,17 @@ export const Menu: FunctionComponent = () => {
     >
       <Icon name={IconNames.List} />
     </Link>,
+      <Link
+          to={pathnames.clients}
+      >
+          <Icon name={IconNames.Apps} />
+      </Link>,
     <LogoutForm
-      submitCaption={''}
+        submitCaption={''}
     >
-      <button type='submit'>
-        <Icon name={IconNames.Exit} />
-      </button>
+        <button type='submit'>
+            <Icon name={IconNames.Exit} />
+        </button>
     </LogoutForm>
   ];
 
