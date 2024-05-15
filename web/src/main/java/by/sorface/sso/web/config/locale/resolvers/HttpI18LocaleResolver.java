@@ -3,6 +3,7 @@ package by.sorface.sso.web.config.locale.resolvers;
 import by.sorface.sso.web.constants.SessionAttributes;
 import by.sorface.sso.web.constants.SupportedLocales;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+@Slf4j
 public class HttpI18LocaleResolver extends AcceptHeaderLocaleResolver {
 
     /**
@@ -50,11 +52,15 @@ public class HttpI18LocaleResolver extends AcceptHeaderLocaleResolver {
      * @return The locale that is supported by the application
      */
     private Locale getLocale(final HttpServletRequest request) {
-        if (StringUtils.hasLength(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE))) {
+        String language = request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
+
+        if (!StringUtils.hasLength(language)) {
             return SupportedLocales.EN;
         }
 
-        final List<Locale.LanguageRange> list = Locale.LanguageRange.parse(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE));
+        log.info("setup language for user: {}", language);
+
+        final List<Locale.LanguageRange> list = Locale.LanguageRange.parse(language);
 
         return Locale.lookup(list, List.of(SupportedLocales.EN, SupportedLocales.RU));
     }

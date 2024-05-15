@@ -1,0 +1,19 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 2024_05_14_19_01_TABLE_INSERT_ROLE_USER
+      comment: Установка пользователю роли по умолчанию
+      author: Pavel Talaika
+
+      context: "development, production"
+
+      changes:
+        - insert:
+            tableName: LT_USER_ROLE_STORE
+            columns:
+              - column:
+                  name: C_FK_USER
+                  value: 4d1060a8-e148-44cf-9a26-397adcedf6ea
+              - column:
+                  name: C_FK_ROLE
+                  value: ab45cf57-aa1c-11ed-970f-98dc442de35a

@@ -2,8 +2,10 @@ databaseChangeLog:
 
   - changeSet:
       id: 2023_10_12_22_11_ADD_TABLE_ROLESTORE
-      author: Pavel Talayko
       comment: Создание таблицы T_ROLESTORE
+      author: Pavel Talaika
+
+      context: "development, production"
 
       preConditions:
         - onFail: MARK_RAN

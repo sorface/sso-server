@@ -2,8 +2,10 @@ databaseChangeLog:
 
   - changeSet:
       id: 2023_10_22_15_05_ADD_TABLE_REGISTRYTOKEN
-      author: Pavel Talayko
       comment: Создание таблицы T_REGISTRYTOKEN
+      author: Pavel Talaika
+
+      context: "development, production"
 
       preConditions:
         - onFail: MARK_RAN

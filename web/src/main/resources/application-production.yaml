@@ -30,7 +30,10 @@ spring:
       pool-name: "HikariPool-sso"
       register-mbeans: true
 
+  liquibase:
+    contexts: production
+
 logging:
   level:
-    root: info
-    org.springframework.security.web.csrf.CsrfAuthenticationStrategy: debug
+    root: debug
+    org.springframework.security.web: debug

@@ -3,7 +3,9 @@ databaseChangeLog:
   - changeSet:
       id: 2023_11_09_20_09_INSERT_DEFAULT_OAUTH_CLIENT
       author: Pavel Talayko
-      context: Установка клиентов приложения по умолчанию
+      comment: Установка клиентов приложения по умолчанию
+
+      context: "development"
 
       changes:
         - insert:

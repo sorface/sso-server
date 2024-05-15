@@ -44,7 +44,7 @@ public class ApplicationClientController {
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('Admin')")
     public ApplicationClient registry(@RequestBody @Valid final ApplicationRegistry applicationRegistry) {
         return applicationClientFacade.registry(applicationRegistry);
     }

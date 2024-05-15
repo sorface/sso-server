@@ -1,6 +1,7 @@
 package by.sorface.sso.web.records.responses;
 
+import java.util.List;
 import java.util.UUID;
 
-public record ProfileRecord(UUID id, String email, String firstName, String lastName, String avatar) {
+public record ProfileRecord(UUID id, String email, String firstName, String lastName, String avatar, List<String> roles) {
 }

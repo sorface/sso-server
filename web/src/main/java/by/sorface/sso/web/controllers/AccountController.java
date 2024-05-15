@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +41,14 @@ public class AccountController {
     @GetMapping("/current")
     public ProfileRecord getSelf() {
         final var principal = getCurrentUser();
-        return new ProfileRecord(principal.getId(), principal.getEmail(), principal.getFirstName(), principal.getLastName(), principal.getAvatarUrl());
+
+        return new ProfileRecord(
+                principal.getId(),
+                principal.getEmail(),
+                principal.getFirstName(),
+                principal.getLastName(),
+                principal.getAvatarUrl(),
+                principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
     }
 
     @PostMapping(
