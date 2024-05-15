@@ -1,7 +1,8 @@
 import React, {FunctionComponent, useEffect} from 'react';
-import './Session.css';
-import {useApiMethod} from "../../hooks/useApiMethod";
+import {useApiMethod} from '../../hooks/useApiMethod';
 import {accountsApiDeclaration} from "../../apiDeclarations";
+
+import './Session.css';
 
 export interface SessionType {
 

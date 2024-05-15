@@ -51,6 +51,9 @@ public abstract class AbstractSocialOAuth2UserService<T extends SocialOAuth2User
             newUser.setEmail(socialOAuth2User.getEmail());
             newUser.setUsername(socialOAuth2User.getUsername());
             newUser.setAvatarUrl(socialOAuth2User.getAvatarUrl());
+            newUser.setLastName(socialOAuth2User.getLastName());
+            newUser.setFirstName(socialOAuth2User.getFirstName());
+            newUser.setMiddleName(socialOAuth2User.getMiddleName());
         }
 
         return newUser;

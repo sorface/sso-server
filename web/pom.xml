@@ -16,7 +16,6 @@
     <properties>
         <lombok.version>1.18.30</lombok.version>
         <liquibase.version>4.20.0</liquibase.version>
-        <build-client.skip>true</build-client.skip>
     </properties>
 
     <dependencies>
@@ -46,6 +45,10 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
@@ -69,15 +72,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -92,12 +87,22 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -126,6 +131,7 @@
 
             <properties>
                 <h2.version>2.2.224</h2.version>
+                <build-client.skip>false</build-client.skip>
             </properties>
 
             <dependencies>
@@ -135,6 +141,121 @@
                     <version>${h2.version}</version>
                 </dependency>
             </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>../client</directory>
+                                    <includes>
+                                        <include>build/</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.13.4</version>
+                        <configuration>
+                            <skip>${build-client.skip}</skip>
+                            <nodeVersion>v20.9.0</nodeVersion>
+                            <npmVersion>10.1.0</npmVersion>
+                            <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+                            <npmDownloadRoot>https://registry.npmjs.org/npm/-/</npmDownloadRoot>
+                            <installDirectory>../client/.node</installDirectory>
+                            <workingDirectory>../client</workingDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>npm-install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>npm build</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>run build</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-index</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <skip>${build-client.skip}</skip>
+                                    <outputDirectory>${basedir}/target/classes/templates</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>../client/build</directory>
+                                            <includes>
+                                                <include>index.html</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-static</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <skip>${build-client.skip}</skip>
+                                    <outputDirectory>${basedir}/target/classes/static</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>../client/build/static</directory>
+                                            <includes>
+                                                <include>js/**</include>
+                                                <include>css/**</include>
+                                                <include>media/**.jpg</include>
+                                                <include>media/**.svg</include>
+                                                <include>media/**.png</include>
+                                            </includes>
+                                        </resource>
+                                        <resource>
+                                            <directory>../client/build</directory>
+                                            <includes>
+                                                <include>**.ico</include>
+                                                <include>*.json</include>
+                                                <include>*.txt</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <profile>

@@ -8,4 +8,6 @@ public final class SessionAttributes {
 
     public static final String USER_AGENT = "USER_AGENT";
 
+    public static final String USER_LOCALE = "USER_LOCALE";
+
 }

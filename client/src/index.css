@@ -35,11 +35,14 @@ a {
 button,
 input[type="submit"] {
     width: 100% !important;
-    color: var(--primary-text);
+    color: var(--text);
     background-color: var(--primary);
     border: 1px solid var(--border);
     border-radius: 0.5rem;
-    padding: 0.5rem 0rem;
+    padding: 0rem 2rem;
+    min-height: 1.75rem;
+    font-size: 0.9rem;
+    text-align: center;
     text-decoration: none;
     cursor: pointer;
     transition: 300ms !important;
@@ -62,7 +65,8 @@ button {
     border-radius: var(--border-radius);
 }
 
-button:hover {
+button:hover,
+input[type="submit"]:hover {
     border-color: var(--text);
 }
 

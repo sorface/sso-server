@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
+import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 
 @Slf4j
 @Configuration
@@ -14,7 +16,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 public class CsrfConfiguration {
 
     @Bean
-    public CookieCsrfTokenRepository csrfTokenRepository(final CookieOptions cookieOptions) {
+    public CookieCsrfTokenRepository cookieCsrfTokenRepository(final CookieOptions cookieOptions) {
         final var cookieCsrfTokenRepository = new CookieCsrfTokenRepository();
 
         final var csrfCookieOptions = cookieOptions.getCsrf();
@@ -27,6 +29,11 @@ public class CsrfConfiguration {
         log.debug("configured CookieCsrfTokenRepository with settings {}{}", System.lineSeparator(), Json.lazyStringify(csrfCookieOptions));
 
         return cookieCsrfTokenRepository;
+    }
+
+    @Bean
+    public CsrfTokenRequestHandler spaCsrfTokenRequestHandler() {
+        return new SpaCsrfTokenRequestHandler(new XorCsrfTokenRequestAttributeHandler());
     }
 
 }

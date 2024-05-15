@@ -2,9 +2,8 @@ import {useCallback, useReducer} from 'react';
 import {REACT_APP_BACKEND_URL} from '../config';
 import {ApiContract} from '../types/apiContracts';
 import {useNavigate} from 'react-router-dom';
-import {pathnames} from '../constants';
 
-interface ApiMethodState<ResponseData = any> {
+export interface ApiMethodState<ResponseData = any> {
     process: {
         loading: boolean;
         error: string | null;
@@ -12,15 +11,6 @@ interface ApiMethodState<ResponseData = any> {
     data: ResponseData | null;
 }
 
-export const getCookie = (name: String) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (!parts) {
-        return null;
-    }
-
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-}
 const initialState: ApiMethodState = {
     process: {
         loading: false,
@@ -74,10 +64,14 @@ const unauthorizedHttpCode = 401;
 const createUrlParam = (name: string, value: string) =>
     `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
 
-const createFetchUrl = (apiContract: ApiContract) => {
-    if (apiContract.urlParams) {
+const createFetchUrl = (apiContract: ApiContract, additionalUrlParams?: object) => {
+    const urlParams: object = {
+        ...apiContract.urlParams,
+        ...additionalUrlParams,
+    };
+    if (Object.keys(urlParams).length) {
         const params =
-            Object.entries(apiContract.urlParams)
+            Object.entries(urlParams)
                 .map(([paramName, paramValue]) => {
                     if (Array.isArray(paramValue)) {
                         return paramValue.map(val => createUrlParam(paramName, val)).join('&');
@@ -91,23 +85,24 @@ const createFetchUrl = (apiContract: ApiContract) => {
 };
 
 const createFetchRequestInit = (apiContract: ApiContract): RequestInit => {
+    const defaultRequestInit: RequestInit = {
+        credentials: 'include',
+        method: apiContract.method,
+    };
+
     if (apiContract.method === 'GET') {
-        return {
-            method: apiContract.method,
-            mode: "cors"
-        };
+        return defaultRequestInit;
     }
 
-    const {method, body} = apiContract;
+    const {body} = apiContract;
 
     return {
-        method: method,
-        mode: "cors",
+        ...defaultRequestInit,
         body: body instanceof FormData ? body : JSON.stringify(body),
     } as RequestInit;
 };
 
-type AnyObject = Record<string, any>;
+export type AnyObject = Record<string, any>;
 
 const getResponseContent = async (response: Response): Promise<AnyObject | string> => {
     const contentType = response.headers.get('content-type');
@@ -135,18 +130,14 @@ export const useApiMethod = <ResponseData, RequestData = AnyObject>(apiContractC
     const [apiMethodState, dispatch] = useReducer(apiMethodReducer, initialState);
     const navigate = useNavigate();
 
-    const fetchData = useCallback(async (requestData: RequestData) => {
+    const fetchData = useCallback(async (requestData: RequestData, additionalUrlParams?: object) => {
         dispatch({name: 'startLoad'});
         const apiContract = apiContractCall(requestData);
         try {
             const response = await fetch(
-                createFetchUrl(apiContract),
+                createFetchUrl(apiContract, additionalUrlParams),
                 createFetchRequestInit(apiContract),
             );
-            if (apiContract.baseUrl.startsWith("/api/accounts/current") && response.status === unauthorizedHttpCode) {
-                navigate(pathnames.signIn);
-                return;
-            }
 
             const responseData = await getResponseContent(response);
             if (!response.ok) {

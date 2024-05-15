@@ -13,7 +13,7 @@ public class UserUtils {
 
         final var strings = Arrays.stream(name.split(" "))
                 .map(String::trim)
-                .filter(part -> part.length() > 0)
+                .filter(part -> !part.isEmpty())
                 .toArray(String[]::new);
 
         if (strings.length > 1) {

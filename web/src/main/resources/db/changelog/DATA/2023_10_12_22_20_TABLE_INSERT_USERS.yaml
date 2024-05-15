@@ -2,8 +2,10 @@ databaseChangeLog:
 
   - changeSet:
       id: 2023_10_12_22_21_INSERT_DEFAULT_USERS
-      author: Pavel Talayko
-      context: Установка пользователей по умолчанию
+      comment: Установка пользователей по умолчанию
+      author: Pavel Talaika
+
+      context: "development, production"
 
       changes:
         - insert:
@@ -14,22 +16,25 @@ databaseChangeLog:
                   value: 4d1060a8-e148-44cf-9a26-397adcedf6ea
               - column:
                   name: C_USERNAME
-                  value: test
+                  value: admin
               - column:
                   name: C_EMAIL
-                  value: test@test.ru
+                  value: welcome@sorface.com
               - column:
                   name: C_PASSWORD
                   value: $2a$10$vj2r7xcYGX8aGnVAXYrs3etr54J8wngAGYDv9fyOlBba3mGpJbqa.
               - column:
                   name: C_FIRSTNAME
-                  value: Павел
+                  value: Администратор
               - column:
                   name: C_LASTNAME
-                  value: Талайко
+                  value: Администратор
               - column:
                   name: C_MIDDLENAME
-                  value: Дмитриевич
+                  value: Администратор
               - column:
                   name: C_ISENABLED
+                  value: "true"
+              - column:
+                  name: C_CONFIRMED
                   value: "true"

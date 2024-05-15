@@ -1,18 +1,21 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { AppRoutes } from './routes/AppRoutes';
-import { REACT_APP_VERSION } from './config';
-import { Menu } from './components/Menu/Menu';
-import { Footer } from "./components/Footer/Footer";
-import { Loader } from './components/Loader/Loader';
-import { AuthContext } from './context/AuthContext';
-import { useGetAccountApi } from './hooks/useGetAccount';
-import { Captions } from './constants';
+import React, {useEffect} from 'react';
+import {BrowserRouter} from 'react-router-dom';
+import {AppRoutes} from './routes/AppRoutes';
+import {REACT_APP_VERSION} from './config';
+import {Menu} from './components/Menu/Menu';
+import {Footer} from "./components/Footer/Footer";
+import {Loader} from './components/Loader/Loader';
+import {AuthContext} from './context/AuthContext';
+import {useGetAccountApi} from './hooks/useGetAccount';
+import {Captions} from './constants';
 
 import './App.css';
+import {useCsrfApi} from "./hooks/useGetCsrf";
 
 function App() {
-    const { accountState, loadAccount } = useGetAccountApi();
+    const {csrfConfigState, loadCsrfConfig} = useCsrfApi();
+
+    const {accountState, loadAccount} = useGetAccountApi();
     const {
         process: {
             loading,
@@ -20,11 +23,19 @@ function App() {
         },
         account,
     } = accountState;
+
     const accountWillLoad = !account && !error;
 
     useEffect(() => {
+        loadCsrfConfig();
+    }, [loadCsrfConfig]);
+
+    useEffect(() => {
+        if (!csrfConfigState.csrfConfig) {
+            return;
+        }
         loadAccount();
-    }, [loadAccount]);
+    }, [csrfConfigState.csrfConfig, loadAccount]);
 
     if (loading || accountWillLoad) {
         return (
@@ -32,7 +43,7 @@ function App() {
                 <div className="App">
                     <div className="App-content">
                         <p>{Captions.Loading}...</p>
-                        <Loader />
+                        <Loader/>
                     </div>
                 </div>
             </div>
@@ -43,12 +54,12 @@ function App() {
         <BrowserRouter>
             <AuthContext.Provider value={account}>
                 <div className="App-container" data-testid="App-container">
-                    <Menu />
+                    <Menu/>
                     <div className="App">
                         <div className="App-content">
-                            <AppRoutes />
+                            <AppRoutes/>
                         </div>
-                        <Footer version={REACT_APP_VERSION} />
+                        <Footer version={REACT_APP_VERSION}/>
                     </div>
                 </div>
             </AuthContext.Provider>

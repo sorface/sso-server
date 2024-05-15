@@ -1,6 +1,6 @@
 import { FunctionComponent, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useApiMethod } from '../../hooks/useApiMethod';
+import { useApiMethodCsrf } from '../../hooks/useApiMethodCsrf';
 import { ConfirmBody, accountsApiDeclaration } from '../../apiDeclarations';
 import { ActivateStatus } from './components/ActivateStatus/ActivateStatus';
 import { Captions, IconNames, pathnames } from '../../constants';
@@ -14,7 +14,7 @@ export const Activate: FunctionComponent = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const tokenParam = searchParams.get(tokenParamName);
-  const { apiMethodState, fetchData } = useApiMethod<unknown, ConfirmBody>(accountsApiDeclaration.confirm);
+  const { apiMethodState, fetchData } = useApiMethodCsrf<unknown, ConfirmBody>(accountsApiDeclaration.confirm);
   const { process: { error }, data } = apiMethodState;
 
   useEffect(() => {

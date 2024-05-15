@@ -25,4 +25,11 @@ export interface ApiContractPatch {
     body: any;
 }
 
-export type ApiContract = ApiContractGet | ApiContractPost | ApiContractPut | ApiContractPatch;
+export interface ApiContractDelete {
+    method: 'DELETE';
+    baseUrl: string;
+    urlParams?: object;
+    body: any;
+}
+
+export type ApiContract = ApiContractGet | ApiContractPost | ApiContractPut | ApiContractPatch | ApiContractDelete;

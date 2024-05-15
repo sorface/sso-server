@@ -1,6 +1,7 @@
 package by.sorface.sso.web.config.security;
 
 import by.sorface.sso.web.config.options.EndpointOptions;
+import by.sorface.sso.web.config.security.handlers.TokenAuthenticationSuccessHandler;
 import by.sorface.sso.web.constants.UrlPatternEnum;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationService;
@@ -47,9 +48,13 @@ public class OAuth2SecurityConfiguration {
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(configure -> {
                     configure.requestMatchers(HttpMethod.OPTIONS, UrlPatternEnum.toArray(UrlPatternEnum.OPTION_REQUEST)).permitAll();
+                    configure.requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.CSRF)).permitAll();
+                    configure.requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.API_ACCOUNT)).permitAll();
                     configure.anyRequest().authenticated();
                 })
-                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(endpointOptions.getUriPageSignIn())))
+                .exceptionHandling(configurer -> {
+                    configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(endpointOptions.getUriPageSignIn()));
+                })
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .apply(authorizationServerConfigurer);

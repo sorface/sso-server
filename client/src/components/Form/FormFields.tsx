@@ -1,6 +1,6 @@
-import { FunctionComponent } from 'react';
-import { FormProps } from './Form';
-import { Captions } from '../../constants';
+import {FunctionComponent} from 'react';
+import {FormProps} from './Form';
+import {Captions} from '../../constants';
 
 const errorLocalization: Record<string, string> = {
     invalidEmail: Captions.InvalidEmailOrUsername,

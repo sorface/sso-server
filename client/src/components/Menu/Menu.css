@@ -6,15 +6,23 @@
   background-color: var(--text);
 }
 
-.menu a {
+.menu .menu-item {
   padding-top: 1rem;
   text-decoration: none;
 }
 
-.menu a:first-child {
+.menu .menu-item:first-child {
   padding-top: 0rem;
 }
 
-.menu a:last-child {
+.menu .menu-item:last-child {
   margin-top: auto;
+}
+
+.menu .form-logout button {
+  background-color: unset;
+  border: unset;
+  padding: 0rem;
+  color: var(--link);
+  font-size: 1.5rem;
 }

@@ -17,12 +17,11 @@ public class OAuth2ClientConverter {
      * and logoUrl fields. It then sets the application client's redirectUris field to
      * be equal to the source's redirectUris field (which is of type Set&lt;String&gt;).
      *
-     * @param final OAuth2Client source Get the clientsecret
-     *              public applicationclient convert(final oauth2client source, final string clientsecret) {
-     *              return new applicationclient() {{
-     *              setid(source
+     * @param source Get the clientsecret
+     *               public applicationclient convert(final oauth2client source, final string clientsecret) {
+     *               return new applicationclient() {{
+     *               setid(source
      * @return An applicationclient
-     * @docauthor Trelent
      */
     public ApplicationClient convert(final OAuth2Client source) {
         return convert(source, source.getClientSecret());
@@ -32,9 +31,8 @@ public class OAuth2ClientConverter {
      * The convertWithoutSecret function is used to convert an OAuth2Client object into an ApplicationClient object.
      * The function takes in a source OAuth2Client and a null secret, and returns the converted ApplicationClient.
      *
-     * @param final OAuth2Client source Convert the oauth2client to an applicationclient
+     * @param source Convert the oauth2client to an applicationclient
      * @return An applicationclient object
-     * @docauthor Trelent
      */
     public ApplicationClient convertWithoutSecret(final OAuth2Client source) {
         return convert(source, null);
@@ -47,8 +45,8 @@ public class OAuth2ClientConverter {
      * This function returns a new Application Client with all of its fields set to those of our original OAuth2Client,
      * except for its id field which has been converted from a UUID to a String and its redirectUrls field which has been split by semicolons (;) and
      *
-     * @param OAuth2Client source Get the clientid, clientname, and redirecturis
-     * @param String       clientSecret Pass the client secret to the applicationclient object
+     * @param source Get the clientid, clientname, and redirecturis
+     * @param clientSecret Pass the client secret to the applicationclient object
      * @return A new applicationclient object
      */
     public ApplicationClient convert(final OAuth2Client source, final String clientSecret) {

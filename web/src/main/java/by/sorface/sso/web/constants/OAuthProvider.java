@@ -27,6 +27,13 @@ public enum OAuthProvider {
             .collect(Collectors.toMap(it -> it.getName().toLowerCase(), Function.identity(), (firstMerge, secondMerge) -> firstMerge));
     private final String name;
 
+    /**
+     * The findByName function takes a String as an argument and returns the corresponding OAuthProvider.
+     * If no match is found, it returns UNKNOWN.
+     *
+     * @param name Find the oauthprovider in the provider_map
+     * @return An oauthprovider object
+     */
     public static OAuthProvider findByName(final String name) {
         if (Objects.isNull(name)) {
             return UNKNOWN;

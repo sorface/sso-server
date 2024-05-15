@@ -4,4 +4,5 @@ export interface Account {
   firstName: string;
   lastName: string;
   avatar: string;
+    roles: string[];
 }

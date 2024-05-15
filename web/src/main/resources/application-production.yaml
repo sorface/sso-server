@@ -2,10 +2,18 @@
 server:
   port: 8080
 
+sorface:
+  cookie:
+    session:
+      same-site: lax
+
 spring:
   jpa:
     show-sql: true
     database: postgresql
+    properties:
+      hibernate:
+        format_sql: true
 
   datasource:
     url: ${DATABASE_URL}
@@ -22,8 +30,10 @@ spring:
       pool-name: "HikariPool-sso"
       register-mbeans: true
 
+  liquibase:
+    contexts: production
+
 logging:
   level:
-    root: info
-    by.sorface.sso.web: debug
-    nl.basjes: off
+    root: debug
+    org.springframework.security.web: debug

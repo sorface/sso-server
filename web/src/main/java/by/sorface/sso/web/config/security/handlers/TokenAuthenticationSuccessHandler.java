@@ -1,4 +1,4 @@
-package by.sorface.sso.web.config.security;
+package by.sorface.sso.web.config.security.handlers;
 
 import by.sorface.sso.web.exceptions.ObjectInvalidException;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
