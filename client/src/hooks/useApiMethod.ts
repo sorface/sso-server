@@ -1,7 +1,6 @@
 import {useCallback, useReducer} from 'react';
 import {REACT_APP_BACKEND_URL} from '../config';
 import {ApiContract} from '../types/apiContracts';
-import {useNavigate} from 'react-router-dom';
 
 export interface ApiMethodState<ResponseData = any> {
     process: {
@@ -126,7 +125,6 @@ const getResponseError = (
 
 export const useApiMethod = <ResponseData, RequestData = AnyObject>(apiContractCall: (data: RequestData) => ApiContract) => {
     const [apiMethodState, dispatch] = useReducer(apiMethodReducer, initialState);
-    const navigate = useNavigate();
 
     const fetchData = useCallback(async (requestData: RequestData, additionalUrlParams?: object) => {
         dispatch({name: 'startLoad'});
@@ -149,7 +147,7 @@ export const useApiMethod = <ResponseData, RequestData = AnyObject>(apiContractC
                 payload: err.message || `Failed to fetch ${apiContract.method} ${apiContract.baseUrl}`,
             });
         }
-    }, [apiContractCall, navigate]);
+    }, [apiContractCall]);
 
     return {
         apiMethodState: apiMethodState as ApiMethodState<ResponseData>,
