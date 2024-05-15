@@ -7,11 +7,6 @@ import './Clients.css';
 import {useApiMethod} from "../../hooks/useApiMethod";
 import {appsApiDeclaration} from "../../apiDeclarations";
 
-interface App {
-    id: string;
-    name: string;
-}
-
 export interface ClientApp {
     id: string;
     clientId: string;
@@ -28,9 +23,6 @@ export const Clients: FunctionComponent = () => {
     } = useApiMethod<ClientApp[], undefined>(appsApiDeclaration.getMyApps);
 
     const {
-        process: {
-            loading
-        },
         data
     } = apiMethodState;
 

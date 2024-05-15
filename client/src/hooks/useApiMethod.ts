@@ -59,8 +59,6 @@ const apiMethodReducer = (state: ApiMethodState, action: ApiMethodAction): ApiMe
             return state;
     }
 };
-const unauthorizedHttpCode = 401;
-
 const createUrlParam = (name: string, value: string) =>
     `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
 
