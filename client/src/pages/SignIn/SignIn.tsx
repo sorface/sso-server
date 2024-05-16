@@ -9,6 +9,7 @@ import {FormWrapper} from '../../components/Form/FormWrapper';
 import {useQueryFromErrors} from '../../hooks/useQueryFromErrors';
 
 import './SignIn.css';
+import {REACT_APP_BACKEND_URL} from "../../config";
 
 const emailFields: Field[] = [
     {
@@ -71,7 +72,7 @@ export const SignIn: FunctionComponent = () => {
                                     <hr/>
                                     <Form
                                         htmlMethod='POST'
-                                        htmlAction='/api/accounts/signin'
+                                        htmlAction={REACT_APP_BACKEND_URL + '/api/accounts/signin'}
                                         fields={signinItem.fields}
                                         fieldErrors={queryFromErrors}
                                         submitCaption={Captions.SignIn}

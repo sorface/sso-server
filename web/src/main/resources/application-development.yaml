@@ -6,6 +6,7 @@ sorface:
   cookie:
     session:
       same-site: none
+
 spring:
   jpa:
     show-sql: true
