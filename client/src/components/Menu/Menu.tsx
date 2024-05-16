@@ -4,11 +4,13 @@ import { IconNames, pathnames } from '../../constants';
 import { Icon } from '../Icon/Icon';
 import { AuthContext } from '../../context/AuthContext';
 import { LogoutForm } from '../LogoutForm/LogoutForm';
+import { checkAdmin } from '../../utils/checkAdmin';
 
 import './Menu.css';
 
 export const Menu: FunctionComponent = () => {
   const account = useContext(AuthContext);
+  const admin = checkAdmin(account);
   const disabled = !account;
 
   if (disabled) {
@@ -26,17 +28,19 @@ export const Menu: FunctionComponent = () => {
     >
       <Icon name={IconNames.List} />
     </Link>,
+    admin && (
       <Link
-          to={pathnames.clients}
+        to={pathnames.clients}
       >
-          <Icon name={IconNames.Apps} />
-      </Link>,
+        <Icon name={IconNames.Apps} />
+      </Link>
+    ),
     <LogoutForm
-        submitCaption={''}
+      submitCaption={''}
     >
-        <button type='submit'>
-            <Icon name={IconNames.Exit} />
-        </button>
+      <button type='submit'>
+        <Icon name={IconNames.Exit} />
+      </button>
     </LogoutForm>
   ];
 
