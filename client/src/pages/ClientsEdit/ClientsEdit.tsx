@@ -21,9 +21,6 @@ export const ClientsEdit: FunctionComponent = () => {
     }, [id, fetchData]);
 
     const {
-        process: {
-            loading
-        },
         data
     } = apiMethodState;
 
