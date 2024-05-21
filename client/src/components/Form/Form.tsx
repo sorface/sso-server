@@ -2,7 +2,6 @@ import {DetailedHTMLProps, FormEvent, FunctionComponent, InputHTMLAttributes, Re
 import {Captions} from '../../constants';
 import {FormFields} from './FormFields';
 import {useCsrfApi} from '../../hooks/useGetCsrf';
-import {REACT_APP_BACKEND_URL} from "../../config";
 
 export type FieldErrors = Record<string, string>;
 
@@ -63,7 +62,7 @@ export const Form: FunctionComponent<FormProps> = ({
     return (
         <form
             ref={formRef}
-            action={REACT_APP_BACKEND_URL + htmlAction}
+            action={htmlAction}
             method={htmlMethod}
             className={className}
             onSubmit={csrfConfig ? undefined : handleSubmit}
