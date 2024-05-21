@@ -73,6 +73,7 @@ export const SignIn: FunctionComponent = () => {
                                     <Form
                                         htmlMethod='POST'
                                         htmlAction={REACT_APP_BACKEND_URL + '/api/accounts/signin'}
+                                        skipCsrf={true}
                                         fields={signinItem.fields}
                                         fieldErrors={queryFromErrors}
                                         submitCaption={Captions.SignIn}

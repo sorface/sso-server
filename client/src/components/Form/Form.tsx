@@ -15,6 +15,7 @@ export interface FormProps {
     fieldErrors: FieldErrors;
     htmlAction: string;
     htmlMethod: string;
+    skipCsrf?: boolean;
     className?: string;
     loading?: boolean;
     error?: string | null;
@@ -27,6 +28,7 @@ export const Form: FunctionComponent<FormProps> = ({
                                                        fieldErrors,
                                                        htmlAction,
                                                        htmlMethod,
+                                                       skipCsrf,
                                                        className,
                                                        loading,
                                                        error: propsError,
@@ -51,6 +53,9 @@ export const Form: FunctionComponent<FormProps> = ({
     }, [csrfConfig]);
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        if (skipCsrf) {
+            return true;
+        }
         event.preventDefault();
         loadCsrfConfig();
     };
@@ -64,7 +69,9 @@ export const Form: FunctionComponent<FormProps> = ({
             onSubmit={csrfConfig ? undefined : handleSubmit}
         >
             <FormFields fields={fields} fieldErrors={fieldErrors}/>
-            <input type='hidden' name={csrfConfig?.parameterName} value={csrfConfig?.token}/>
+            {!skipCsrf && (
+                <input type='hidden' name={csrfConfig?.parameterName} value={csrfConfig?.token}/>
+            )}
             {submitCaption && <input type="submit" value={submitCaption}/>}
             <div className='form-status'>
                 {loading && <span>{Captions.Loading}...</span>}
