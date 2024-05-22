@@ -1,33 +1,46 @@
+export enum ApiEndpoint {
+    Csrf = '/csrf',
+    Apps = '/api/applications',
+    GetAppById = '/api/applications/:id',
+    AccountsSignup = '/accounts/signup',
+    AccountsSignin = '/api/accounts/signin',
+    AccountsCurrent = '/api/accounts/current',
+    AccountsConfirm = '/api/account/confirm',
+    AccountsEdit = '/api/accounts/:id',
+    AccountsLogout = '/api/accounts/logout',
+    CurrentSession = '/api/sessions',
+}
+
 export interface ApiContractGet {
     method: 'GET';
-    baseUrl: string;
+    baseUrl: ApiEndpoint;
     urlParams?: object;
 }
 
 export interface ApiContractPost {
     method: 'POST';
-    baseUrl: string;
+    baseUrl: ApiEndpoint;
     urlParams?: object;
     body: any;
 }
 
 export interface ApiContractPut {
     method: 'PUT';
-    baseUrl: string;
+    baseUrl: ApiEndpoint;
     urlParams?: object;
     body: any;
 }
 
 export interface ApiContractPatch {
     method: 'PATCH';
-    baseUrl: string;
+    baseUrl: ApiEndpoint;
     urlParams?: object;
     body: any;
 }
 
 export interface ApiContractDelete {
     method: 'DELETE';
-    baseUrl: string;
+    baseUrl: ApiEndpoint;
     urlParams?: object;
     body: any;
 }

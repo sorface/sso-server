@@ -1,9 +1,9 @@
 import {FunctionComponent} from 'react';
 import {Form, FormProps} from '../Form/Form';
 import {Captions} from '../../constants';
+import { ApiEndpoint } from '../../types/apiContracts';
 
 import './LogoutForm.css';
-import {REACT_APP_BACKEND_URL} from "../../config";
 
 export interface LogoutFormProps {
   submitCaption?: FormProps['submitCaption'];
@@ -17,7 +17,7 @@ export const LogoutForm: FunctionComponent<LogoutFormProps> = ({
   return (
     <Form
       htmlMethod='POST'
-      htmlAction={REACT_APP_BACKEND_URL + '/api/accounts/logout'}
+      htmlAction={ApiEndpoint.AccountsLogout}
       className='form-logout'
       fields={[]}
       fieldErrors={{ '': '' }}

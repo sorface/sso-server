@@ -7,9 +7,9 @@ import twitchLogo from './img/twitch.svg';
 import emailLogo from './img/email-svgrepo-com.svg';
 import {FormWrapper} from '../../components/Form/FormWrapper';
 import {useQueryFromErrors} from '../../hooks/useQueryFromErrors';
+import { ApiEndpoint } from '../../types/apiContracts';
 
 import './SignIn.css';
-import {REACT_APP_BACKEND_URL} from "../../config";
 
 const emailFields: Field[] = [
     {
@@ -72,7 +72,7 @@ export const SignIn: FunctionComponent = () => {
                                     <hr/>
                                     <Form
                                         htmlMethod='POST'
-                                        htmlAction={REACT_APP_BACKEND_URL + '/api/accounts/signin'}
+                                        htmlAction={ApiEndpoint.AccountsSignin}
                                         skipCsrf={true}
                                         fields={signinItem.fields}
                                         fieldErrors={queryFromErrors}

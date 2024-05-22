@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Captions, pathnames } from '../../constants';
 import { Field, Form } from '../../components/Form/Form';
 import { FormWrapper } from '../../components/Form/FormWrapper';
+import { ApiEndpoint } from '../../types/apiContracts';
 
 const fields: Field[] = [
     {
@@ -41,7 +42,7 @@ export const SignUp: FunctionComponent = () => {
             <FormWrapper>
                 <Form
                     htmlMethod='POST'
-                    htmlAction='/api/accounts/signup'
+                    htmlAction={ApiEndpoint.AccountsSignup}
                     fields={fields}
                     fieldErrors={{}}
                     submitCaption={Captions.SignUp}

@@ -1,5 +1,6 @@
 import {FunctionComponent} from 'react';
 import {Field, Form} from "../../components/Form/Form";
+import { ApiEndpoint } from '../../types/apiContracts';
 
 export const ClientsAdd: FunctionComponent = () => {
     const fields: Field[] = [
@@ -16,7 +17,7 @@ export const ClientsAdd: FunctionComponent = () => {
     return (
         <div>
             <h3>Client Add</h3>
-            <Form fields={fields} fieldErrors={{}} htmlAction={'/api/applications'} htmlMethod={'POST'}/>
+            <Form fields={fields} fieldErrors={{}} htmlAction={ApiEndpoint.Apps} htmlMethod={'POST'}/>
         </div>
     )
 };

@@ -2,6 +2,8 @@ import {DetailedHTMLProps, FormEvent, FunctionComponent, InputHTMLAttributes, Re
 import {Captions} from '../../constants';
 import {FormFields} from './FormFields';
 import {useCsrfApi} from '../../hooks/useGetCsrf';
+import { ApiEndpoint } from '../../types/apiContracts';
+import { REACT_APP_BACKEND_URL } from '../../config';
 
 export type FieldErrors = Record<string, string>;
 
@@ -12,7 +14,7 @@ export interface Field extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputEl
 export interface FormProps {
     fields: Field[];
     fieldErrors: FieldErrors;
-    htmlAction: string;
+    htmlAction: ApiEndpoint;
     htmlMethod: string;
     skipCsrf?: boolean;
     className?: string;
@@ -62,7 +64,7 @@ export const Form: FunctionComponent<FormProps> = ({
     return (
         <form
             ref={formRef}
-            action={htmlAction}
+            action={REACT_APP_BACKEND_URL + htmlAction}
             method={htmlMethod}
             className={className}
             onSubmit={csrfConfig ? undefined : handleSubmit}
