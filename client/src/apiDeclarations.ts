@@ -1,4 +1,4 @@
-import {ApiContractDelete, ApiContractGet, ApiContractPatch, ApiContractPost} from './types/apiContracts';
+import {ApiContractDelete, ApiContractGet, ApiContractPatch, ApiContractPost, ApiEndpoint} from './types/apiContracts';
 
 export type SignUpBody = Record<string, FormDataEntryValue>;
 
@@ -9,22 +9,22 @@ export interface ConfirmBody {
 export const csrfApiDeclaration = {
     csrf: (): ApiContractGet => ({
         method: 'GET',
-        baseUrl: '/csrf'
+        baseUrl: ApiEndpoint.Csrf,
     })
 }
 
 export const appsApiDeclaration = {
     getMyApps: (): ApiContractGet => ({
         method: "GET",
-        baseUrl: "/api/applications"
+        baseUrl: ApiEndpoint.Apps,
     }),
     getById: (id: string): ApiContractGet => ({
         method: "GET",
-        baseUrl: `/api/applications/${id}`
+        baseUrl: ApiEndpoint.GetAppById.replace(':id', id) as ApiEndpoint,
     }),
     deleteById: (id: string): ApiContractDelete => ({
         method: "DELETE",
-        baseUrl: `/api/applications`,
+        baseUrl: ApiEndpoint.Apps,
         body: {
             id
         }
@@ -34,25 +34,25 @@ export const appsApiDeclaration = {
 export const accountsApiDeclaration = {
     signup: (body: SignUpBody): ApiContractPost => ({
         method: 'POST',
-        baseUrl: '/accounts/signup',
+        baseUrl: ApiEndpoint.AccountsSignup,
         body,
     }),
     current: (): ApiContractGet => ({
         method: 'GET',
-        baseUrl: '/api/accounts/current',
+        baseUrl: ApiEndpoint.AccountsCurrent,
     }),
     confirm: (body: ConfirmBody): ApiContractPost => ({
         method: 'POST',
-        baseUrl: '/api/account/confirm',
+        baseUrl: ApiEndpoint.AccountsConfirm,
         body,
     }),
     getCurrentSession: (): ApiContractGet => ({
         method: 'GET',
-        baseUrl: '/api/sessions',
+        baseUrl: ApiEndpoint.CurrentSession,
     }),
     edit: (): ApiContractPatch => ({
         method: 'PATCH',
-        baseUrl: `/api/accounts/:id`,
+        baseUrl: ApiEndpoint.AccountsEdit,
         body: {
             firstname: '',
             lastname: ''
@@ -60,7 +60,7 @@ export const accountsApiDeclaration = {
     }),
     logout: (): ApiContractPost => ({
         method: 'POST',
-        baseUrl: '/api/accounts/logout',
+        baseUrl: ApiEndpoint.AccountsLogout,
         body: ''
     })
 };
