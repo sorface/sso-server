@@ -67,7 +67,10 @@ export const useCsrfApi = () => {
         dispatch({name: 'startLoad'});
 
         try {
-            const response = await fetch(`${REACT_APP_BACKEND_URL}/api/csrf`);
+            const response = await fetch(
+                `${REACT_APP_BACKEND_URL}/api/csrf`,
+                { credentials: 'include' },
+            );
             if (!response.ok) {
                 throw new Error('UserApi error');
             }
