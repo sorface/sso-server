@@ -14,14 +14,15 @@ export interface Field extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputEl
 export interface FormProps {
     fields: Field[];
     fieldErrors: FieldErrors;
-    htmlAction: ApiEndpoint;
-    htmlMethod: string;
+    htmlAction?: ApiEndpoint;
+    htmlMethod?: string;
     skipCsrf?: boolean;
     className?: string;
     loading?: boolean;
     error?: string | null;
     submitCaption?: string;
     children?: ReactNode;
+    onSubmit?: (formData: FormData) => void;
 }
 
 export const Form: FunctionComponent<FormProps> = ({
@@ -35,6 +36,7 @@ export const Form: FunctionComponent<FormProps> = ({
                                                        error: propsError,
                                                        submitCaption,
                                                        children,
+                                                       onSubmit,
                                                    }) => {
     const {loadCsrfConfig, csrfConfigState} = useCsrfApi();
     const {csrfConfig, process: {csrfConfigError}} = csrfConfigState;
@@ -54,6 +56,12 @@ export const Form: FunctionComponent<FormProps> = ({
     }, [csrfConfig]);
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        if (onSubmit) {
+            event.preventDefault();
+            const formData = new FormData(event.target as HTMLFormElement);
+            onSubmit(formData);
+            return;
+        }
         if (skipCsrf) {
             return true;
         }

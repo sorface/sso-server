@@ -58,4 +58,7 @@ export const enum Captions {
     Unknown = 'unknown',
     UnknownError = 'Unknown error',
     Logout = 'Logout',
+    AddClient = 'Add client',
+    ClientName = 'Client Name',
+    RedirectionUrls = 'Redirection Urls',
 }
