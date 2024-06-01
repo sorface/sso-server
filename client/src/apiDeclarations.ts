@@ -41,6 +41,12 @@ export const appsApiDeclaration = {
     }),
 };
 
+export interface EditAccountBody {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+}
+
 export const accountsApiDeclaration = {
     signup: (body: SignUpBody): ApiContractPost => ({
         method: 'POST',
@@ -60,13 +66,13 @@ export const accountsApiDeclaration = {
         method: 'GET',
         baseUrl: ApiEndpoint.CurrentSession,
     }),
-    edit: (): ApiContractPatch => ({
+    edit: (body: EditAccountBody): ApiContractPatch => ({
         method: 'PATCH',
-        baseUrl: ApiEndpoint.AccountsEdit,
+        baseUrl: ApiEndpoint.AccountsEdit.replace(':id', body.id) as ApiEndpoint,
         body: {
-            firstname: '',
-            lastname: ''
-        }
+            ...body,
+            id: undefined,   
+        },
     }),
     logout: (): ApiContractPost => ({
         method: 'POST',

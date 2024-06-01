@@ -1,4 +1,9 @@
 import React from 'react';
 import { Account } from '../types/account';
 
-export const AuthContext = React.createContext<Account | null>(null);
+type AuthContextValue = { account: Account | null, loadAccount: () => Promise<void> };
+
+export const AuthContext = React.createContext<AuthContextValue>({
+  account: null,
+  loadAccount: async () => { },
+});

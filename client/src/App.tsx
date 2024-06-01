@@ -52,7 +52,7 @@ function App() {
 
     return (
         <BrowserRouter>
-            <AuthContext.Provider value={account}>
+            <AuthContext.Provider value={{ account, loadAccount }}>
                 <div className="App-container" data-testid="App-container">
                     <Menu/>
                     <div className="App">

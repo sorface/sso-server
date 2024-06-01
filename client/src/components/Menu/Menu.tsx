@@ -9,7 +9,7 @@ import { checkAdmin } from '../../utils/checkAdmin';
 import './Menu.css';
 
 export const Menu: FunctionComponent = () => {
-  const account = useContext(AuthContext);
+  const { account } = useContext(AuthContext);
   const admin = checkAdmin(account);
   const disabled = !account;
 
