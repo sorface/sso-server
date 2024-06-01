@@ -1,20 +1,26 @@
-import React, {ChangeEvent, FunctionComponent, useContext, useState} from 'react';
+import React, { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from 'react';
 import defaultAvatarImage from './img/anonymus_avatar.png';
-import {Captions, IconNames} from "../../constants";
-import {Icon} from '../../components/Icon/Icon';
-import {AuthContext} from '../../context/AuthContext';
-import {LogoutForm} from '../../components/LogoutForm/LogoutForm';
+import { Captions, IconNames } from "../../constants";
+import { Icon } from '../../components/Icon/Icon';
+import { AuthContext } from '../../context/AuthContext';
+import { LogoutForm } from '../../components/LogoutForm/LogoutForm';
+import { useApiMethodCsrf } from '../../hooks/useApiMethodCsrf';
+import { EditAccountBody, accountsApiDeclaration } from '../../apiDeclarations';
+import { Loader } from '../../components/Loader/Loader';
 
 import './Account.css';
 
 interface ProfileField {
     name: string;
+    caption: string;
     value: string | undefined;
     editable: boolean;
 }
 
 export const Account: FunctionComponent = () => {
-    const account = useContext(AuthContext);
+    const { account, loadAccount } = useContext(AuthContext);
+    const { fetchData, apiMethodState } = useApiMethodCsrf<unknown, EditAccountBody>(accountsApiDeclaration.edit);
+    const { data, process: { error, loading } } = apiMethodState;
     const [editedFieldName, setEditedFieldName] = useState('');
     const [editedFieldValue, setEditedFieldValue] = useState('');
 
@@ -31,29 +37,47 @@ export const Account: FunctionComponent = () => {
         setEditedFieldName('');
     };
 
+    useEffect(() => {
+        if (!data) {
+            return;
+        }
+        loadAccount();
+    }, [data, loadAccount]);
+
     const handleEditedFieldSave = () => {
-        console.log('field save', editedFieldName, editedFieldValue);
+        if (!account) {
+            console.warn('Account is empty')
+            return;
+        }
         handleEditedFieldCancel();
+        fetchData({
+            id: account.id,
+            [editedFieldName]: editedFieldValue,
+        });
     };
 
     const fields: ProfileField[] = [
         {
-            name: 'ID',
+            name: 'id',
+            caption: Captions.Id,
             value: account?.id,
             editable: false,
         },
         {
-            name: 'Email',
+            name: 'email',
+            caption: Captions.Email,
             value: account?.email,
             editable: false,
         },
         {
-            name: 'Имя',
+            name: 'firstName',
+            caption: Captions.FirstName,
             value: account?.firstName,
             editable: true,
         },
         {
-            name: 'Фамилия',
+            name: 'lastName',
+            caption: Captions.LastName,
             value: account?.lastName,
             editable: true,
         },
@@ -62,29 +86,31 @@ export const Account: FunctionComponent = () => {
     return (
         <div className='account-page'>
             <div className="avatar">
-                <img src={account?.avatar || defaultAvatarImage} alt="avatar"/>
+                <img src={account?.avatar || defaultAvatarImage} alt="avatar" />
             </div>
+            {!!error && (<div>{Captions.Error}: {error}</div>)}
+            {!!loading && (<div><Loader /></div>)}
             <table className="user-data-table">
-                {fields.map(({name, value, editable}) => (
+                {fields.map(({ name, caption, value, editable }) => (
                     <tr key={name}>
-                        <td className="bold left">{name}</td>
+                        <td className="bold left">{caption}</td>
                         {name !== editedFieldName ? (
                             <td className="right">
                                 <div className="field-value">{value || Captions.Unknown}</div>
                                 {editable && (
                                     <div className="field-action" onClick={() => handleEditField(name, value || '')}>
-                                        <Icon name={IconNames.Create}/>
+                                        <Icon name={IconNames.Create} />
                                     </div>
                                 )}
                             </td>
                         ) : (
                             <td className="right">
-                                <input className="field-value" type="text" value={editedFieldValue} onChange={handleEditedFieldChangeValue}/>
+                                <input className="field-value" type="text" value={editedFieldValue} onChange={handleEditedFieldChangeValue} />
                                 <div className="field-action" onClick={handleEditedFieldSave}>
-                                    <Icon name={IconNames.Checkmark}/>
+                                    <Icon name={IconNames.Checkmark} />
                                 </div>
                                 <div className="field-action" onClick={handleEditedFieldCancel}>
-                                    <Icon name={IconNames.Close}/>
+                                    <Icon name={IconNames.Close} />
                                 </div>
                             </td>
                         )}

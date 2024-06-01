@@ -13,7 +13,7 @@ import {ClientsEdit} from '../pages/ClientsEdit/ClientsEdit';
 import {ClientsAdd} from '../pages/ClientsAdd/ClientsAdd';
 
 export const AppRoutes: FunctionComponent = () => {
-    const account = useContext(AuthContext);
+    const { account } = useContext(AuthContext);
     const authenticated = !!account;
     const authenticatedRouteProps = {
         allowed: authenticated,

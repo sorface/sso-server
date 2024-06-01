@@ -43,6 +43,8 @@ export const enum Captions {
     InvalidPassword = 'Invalid password',
     EmailOrUsername = 'Email or Username',
     InvalidEmailOrUsername = 'Invalid email or username',
+    Id = 'Id',
+    Email = 'Email',
     FirstName = 'First Name',
     LastName = 'Last Name',
     LogoAlt = 'logo',
