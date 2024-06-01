@@ -26,6 +26,7 @@
 .signin-button {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     height: 2.75rem;
     padding: 0rem 1rem;
 }
