@@ -1,23 +1,43 @@
-import {FunctionComponent} from 'react';
-import {Field, Form} from "../../components/Form/Form";
-import { ApiEndpoint } from '../../types/apiContracts';
+import { FunctionComponent } from 'react';
+import { Field, Form } from "../../components/Form/Form";
+import { useApiMethodCsrf } from '../../hooks/useApiMethodCsrf';
+import { CreateAppBody, appsApiDeclaration } from '../../apiDeclarations';
+import { Captions } from '../../constants';
+
+const nameField = 'name';
+const redirectionUrlsField = 'redirectionUrls';
+
+const fields: Field[] = [
+    {
+        name: nameField,
+        placeholder: Captions.ClientName,
+    },
+    {
+        name: redirectionUrlsField,
+        placeholder: Captions.RedirectionUrls,
+    },
+];
 
 export const ClientsAdd: FunctionComponent = () => {
-    const fields: Field[] = [
-        {
-            name: 'name',
-            placeholder: 'Client Name'
-        },
-        {
-            name: 'redirectionUrls',
-            placeholder: 'Redirection Urls'
-        }
-    ];
+    const { fetchData } = useApiMethodCsrf<unknown, CreateAppBody>(appsApiDeclaration.create);
+
+    const handleSubmit = (formData: FormData) => {
+        const data = {
+            [nameField]: String(formData.get(nameField)),
+            [redirectionUrlsField]: String(formData.get(redirectionUrlsField)),
+        };
+        fetchData(data);
+    };
 
     return (
         <div>
-            <h3>Client Add</h3>
-            <Form fields={fields} fieldErrors={{}} htmlAction={ApiEndpoint.Apps} htmlMethod={'POST'}/>
+            <h3>{Captions.AddClient}</h3>
+            <Form
+                fields={fields}
+                fieldErrors={{}}
+                submitCaption={Captions.AddClient}
+                onSubmit={handleSubmit}
+            />
         </div>
-    )
+    );
 };

@@ -11,25 +11,35 @@ export const csrfApiDeclaration = {
         method: 'GET',
         baseUrl: ApiEndpoint.Csrf,
     })
+};
+
+export interface CreateAppBody {
+    name: string;
+    redirectionUrls: string;
 }
 
 export const appsApiDeclaration = {
     getMyApps: (): ApiContractGet => ({
-        method: "GET",
+        method: 'GET',
         baseUrl: ApiEndpoint.Apps,
     }),
     getById: (id: string): ApiContractGet => ({
-        method: "GET",
+        method: 'GET',
         baseUrl: ApiEndpoint.GetAppById.replace(':id', id) as ApiEndpoint,
     }),
     deleteById: (id: string): ApiContractDelete => ({
-        method: "DELETE",
+        method: 'DELETE',
         baseUrl: ApiEndpoint.Apps,
         body: {
             id
         }
-    })
-}
+    }),
+    create: (body: CreateAppBody): ApiContractPost => ({
+        method: 'POST',
+        baseUrl: ApiEndpoint.Apps,
+        body,
+    }),
+};
 
 export const accountsApiDeclaration = {
     signup: (body: SignUpBody): ApiContractPost => ({
