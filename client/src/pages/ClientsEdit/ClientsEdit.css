@@ -1,0 +1,7 @@
+.client-edit-body {
+  padding: 0rem 1rem;
+}
+
+.client-edit-body .form {
+  width: calc(100% - var(--padding) * 2);
+}
