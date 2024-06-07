@@ -64,6 +64,12 @@ export const enum Captions {
     UnknownError = 'Unknown error',
     Logout = 'Logout',
     AddClient = 'Add client',
+    EditClient = 'Edit client',
     ClientName = 'Client Name',
     RedirectionUrls = 'Redirection Urls',
+    IssueTime = 'Issue time',
+    ExpiresAt = 'Expires at',
+    Save = 'Save',
+    RenewSecret = 'Renew secret',
+    NewSecret = 'New secret',
 }
