@@ -117,7 +117,7 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
 
         log.info("saved user's authorization object with id {}", authorization.getId());
 
-        this.authorizations.set(key, authorization, oAuth2Options.getRedis().getTtl(), TimeUnit.MILLISECONDS);
+        this.authorizations.set(key, authorization, oAuth2Options.getRedis().getTtl(), TimeUnit.HOURS);
     }
 
     /**

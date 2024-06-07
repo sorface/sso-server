@@ -30,6 +30,7 @@ sorface:
     uri-page-signup: '${sorface.client.domain}/account/signup'
     uri-page-not-found: '${sorface.client.domain}/account/404'
     uri-page-profile: '${sorface.client.domain}/account'
+    uri-page-failure: "${sorface.client.domain}/failure"
     uri-api-login: "/api/accounts/signin"
     uri-api-logout: "/api/accounts/logout"
 

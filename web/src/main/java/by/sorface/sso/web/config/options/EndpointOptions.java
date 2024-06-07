@@ -26,6 +26,11 @@ public class EndpointOptions {
     private String uriPageProfile;
 
     /**
+     * url profile page
+     */
+    private String uriPageFailure;
+
+    /**
      * url not found page
      */
     private String uriPageNotFound;

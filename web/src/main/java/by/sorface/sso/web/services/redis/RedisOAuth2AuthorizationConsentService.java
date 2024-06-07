@@ -42,7 +42,7 @@ public final class RedisOAuth2AuthorizationConsentService implements OAuth2Autho
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");
         String id = getId(authorizationConsent);
 
-        this.authorizationConsents.set(KEY_PREFIX + id, authorizationConsent, oAuth2Options.getRedis().getTtl(), TimeUnit.MILLISECONDS);
+        this.authorizationConsents.set(KEY_PREFIX + id, authorizationConsent, oAuth2Options.getRedis().getTtl(), TimeUnit.HOURS);
     }
 
     @Override

@@ -11,6 +11,7 @@ import {ProtectedRoute} from './ProtectedRoute';
 import {Clients} from '../pages/Clients/Clients';
 import {ClientsEdit} from '../pages/ClientsEdit/ClientsEdit';
 import {ClientsAdd} from '../pages/ClientsAdd/ClientsAdd';
+import {Failure} from "../pages/Failure/Failure";
 
 export const AppRoutes: FunctionComponent = () => {
     const { account } = useContext(AuthContext);
@@ -76,6 +77,8 @@ export const AppRoutes: FunctionComponent = () => {
                        </ProtectedRoute>
                    }
             />
+
+            <Route path={pathnames.failure} element={<Failure/>}/>
 
             <Route path={'/'} element={
                 <Navigate to={pathnames.account} replace/>

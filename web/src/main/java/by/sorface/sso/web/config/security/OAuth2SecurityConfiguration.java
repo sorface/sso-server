@@ -1,6 +1,7 @@
 package by.sorface.sso.web.config.security;
 
 import by.sorface.sso.web.config.options.EndpointOptions;
+import by.sorface.sso.web.config.security.handlers.AuthenticationClientErrorHandler;
 import by.sorface.sso.web.config.security.handlers.TokenAuthenticationSuccessHandler;
 import by.sorface.sso.web.constants.UrlPatternEnum;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
@@ -29,6 +30,8 @@ public class OAuth2SecurityConfiguration {
 
     private final TokenAuthenticationSuccessHandler tokenAuthenticationSuccessHandler;
 
+    private final AuthenticationClientErrorHandler authenticationClientErrorHandler;
+
     private final EndpointOptions endpointOptions;
 
     /**
@@ -42,6 +45,9 @@ public class OAuth2SecurityConfiguration {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authServerSecurityFilterChain(final HttpSecurity httpSecurity) throws Exception {
         final var authorizationServerConfigurer = oAuth2AuthorizationServerConfigurer(httpSecurity);
+
+        authorizationServerConfigurer.authorizationEndpoint(configurer -> configurer.errorResponseHandler(authenticationClientErrorHandler));
+
         final RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         httpSecurity
@@ -52,9 +58,7 @@ public class OAuth2SecurityConfiguration {
                     configure.requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.API_ACCOUNT)).permitAll();
                     configure.anyRequest().authenticated();
                 })
-                .exceptionHandling(configurer -> {
-                    configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(endpointOptions.getUriPageSignIn()));
-                })
+                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(endpointOptions.getUriPageSignIn())))
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .apply(authorizationServerConfigurer);

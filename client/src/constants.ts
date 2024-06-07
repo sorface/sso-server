@@ -3,6 +3,7 @@ export const pathnames = {
     session: '/account/sessions',
     signUp: '/account/signup',
     signIn: '/account/signin',
+    failure: '/failure',
     activate: '/account/activate',
     clients: '/clients',
     clientsAdd: '/clients/add',
@@ -20,6 +21,7 @@ export const enum IconNames {
     Close = 'close-circle',
     Apps = 'apps',
     Add = 'add',
+    Alert = 'alert',
     Remove = 'remove',
 }
 
@@ -55,6 +57,7 @@ export const enum Captions {
     Activating = 'Activating',
     TokenNotFound = 'Token not found',
     InvalidToken = 'Invalid token',
+    ErrorTitle = 'An error has occurred',
     YouWillBeRedirected = 'You will be redirected in :redirectTimeoutSec seconds',
     PleaseWait = 'Please wait...',
     Unknown = 'unknown',
