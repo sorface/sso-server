@@ -1,7 +1,7 @@
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, MouseEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import { useApiMethod } from "../../hooks/useApiMethod";
-import { appsApiDeclaration } from "../../apiDeclarations";
+import { DeleteAppBody, EditAppBody, appsApiDeclaration } from "../../apiDeclarations";
 import { ClientApp } from "../Clients/Clients";
 import { Captions } from '../../constants';
 import { Field, Form } from '../../components/Form/Form';
@@ -10,16 +10,42 @@ import { RenewSecret } from './components/RenewSecret/RenewSecret';
 
 import './ClientsEdit.css';
 
+const nameField = 'name';
+const redirectionUrlsField = 'redirectUrls';
+
 export const ClientsEdit: FunctionComponent = () => {
     const {
         apiMethodState,
-        fetchData
+        fetchData,
     } = useApiMethod<ClientApp, string>(appsApiDeclaration.getById);
 
     const {
         data,
         process: { loading, error },
     } = apiMethodState;
+
+    const {
+        apiMethodState: editApiMethodState,
+        fetchData: editFetch,
+    } = useApiMethod<ClientApp, EditAppBody>(appsApiDeclaration.edit);
+
+    const {
+        data: editedApp,
+        process: { loading: editLoading, error: editError },
+    } = editApiMethodState;
+
+    const {
+        apiMethodState: deleteApiMethodState,
+        fetchData: deleteFetch,
+    } = useApiMethod<unknown, DeleteAppBody>(appsApiDeclaration.deleteById);
+
+    const {
+        data: deletedApp,
+        process: { loading: deleteLoading, error: deleteError },
+    } = deleteApiMethodState;
+
+    const loadintTotal = loading || editLoading || deleteLoading;
+    const errorTotal = error || editError || deleteError;
 
     const { id } = useParams();
 
@@ -31,12 +57,12 @@ export const ClientsEdit: FunctionComponent = () => {
             defaultValue: data?.clientId,
         },
         {
-            name: 'name',
+            name: nameField,
             placeholder: Captions.ClientName,
             defaultValue: data?.clientName,
         },
         {
-            name: 'redirectUrls',
+            name: redirectionUrlsField,
             placeholder: Captions.RedirectionUrls,
             defaultValue: data?.redirectUrls.join(","),
         },
@@ -60,25 +86,50 @@ export const ClientsEdit: FunctionComponent = () => {
         }
 
         fetchData(id);
-    }, [id, fetchData]);
+    }, [id, editedApp, deletedApp, fetchData]);
+
+    const handleSubmit = (data: FormData) => {
+        if (!id) {
+            throw new Error('App id not found');
+        }
+        editFetch({
+            id,
+            name: String(data.get(nameField)),
+            redirectionUrls: String(data.get(redirectionUrlsField)),
+        });
+    };
+
+    const handleDelete = (event: MouseEvent) => {
+        event.preventDefault();
+        if (!id) {
+            throw new Error('App id not found');
+        }
+        deleteFetch({
+            id,
+        });
+    };
 
     return (
         <div className='client-edit'>
             <h3>{Captions.EditClient}</h3>
             <div className='client-edit-body'>
-                {loading && <Loader />}
-                {!!error && <div>{Captions.Error}: {error}</div>}
+                {loadintTotal && <Loader />}
+                {!!errorTotal && <div>{Captions.Error}: {errorTotal}</div>}
                 {!!data && (
-                        <Form
-                            styled
-                            fields={fields}
-                            fieldErrors={{}}
-                            submitCaption={Captions.Save}
-                        >
-                            <RenewSecret />
-                        </Form>
+                    <Form
+                        styled
+                        fields={fields}
+                        fieldErrors={{}}
+                        submitCaption={Captions.Save}
+                        onSubmit={handleSubmit}
+                    >
+                        <>
+                            <button className='danger' onClick={handleDelete}>{Captions.Delete}</button>
+                            <RenewSecret clientId={data.clientId} />
+                        </>
+                    </Form>
                 )}
             </div>
         </div>
-    )
+    );
 };

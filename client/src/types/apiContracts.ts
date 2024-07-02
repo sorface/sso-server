@@ -2,6 +2,7 @@ export enum ApiEndpoint {
     Csrf = '/csrf',
     Apps = '/api/applications',
     GetAppById = '/api/applications/:id',
+    RefreshApp = '/api/applications/:clientId/refresh',
     AccountsSignup = '/accounts/signup',
     AccountsSignin = '/api/accounts/signin',
     AccountsCurrent = '/api/accounts/current',

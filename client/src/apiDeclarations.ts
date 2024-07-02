@@ -1,4 +1,4 @@
-import {ApiContractDelete, ApiContractGet, ApiContractPatch, ApiContractPost, ApiEndpoint} from './types/apiContracts';
+import { ApiContractDelete, ApiContractGet, ApiContractPatch, ApiContractPost, ApiEndpoint } from './types/apiContracts';
 
 export type SignUpBody = Record<string, FormDataEntryValue>;
 
@@ -18,6 +18,18 @@ export interface CreateAppBody {
     redirectionUrls: string;
 }
 
+export interface EditAppBody extends CreateAppBody {
+    id: string;
+}
+
+export interface DeleteAppBody {
+    id: string;
+}
+
+export interface RefreshAppParams {
+    clientId: string;
+}
+
 export const appsApiDeclaration = {
     getMyApps: (): ApiContractGet => ({
         method: 'GET',
@@ -27,17 +39,25 @@ export const appsApiDeclaration = {
         method: 'GET',
         baseUrl: ApiEndpoint.GetAppById.replace(':id', id) as ApiEndpoint,
     }),
-    deleteById: (id: string): ApiContractDelete => ({
+    deleteById: (body: DeleteAppBody): ApiContractDelete => ({
         method: 'DELETE',
         baseUrl: ApiEndpoint.Apps,
-        body: {
-            id
-        }
+        body,
     }),
     create: (body: CreateAppBody): ApiContractPost => ({
         method: 'POST',
         baseUrl: ApiEndpoint.Apps,
         body,
+    }),
+    edit: (body: EditAppBody): ApiContractPatch => ({
+        method: 'PATCH',
+        baseUrl: ApiEndpoint.GetAppById.replace(':id', body.id) as ApiEndpoint,
+        body: { ...body, id: undefined },
+    }),
+    refresh: (params: RefreshAppParams): ApiContractPatch => ({
+        method: 'PATCH',
+        baseUrl: ApiEndpoint.RefreshApp.replace(':clientId', params.clientId) as ApiEndpoint,
+        body: undefined,
     }),
 };
 
@@ -71,7 +91,7 @@ export const accountsApiDeclaration = {
         baseUrl: ApiEndpoint.AccountsEdit.replace(':id', body.id) as ApiEndpoint,
         body: {
             ...body,
-            id: undefined,   
+            id: undefined,
         },
     }),
     logout: (): ApiContractPost => ({
