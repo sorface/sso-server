@@ -70,6 +70,7 @@ export const enum Captions {
     IssueTime = 'Issue time',
     ExpiresAt = 'Expires at',
     Save = 'Save',
+    Delete = 'Delete',
     RenewSecret = 'Renew secret',
     NewSecret = 'New secret',
 }
