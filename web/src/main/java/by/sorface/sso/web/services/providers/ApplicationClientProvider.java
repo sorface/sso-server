@@ -89,7 +89,7 @@ public class ApplicationClientProvider implements RegisteredClientRepository {
         final var tokenSettings = TokenSettings.builder()
                 .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
                 .accessTokenTimeToLive(Duration.of(30, ChronoUnit.MINUTES))
-                .refreshTokenTimeToLive(Duration.of(120, ChronoUnit.MINUTES))
+                .refreshTokenTimeToLive(Duration.of(5, ChronoUnit.DAYS))
                 .reuseRefreshTokens(false)
                 .authorizationCodeTimeToLive(Duration.of(30, ChronoUnit.SECONDS))
                 .build();

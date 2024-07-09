@@ -1,5 +1,4 @@
 # common properties
-
 sorface:
   client:
     domain: ${CLIENT_SERVER_DOMAIN}
@@ -7,12 +6,17 @@ sorface:
   cors:
     options:
       - pattern: /**
-        allowed-origins: ${CLIENT_SERVER_DOMAIN}, http://localhost:8080
+        allowed-origins: ${CLIENT_SERVER_DOMAIN}, http://localhost:8080, http://127.0.0.1:8085, http://localhost:8085
         allowed-headers: "*"
         allowed-methods: "*"
         exposed-headers: "*"
         allow-credentials: true
-
+      - pattern: /v3/api-docs
+        allowed-origins: "http://localhost:8085"
+        allowed-headers: "*"
+        exposed-headers: "*"
+        allowed-methods: "*"
+        allow-credentials: true
   cookie:
     session:
       domain-pattern: '^.+?\.(\w+\.[a-z]+)$'

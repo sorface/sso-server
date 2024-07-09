@@ -16,6 +16,9 @@
     <properties>
         <lombok.version>1.18.30</lombok.version>
         <liquibase.version>4.20.0</liquibase.version>
+        <jedis.version>4.3.2</jedis.version>
+        <yauaa.version>7.26.0</yauaa.version>
+        <springdoc-openapi-starter-webmvc-api.version>2.5.0</springdoc-openapi-starter-webmvc-api.version>
     </properties>
 
     <dependencies>
@@ -112,17 +115,17 @@
         <dependency>
             <groupId>nl.basjes.parse.useragent</groupId>
             <artifactId>yauaa</artifactId>
-            <version>7.26.0</version>
+            <version>${yauaa.version}</version>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>4.3.2</version>
+            <version>${jedis.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.5.0</version>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>${springdoc-openapi-starter-webmvc-api.version}</version>
         </dependency>
     </dependencies>
 
