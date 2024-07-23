@@ -1,5 +1,6 @@
 package by.sorface.sso.web.services.providers;
 
+import by.sorface.sso.web.config.options.ClientTokenOptions;
 import by.sorface.sso.web.dao.models.OAuth2Client;
 import by.sorface.sso.web.services.clients.OAuth2ClientService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import java.nio.file.AccessDeniedException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -30,6 +30,8 @@ public class ApplicationClientProvider implements RegisteredClientRepository {
     }
 
     private final OAuth2ClientService oAuth2ClientService;
+
+    private final ClientTokenOptions clientTokenOptions;
 
     @Override
     public void save(final RegisteredClient registeredClient) {
@@ -86,12 +88,16 @@ public class ApplicationClientProvider implements RegisteredClientRepository {
 
         final var scopes = Set.of("scope.read", "scope.write");
 
+        final ClientTokenOptions.TokenSetting accessTokenSettings = clientTokenOptions.getAccessToken();
+        final ClientTokenOptions.TokenSetting refreshTokenSettings = clientTokenOptions.getRefreshToken();
+        final ClientTokenOptions.TokenSetting authorizationCodeSettings = clientTokenOptions.getAuthorizationCode();
+
         final var tokenSettings = TokenSettings.builder()
                 .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
-                .accessTokenTimeToLive(Duration.of(30, ChronoUnit.MINUTES))
-                .refreshTokenTimeToLive(Duration.of(5, ChronoUnit.DAYS))
+                .accessTokenTimeToLive(Duration.of(accessTokenSettings.getTimeToLiveValue(), accessTokenSettings.getTimeToLiveCron()))
+                .refreshTokenTimeToLive(Duration.of(refreshTokenSettings.getTimeToLiveValue(), refreshTokenSettings.getTimeToLiveCron()))
                 .reuseRefreshTokens(false)
-                .authorizationCodeTimeToLive(Duration.of(30, ChronoUnit.SECONDS))
+                .authorizationCodeTimeToLive(Duration.of(authorizationCodeSettings.getTimeToLiveValue(), authorizationCodeSettings.getTimeToLiveCron()))
                 .build();
 
         final var authorizationCodes = Set.of(

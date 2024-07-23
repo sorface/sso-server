@@ -2,6 +2,16 @@
 sorface:
   client:
     domain: ${CLIENT_SERVER_DOMAIN}
+    token:
+      access-token:
+        time-to-live-cron: days
+        time-to-live-value: 30
+      refresh-token:
+        time-to-live-cron: days
+        time-to-live-value: 32
+      authorization-code:
+        time-to-live-cron: minutes
+        time-to-live-value: 30
 
   cors:
     options:

@@ -2,7 +2,7 @@ package by.sorface.sso.web.config.security.csrf;
 
 import org.junit.jupiter.api.Test;
 
-class SpaCsrfTokenRequestHandlerTest {
+class SpaCsrfTokenSettingRequestHandlerTest {
 
     @Test
     void handle() {
