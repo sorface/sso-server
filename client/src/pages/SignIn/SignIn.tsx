@@ -7,9 +7,10 @@ import twitchLogo from './img/twitch.svg';
 import emailLogo from './img/email-svgrepo-com.svg';
 import {FormWrapper} from '../../components/Form/FormWrapper';
 import {useQueryFromErrors} from '../../hooks/useQueryFromErrors';
-import { ApiEndpoint } from '../../types/apiContracts';
+import {ApiEndpoint} from '../../types/apiContracts';
 
 import './SignIn.css';
+import {REACT_APP_BACKEND_URL} from "../../config";
 
 const emailFields: Field[] = [
     {
@@ -83,7 +84,7 @@ export const SignIn: FunctionComponent = () => {
                             ) : (
                                 <a
                                     className="signin-link"
-                                    href={signinItem.href}
+                                    href={REACT_APP_BACKEND_URL + signinItem.href}
                                     onClick={signinItem.onClick}
                                 >
                                     <button className='signin-button' disabled={signinItem.disabled}>
