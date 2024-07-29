@@ -1,5 +1,6 @@
 package by.sorface.sso.web.config;
 
+import brave.sampler.Sampler;
 import by.sorface.sso.web.config.locale.resolvers.HttpI18LocaleResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,5 +67,10 @@ public class SorfaceConfiguration {
     @Bean
     public LocaleResolver localeResolver() {
         return new HttpI18LocaleResolver();
+    }
+
+    @Bean
+    public Sampler defaultSampler() {
+        return Sampler.ALWAYS_SAMPLE;
     }
 }

@@ -5,6 +5,7 @@ import by.sorface.sso.web.exceptions.UserRequestException;
 import by.sorface.sso.web.facade.accounts.AccountFacade;
 import by.sorface.sso.web.facade.signup.SignupEmailFacade;
 import by.sorface.sso.web.facade.signup.SignupFacade;
+import by.sorface.sso.web.records.I18Codes;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import by.sorface.sso.web.records.requests.AccountSignup;
 import by.sorface.sso.web.records.requests.ConfirmEmail;
@@ -64,7 +65,7 @@ public class AccountController {
         try {
             request.login(accountSignup.email(), accountSignup.password());
         } catch (ServletException e) {
-            throw new UserRequestException(e.getMessage());
+            throw new UserRequestException(I18Codes.I18UserCodes.ALREADY_AUTHENTICATED);
         }
 
         final var auth = (Authentication) request.getUserPrincipal();
@@ -96,13 +97,13 @@ public class AccountController {
         final var auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (Objects.isNull(auth) || auth instanceof AnonymousAuthenticationToken) {
-            throw new AccessDeniedException("exception.access.denied");
+            throw new AccessDeniedException(I18Codes.I18GlobalCodes.ACCESS_DENIED);
         }
 
         final var principal = (DefaultPrincipal) auth.getPrincipal();
 
         if (Objects.isNull(principal)) {
-            throw new AccessDeniedException("exception.access.denied");
+            throw new AccessDeniedException(I18Codes.I18GlobalCodes.ACCESS_DENIED);
         }
 
         return principal;

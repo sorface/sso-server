@@ -1,6 +1,7 @@
 package by.sorface.sso.web.config.security.handlers;
 
 import by.sorface.sso.web.exceptions.ObjectInvalidException;
+import by.sorface.sso.web.records.I18Codes;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import by.sorface.sso.web.records.tokens.IntrospectionPrincipal;
 import by.sorface.sso.web.records.tokens.TokenRecord;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -105,7 +107,7 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
 
             tokenRecordBuilder.principal(introspectionPrincipal);
         } else {
-            throw new ObjectInvalidException("Principal class = " + attributeAuth.getPrincipal().getClass().getSimpleName() + " is not supported");
+            throw new ObjectInvalidException(I18Codes.I18GlobalCodes.OBJECT_IS_NOT_SUPPORTED, Map.of("objectClass", attributeAuth.getPrincipal().getClass().getSimpleName()));
         }
 
         return tokenRecordBuilder.build();

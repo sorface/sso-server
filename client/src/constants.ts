@@ -45,7 +45,8 @@ export const enum Captions {
     InvalidPassword = 'Invalid password',
     EmailOrUsername = 'Email or Username',
     InvalidEmailOrUsername = 'Invalid email or username',
-    Id = 'Id',
+    ClientTechId = 'Id',
+    Id = 'Client Id',
     Email = 'Email',
     FirstName = 'First Name',
     LastName = 'Last Name',
@@ -73,4 +74,6 @@ export const enum Captions {
     Delete = 'Delete',
     RenewSecret = 'Renew secret',
     NewSecret = 'New secret',
+    NewExpiredSecret = 'New expired secret',
+    ClientSecretLabel = 'Client Secret'
 }

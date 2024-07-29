@@ -1,9 +1,11 @@
 package by.sorface.sso.web.services.locale;
 
+import java.util.Map;
+
 public interface LocaleService {
 
-    String getMessage(final String code);
+    String getI18Message(final String i18Code);
 
-    String getMessage(final String code, final Object... args);
+    String getI18Message(final String i18Code, final Map<String, String> args);
 
 }

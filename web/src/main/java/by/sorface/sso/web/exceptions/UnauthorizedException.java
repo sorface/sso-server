@@ -1,9 +1,19 @@
 package by.sorface.sso.web.exceptions;
 
-public class UnauthorizedException extends RuntimeException {
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
-    public UnauthorizedException(final String message) {
-        super(message);
+import java.util.Map;
+
+@Getter
+public class UnauthorizedException extends GlobalSystemException {
+
+    public UnauthorizedException(final String i18Code, final Map<String, String> args) {
+        super(i18Code, args, HttpStatus.UNAUTHORIZED);
+    }
+
+    public UnauthorizedException(final String i18Code) {
+        super(i18Code, HttpStatus.UNAUTHORIZED);
     }
 
 }

@@ -3,15 +3,16 @@ package by.sorface.sso.web.controllers.advices;
 import by.sorface.sso.web.controllers.AccountController;
 import by.sorface.sso.web.controllers.AccountSessionController;
 import by.sorface.sso.web.controllers.ApplicationClientController;
-import by.sorface.sso.web.exceptions.NotFoundException;
-import by.sorface.sso.web.exceptions.ObjectExpiredException;
-import by.sorface.sso.web.exceptions.UnauthorizedException;
-import by.sorface.sso.web.exceptions.UserRequestException;
+import by.sorface.sso.web.controllers.CsrfController;
+import by.sorface.sso.web.exceptions.*;
+import by.sorface.sso.web.records.I18Codes;
 import by.sorface.sso.web.records.responses.OperationError;
 import by.sorface.sso.web.records.responses.ValidateOperationError;
 import by.sorface.sso.web.services.locale.LocaleI18Service;
+import by.sorface.sso.web.services.sleuth.SleuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
@@ -27,36 +28,29 @@ import java.util.List;
         basePackageClasses = {
                 AccountController.class,
                 AccountSessionController.class,
-                ApplicationClientController.class
+                ApplicationClientController.class,
+                CsrfController.class
         }
 )
 @RequiredArgsConstructor
 public class ExceptionAdvice {
 
+    private final SleuthService sleuthService;
+
     private final LocaleI18Service localeI18Service;
 
-    @ExceptionHandler(UserRequestException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public OperationError handleUserRequestException(final UserRequestException e) {
-        return buildError(HttpStatus.BAD_REQUEST, e);
-    }
+    @ExceptionHandler(value = {
+            GlobalSystemException.class,
+            UserRequestException.class,
+            NotFoundException.class,
+            ObjectExpiredException.class,
+            ObjectInvalidException.class,
+            UnauthorizedException.class
+    })
+    public ResponseEntity<OperationError> handleUserRequestException(final GlobalSystemException e) {
+        final OperationError body = buildError(e, sleuthService.getSpanId(), sleuthService.getTraceId());
 
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public OperationError handleNotFoundException(final NotFoundException e) {
-        return buildError(HttpStatus.NOT_FOUND, e);
-    }
-
-    @ExceptionHandler(ObjectExpiredException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public OperationError handleObjectExpiredException(final ObjectExpiredException e) {
-        return buildError(HttpStatus.BAD_REQUEST, e);
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public OperationError handleUnauthorizedException(final UnauthorizedException e) {
-        return buildError(HttpStatus.UNAUTHORIZED, "exception.access.denied");
+        return ResponseEntity.status(e.getHttpStatus()).body(body);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -67,56 +61,59 @@ public class ExceptionAdvice {
                     final var validateError = new ValidateOperationError.ValidateError();
                     {
                         validateError.setField(((FieldError) error).getField());
-                        validateError.setMessage(localeI18Service.getMessage(error.getDefaultMessage()));
+                        validateError.setMessage(error.getDefaultMessage());
                     }
 
                     return validateError;
                 })
                 .toList();
 
-        return buildValidateError(HttpStatus.BAD_REQUEST, errors);
+        return buildValidateError(HttpStatus.BAD_REQUEST, errors, sleuthService.getSpanId(), sleuthService.getTraceId());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public OperationError handleAccessDenied(final AccessDeniedException e) {
-        return buildError(HttpStatus.UNAUTHORIZED, "exception.access.denied");
+        return buildError(HttpStatus.UNAUTHORIZED, e.getMessage(), sleuthService.getSpanId(), sleuthService.getTraceId());
     }
 
     @ExceptionHandler(InsufficientAuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public OperationError handleInsufficientAuthentication(final InsufficientAuthenticationException e) {
-        return buildError(HttpStatus.UNAUTHORIZED, "exception.access.denied");
+        return buildError(HttpStatus.UNAUTHORIZED, e.getMessage(), sleuthService.getSpanId(), sleuthService.getTraceId());
     }
 
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public OperationError handleAuthenticationException(final AuthenticationException e) {
-        return buildError(HttpStatus.FORBIDDEN, "exception.access.denied");
+        return buildError(HttpStatus.FORBIDDEN, e.getMessage(), sleuthService.getSpanId(), sleuthService.getTraceId());
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public OperationError handleNotFoundException(final RuntimeException e) {
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, e);
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, I18Codes.I18GlobalCodes.UNKNOWN_ERROR, sleuthService.getSpanId(), sleuthService.getTraceId());
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public OperationError handleException(final Exception e) {
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, e);
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, I18Codes.I18GlobalCodes.UNKNOWN_ERROR, sleuthService.getSpanId(), sleuthService.getTraceId());
     }
 
-    private OperationError buildError(final HttpStatus status, final Exception exception) {
-        return new OperationError(localeI18Service.getMessage(exception.getMessage()), status.getReasonPhrase(), status.value());
+    private OperationError buildError(final GlobalSystemException exception, final String spanId, final String traceId) {
+        final String message = localeI18Service.getI18Message(exception.getI18Code(), exception.getArgs());
+        return new OperationError(message, exception.getHttpStatus().getReasonPhrase(), exception.getHttpStatus().value(), spanId, traceId);
     }
 
-    private OperationError buildError(final HttpStatus status, final String message) {
-        return new OperationError(localeI18Service.getMessage(message), status.getReasonPhrase(), status.value());
+    private OperationError buildError(final HttpStatus status, final String message, final String spanId, final String traceId) {
+        return new OperationError(localeI18Service.getI18Message(message), status.getReasonPhrase(), status.value(), spanId, traceId);
     }
 
-    private ValidateOperationError buildValidateError(final HttpStatus status, final List<ValidateOperationError.ValidateError> errors) {
-        return new ValidateOperationError(localeI18Service.getMessage("validate.error"), errors, status.value());
+    private ValidateOperationError buildValidateError(final HttpStatus status,
+                                                      final List<ValidateOperationError.ValidateError> errors,
+                                                      final String spanId,
+                                                      final String traceId) {
+        return new ValidateOperationError(localeI18Service.getI18Message(I18Codes.I18GlobalCodes.VALIDATION_ERROR), errors, status.value(), spanId, traceId);
     }
-
 }

@@ -1,6 +1,7 @@
 package by.sorface.sso.web.facade.signup;
 
 import by.sorface.sso.web.config.options.OAuth2Options;
+import by.sorface.sso.web.records.I18Codes;
 import by.sorface.sso.web.records.mails.MailImage;
 import by.sorface.sso.web.records.mails.MailTemplate;
 import by.sorface.sso.web.records.requests.AccountSignup;
@@ -68,8 +69,9 @@ public class DefaultSignupEmailFacade implements SignupEmailFacade {
             context.setVariable("issuer", oAuth2Options.getIssuerUrl());
         }
 
-        final var emailTemplate = localeI18Service.getMessage("email.confirm");
-        final var subject = localeI18Service.getMessage("email.confirm.subject");
+        final var emailTemplate = localeI18Service.getI18Message(I18Codes.I18EmailCodes.TEMPLATE);
+        final var subject = localeI18Service.getI18Message(I18Codes.I18EmailCodes.CONFIRMATION_REGISTRATION);
+
         final var images = List.of(new MailImage("isorface.png"));
 
         final var mailTemplate = new MailTemplate(registeredUser.email(), subject, emailTemplate, context, images);

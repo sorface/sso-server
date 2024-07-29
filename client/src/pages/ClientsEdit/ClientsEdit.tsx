@@ -1,14 +1,15 @@
-import { FunctionComponent, useEffect, MouseEvent } from 'react';
-import { useParams } from 'react-router-dom';
-import { useApiMethod } from "../../hooks/useApiMethod";
-import { DeleteAppBody, EditAppBody, appsApiDeclaration } from "../../apiDeclarations";
-import { ClientApp } from "../Clients/Clients";
-import { Captions } from '../../constants';
-import { Field, Form } from '../../components/Form/Form';
-import { Loader } from '../../components/Loader/Loader';
-import { RenewSecret } from './components/RenewSecret/RenewSecret';
+import {FunctionComponent, MouseEvent, useEffect} from 'react';
+import {useParams} from 'react-router-dom';
+import {useApiMethod} from "../../hooks/useApiMethod";
+import {appsApiDeclaration, EditAppBody} from "../../apiDeclarations";
+import {ClientApp} from "../Clients/Clients";
+import {Captions} from '../../constants';
+import {Field, Form} from '../../components/Form/Form';
+import {Loader} from '../../components/Loader/Loader';
+import {RenewSecret} from './components/RenewSecret/RenewSecret';
 
 import './ClientsEdit.css';
+import {useApiMethodCsrf} from "../../hooks/useApiMethodCsrf";
 
 const nameField = 'name';
 const redirectionUrlsField = 'redirectUrls';
@@ -27,7 +28,7 @@ export const ClientsEdit: FunctionComponent = () => {
     const {
         apiMethodState: editApiMethodState,
         fetchData: editFetch,
-    } = useApiMethod<ClientApp, EditAppBody>(appsApiDeclaration.edit);
+    } = useApiMethodCsrf<ClientApp, EditAppBody>(appsApiDeclaration.edit);
 
     const {
         data: editedApp,
@@ -37,7 +38,7 @@ export const ClientsEdit: FunctionComponent = () => {
     const {
         apiMethodState: deleteApiMethodState,
         fetchData: deleteFetch,
-    } = useApiMethod<unknown, DeleteAppBody>(appsApiDeclaration.deleteById);
+    } = useApiMethod<unknown, string>(appsApiDeclaration.deleteById);
 
     const {
         data: deletedApp,
@@ -50,6 +51,12 @@ export const ClientsEdit: FunctionComponent = () => {
     const { id } = useParams();
 
     const fields: Field[] = [
+        {
+            name: 'clientTechId',
+            placeholder: Captions.ClientTechId,
+            readOnly: true,
+            defaultValue: data?.id,
+        },
         {
             name: 'id',
             placeholder: Captions.Id,
@@ -95,7 +102,7 @@ export const ClientsEdit: FunctionComponent = () => {
         editFetch({
             id,
             name: String(data.get(nameField)),
-            redirectionUrls: String(data.get(redirectionUrlsField)),
+            redirectionUrls: [String(data.get(redirectionUrlsField))],
         });
     };
 
@@ -104,9 +111,7 @@ export const ClientsEdit: FunctionComponent = () => {
         if (!id) {
             throw new Error('App id not found');
         }
-        deleteFetch({
-            id,
-        });
+        deleteFetch(id);
     };
 
     return (
@@ -125,7 +130,7 @@ export const ClientsEdit: FunctionComponent = () => {
                     >
                         <>
                             <button className='danger' onClick={handleDelete}>{Captions.Delete}</button>
-                            <RenewSecret clientId={data.clientId} />
+                            <RenewSecret clientId={data?.id}/>
                         </>
                     </Form>
                 )}

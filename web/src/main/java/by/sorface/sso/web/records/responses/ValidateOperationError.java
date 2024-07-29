@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 
-public record ValidateOperationError(String message, List<ValidateError> errors, int code) {
+public record ValidateOperationError(String message, List<ValidateError> errors, int code, String spanId, String traceId) {
 
     @Data
     public static class ValidateError {

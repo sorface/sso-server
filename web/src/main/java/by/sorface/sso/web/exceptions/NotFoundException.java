@@ -1,15 +1,17 @@
 package by.sorface.sso.web.exceptions;
 
+import org.springframework.http.HttpStatus;
+
 import java.util.Map;
 
-public class NotFoundException extends UserRequestException {
+public class NotFoundException extends GlobalSystemException {
 
-    public NotFoundException(final String message) {
-        super(message);
+    public NotFoundException(final String i18Code) {
+        super(i18Code, HttpStatus.NOT_FOUND);
     }
 
-    public NotFoundException(String message, Map<String, String> args) {
-        super(message, args);
+    public NotFoundException(final String i18Code, Map<String, String> args) {
+        super(i18Code, args, HttpStatus.NOT_FOUND);
     }
 
 }

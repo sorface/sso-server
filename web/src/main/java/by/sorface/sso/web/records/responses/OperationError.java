@@ -1,4 +1,10 @@
 package by.sorface.sso.web.records.responses;
 
-public record OperationError(String message, String details, int code) {
+public record OperationError(
+        String message,
+        String details,
+        int code,
+        String spanId,
+        String traceId
+) {
 }

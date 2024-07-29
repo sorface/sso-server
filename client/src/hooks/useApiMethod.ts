@@ -93,9 +93,13 @@ const createFetchRequestInit = (apiContract: ApiContract): RequestInit => {
 
     const {body} = apiContract;
 
+    const headers = new Headers();
+    headers.append("Content-Type", 'application/json;charset=UTF-8')
+
     return {
         ...defaultRequestInit,
         body: body instanceof FormData ? body : JSON.stringify(body),
+        headers
     } as RequestInit;
 };
 

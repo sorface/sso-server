@@ -1,9 +1,11 @@
 package by.sorface.sso.web.exceptions;
 
-public class ObjectExpiredException extends UserRequestException {
+import org.springframework.http.HttpStatus;
 
-    public ObjectExpiredException(final String message) {
-        super(message);
+public class ObjectExpiredException extends GlobalSystemException {
+
+    public ObjectExpiredException(final String i18Codes) {
+        super(i18Codes, HttpStatus.BAD_REQUEST);
     }
 
 }

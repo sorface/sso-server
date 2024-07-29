@@ -1,4 +1,4 @@
-import { ApiContractDelete, ApiContractGet, ApiContractPatch, ApiContractPost, ApiEndpoint } from './types/apiContracts';
+import {ApiContractDelete, ApiContractGet, ApiContractPatch, ApiContractPost, ApiEndpoint} from './types/apiContracts';
 
 export type SignUpBody = Record<string, FormDataEntryValue>;
 
@@ -15,7 +15,7 @@ export const csrfApiDeclaration = {
 
 export interface CreateAppBody {
     name: string;
-    redirectionUrls: string;
+    redirectionUrls: string[];
 }
 
 export interface EditAppBody extends CreateAppBody {
@@ -30,6 +30,11 @@ export interface RefreshAppParams {
     clientId: string;
 }
 
+export interface RefreshSecretResponse {
+    clientSecret: string;
+    expiresAt: Date;
+}
+
 export const appsApiDeclaration = {
     getMyApps: (): ApiContractGet => ({
         method: 'GET',
@@ -39,10 +44,9 @@ export const appsApiDeclaration = {
         method: 'GET',
         baseUrl: ApiEndpoint.GetAppById.replace(':id', id) as ApiEndpoint,
     }),
-    deleteById: (body: DeleteAppBody): ApiContractDelete => ({
+    deleteById: (id: string): ApiContractDelete => ({
         method: 'DELETE',
-        baseUrl: ApiEndpoint.Apps,
-        body,
+        baseUrl: ApiEndpoint.DeleteAppById.replace(':id', id) as ApiEndpoint,
     }),
     create: (body: CreateAppBody): ApiContractPost => ({
         method: 'POST',

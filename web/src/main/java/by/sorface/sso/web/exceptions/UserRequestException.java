@@ -1,24 +1,19 @@
 package by.sorface.sso.web.exceptions;
 
-import java.util.HashMap;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
 import java.util.Map;
 
-public class UserRequestException extends RuntimeException {
+@Getter
+public class UserRequestException extends GlobalSystemException {
 
-    private final Map<String, String> args = new HashMap<>();
-
-    public UserRequestException(final String message) {
-        super(message);
+    public UserRequestException(final String i18Code) {
+        super(i18Code, HttpStatus.BAD_REQUEST);
     }
 
-    public UserRequestException(final String message, final Map<String, String> args) {
-        super(message);
-
-        args.putAll(args);
-    }
-
-    public Map<String, String> getArgs() {
-        return args;
+    public UserRequestException(final String i18Code, final Map<String, String> args) {
+        super(i18Code, args, HttpStatus.BAD_REQUEST);
     }
 
 }

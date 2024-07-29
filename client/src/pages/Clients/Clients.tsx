@@ -4,8 +4,9 @@ import {Icon} from '../../components/Icon/Icon';
 import {IconNames, pathnames} from '../../constants';
 
 import './Clients.css';
-import {useApiMethod} from "../../hooks/useApiMethod";
+import {ApiMethodState, useApiMethod} from "../../hooks/useApiMethod";
 import {appsApiDeclaration} from "../../apiDeclarations";
+import {useApiMethodCsrf} from "../../hooks/useApiMethodCsrf";
 
 export interface ClientApp {
     id: string;
@@ -23,6 +24,11 @@ export const Clients: FunctionComponent = () => {
     } = useApiMethod<ClientApp[], undefined>(appsApiDeclaration.getMyApps);
 
     const {
+        apiMethodState: deleteApiMethodState,
+        fetchData: deleteFetch,
+    } = useApiMethodCsrf<ApiMethodState, string>(appsApiDeclaration.deleteById);
+
+    const {
         data
     } = apiMethodState;
 
@@ -36,6 +42,18 @@ export const Clients: FunctionComponent = () => {
         }
     }, [data]);
 
+    useEffect(() => {
+        if (!!deleteApiMethodState.data) {
+            return;
+        }
+
+        fetchData(undefined);
+    }, [deleteApiMethodState.data, fetchData]);
+
+    const handleDelete = (id: string) => () => {
+        deleteFetch(id);
+    }
+
     const createAppItem = (app: ClientApp) => (
         <tr key={app.id}>
             <td>{app.id}</td>
@@ -46,7 +64,9 @@ export const Clients: FunctionComponent = () => {
                 </Link>
             </td>
             <td>
-                <button className='remove'><Icon name={IconNames.Remove}/></button>
+                <button className='remove' onClick={handleDelete(app.id)}>
+                    <Icon name={IconNames.Remove}/>
+                </button>
             </td>
         </tr>
     );

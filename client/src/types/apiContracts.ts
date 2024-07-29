@@ -2,6 +2,7 @@ export enum ApiEndpoint {
     Csrf = '/csrf',
     Apps = '/api/applications',
     GetAppById = '/api/applications/:id',
+    DeleteAppById = '/api/applications/:id',
     RefreshApp = '/api/applications/:clientId/refresh',
     AccountsSignup = '/accounts/signup',
     AccountsSignin = '/api/accounts/signin',
@@ -43,7 +44,7 @@ export interface ApiContractDelete {
     method: 'DELETE';
     baseUrl: ApiEndpoint;
     urlParams?: object;
-    body: any;
+    body?: object;
 }
 
 export type ApiContract = ApiContractGet | ApiContractPost | ApiContractPut | ApiContractPatch | ApiContractDelete;

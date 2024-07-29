@@ -1,7 +1,9 @@
 package by.sorface.sso.web.config.security;
 
+import by.sorface.sso.web.records.I18Codes;
 import by.sorface.sso.web.records.responses.OperationError;
 import by.sorface.sso.web.services.locale.LocaleI18Service;
+import by.sorface.sso.web.services.sleuth.SleuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +20,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+    private final SleuthService sleuthService;
+
     private final LocaleI18Service localeI18Service;
 
     /**
@@ -30,7 +34,7 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
      */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        final var operationError = buildError(HttpStatus.UNAUTHORIZED, "exception.access.denied");
+        final var operationError = buildError(HttpStatus.UNAUTHORIZED, I18Codes.I18GlobalCodes.ACCESS_DENIED);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -45,7 +49,7 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
     }
 
     private OperationError buildError(final HttpStatus status, final String message) {
-        return new OperationError(localeI18Service.getMessage(message), status.getReasonPhrase(), status.value());
+        return new OperationError(localeI18Service.getI18Message(message), status.getReasonPhrase(), status.value(), sleuthService.getSpanId(), sleuthService.getTraceId());
     }
 
 }

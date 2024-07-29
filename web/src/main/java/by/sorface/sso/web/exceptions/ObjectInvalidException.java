@@ -1,9 +1,17 @@
 package by.sorface.sso.web.exceptions;
 
-public class ObjectInvalidException extends UserRequestException {
+import org.springframework.http.HttpStatus;
 
-    public ObjectInvalidException(final String message) {
-        super(message);
+import java.util.Map;
+
+public class ObjectInvalidException extends GlobalSystemException {
+
+    public ObjectInvalidException(final String i18Code) {
+        super(i18Code, HttpStatus.BAD_REQUEST);
+    }
+
+    public ObjectInvalidException(final String i18Code, final Map<String, String> args) {
+        super(i18Code, args, HttpStatus.BAD_REQUEST);
     }
 
 }

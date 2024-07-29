@@ -3,11 +3,13 @@ package by.sorface.sso.web.facade.accounts;
 import by.sorface.sso.web.dao.models.RoleEntity;
 import by.sorface.sso.web.dao.models.UserEntity;
 import by.sorface.sso.web.exceptions.NotFoundException;
+import by.sorface.sso.web.records.I18Codes;
 import by.sorface.sso.web.records.requests.UserPatchUpdate;
 import by.sorface.sso.web.records.responses.ProfileRecord;
 import by.sorface.sso.web.services.users.UserService;
 import by.sorface.sso.web.utils.NullUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DefaultAccountFacade implements AccountFacade {
@@ -27,7 +30,7 @@ public class DefaultAccountFacade implements AccountFacade {
         final UserEntity user = userService.findById(id);
 
         if (Objects.isNull(user)) {
-            throw new NotFoundException("application.user.not-found-by-id", Map.of("id", id.toString()));
+            throw new NotFoundException(I18Codes.I18UserCodes.NOT_FOUND_BY_ID, Map.of("id", id.toString()));
         }
 
         return new ProfileRecord(
@@ -44,8 +47,10 @@ public class DefaultAccountFacade implements AccountFacade {
     public void update(final UUID id, final UserPatchUpdate userPatchUpdate) {
         final UserEntity user = userService.findById(id);
 
+        log.info("Updating user information by user ID '{}'", id);
+
         if (Objects.isNull(user)) {
-            throw new NotFoundException("application.user.not-found-by-id", Map.of("id", id.toString()));
+            throw new NotFoundException(I18Codes.I18UserCodes.NOT_FOUND_BY_ID, Map.of("id", id.toString()));
         }
 
         NullUtils.setIfNonNull(userPatchUpdate.firstname(), user::setFirstName);

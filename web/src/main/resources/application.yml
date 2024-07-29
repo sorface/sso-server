@@ -1,64 +1,11 @@
-# common properties
-sorface:
-  client:
-    domain: ${CLIENT_SERVER_DOMAIN}
-    token:
-      access-token:
-        time-to-live-cron: days
-        time-to-live-value: 30
-      refresh-token:
-        time-to-live-cron: days
-        time-to-live-value: 32
-      authorization-code:
-        time-to-live-cron: minutes
-        time-to-live-value: 30
-
-  cors:
-    options:
-      - pattern: /**
-        allowed-origins: ${CLIENT_SERVER_DOMAIN}, http://localhost:8080, http://127.0.0.1:8085, http://localhost:8085
-        allowed-headers: "*"
-        allowed-methods: "*"
-        exposed-headers: "*"
-        allow-credentials: true
-      - pattern: /v3/api-docs
-        allowed-origins: "http://localhost:8085"
-        allowed-headers: "*"
-        exposed-headers: "*"
-        allowed-methods: "*"
-        allow-credentials: true
-  cookie:
-    session:
-      domain-pattern: '^.+?\.(\w+\.[a-z]+)$'
-      path: '/'
-      name: 'JSESSIONID'
-      http-only: true
-    csrf:
-      domain: 'localhost'
-      path: '/'
-      name: 'x_csrf_token'
-      http-only: true
-
-  endpoint:
-    uri-page-signin: '${sorface.client.domain}/account/signin'
-    uri-page-signup: '${sorface.client.domain}/account/signup'
-    uri-page-not-found: '${sorface.client.domain}/account/404'
-    uri-page-profile: '${sorface.client.domain}/account'
-    uri-page-failure: "${sorface.client.domain}/failure"
-    uri-api-login: "/api/accounts/signin"
-    uri-api-logout: "/api/accounts/logout"
-
-  oauth2:
-    issuer-url: ${OAUTH_SERVER_ISSUER_URL}
-    redis:
-      complete-prefix: 'oauth2_auth_complete:'
-      init-prefix: 'oauth2_auth_init:'
-      ttl: 72000
-
 spring:
   application:
-    name: sorface-sso
-
+    name: sorface-passport
+  cloud:
+    compatibility-verifier:
+      enabled: false
+  sleuth:
+    enabled: true
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/master.yaml
@@ -131,7 +78,7 @@ spring:
       mail.smtp.ssl.enable: true
 
   session:
-    timeout: 1800
+    timeout: 30d
     redis:
       flush-mode: on_save
       namespace: sorface:session
@@ -150,3 +97,67 @@ spring:
         pool:
           max-active: 16
           max-idle: 8
+
+# common properties
+sorface:
+  client:
+    domain: ${CLIENT_SERVER_DOMAIN}
+    token:
+      access-token:
+        time-to-live-cron: days
+        time-to-live-value: 30
+      refresh-token:
+        time-to-live-cron: days
+        time-to-live-value: 32
+      authorization-code:
+        time-to-live-cron: minutes
+        time-to-live-value: 30
+
+  cors:
+    options:
+      - pattern: /**
+        allowed-origins: ${CLIENT_SERVER_DOMAIN}, http://localhost:8080, http://127.0.0.1:8085, http://localhost:8085
+        allowed-headers: "*"
+        allowed-methods: "*"
+        exposed-headers: "*"
+        allow-credentials: true
+      - pattern: /v3/api-docs
+        allowed-origins: "http://localhost:8085"
+        allowed-headers: "*"
+        exposed-headers: "*"
+        allowed-methods: "*"
+        allow-credentials: true
+  cookie:
+    session:
+      domain-pattern: '^.+?\.(\w+\.[a-z]+)$'
+      path: '/'
+      name: 'JSESSIONID'
+      http-only: true
+    csrf:
+      domain: 'localhost'
+      path: '/'
+      name: 'x_csrf_token'
+      http-only: true
+
+  endpoint:
+    uri-page-signin: '${sorface.client.domain}/account/signin'
+    uri-page-signup: '${sorface.client.domain}/account/signup'
+    uri-page-not-found: '${sorface.client.domain}/account/404'
+    uri-page-profile: '${sorface.client.domain}/account'
+    uri-page-failure: "${sorface.client.domain}/failure"
+    uri-api-login: "/api/accounts/signin"
+    uri-api-logout: "/api/accounts/logout"
+
+  oauth2:
+    issuer-url: ${OAUTH_SERVER_ISSUER_URL}
+    redis:
+      complete-prefix: 'oauth2_auth_complete:'
+      init-prefix: 'oauth2_auth_init:'
+      ttl: 72000
+logging:
+  level:
+    root: info
+    nl.basjes.parse: error
+  pattern:
+    console: '%d{dd.MM.yyyy HH:mm:ss.SSS} %highlight(%-5level) [operid -> %blue(%X{traceId:-}) | rquid -> %green(%X{spanId})] [%thread] %magenta([%file:%line]) : %msg%n'
+

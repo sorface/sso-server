@@ -1,11 +1,15 @@
 package by.sorface.sso.web.controllers;
 
 import by.sorface.sso.web.facade.clients.ApplicationClientFacade;
-import by.sorface.sso.web.records.requests.ApplicationClientDelete;
+import by.sorface.sso.web.records.I18Codes;
+import by.sorface.sso.web.records.requests.ApplicationClientPatchRequest;
 import by.sorface.sso.web.records.requests.ApplicationRegistry;
 import by.sorface.sso.web.records.responses.ApplicationClient;
 import by.sorface.sso.web.records.responses.ApplicationClientRefreshSecret;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/applications")
 @RequiredArgsConstructor
+@PreAuthorize("hasAuthority('ADMIN')")
 public class ApplicationClientController {
 
     private final ApplicationClientFacade applicationClientFacade;
@@ -36,15 +41,23 @@ public class ApplicationClientController {
         return applicationClientFacade.refreshSecret(clientId);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> delete(@RequestBody final ApplicationClientDelete applicationClientDelete) {
-        applicationClientFacade.delete(applicationClientDelete);
+    @PatchMapping("/{clientId}")
+    public ApplicationClient partialUpdate(@PathVariable("clientId") final UUID clientId,
+                                           @RequestBody final ApplicationClientPatchRequest request) {
+        return applicationClientFacade.partialUpdate(clientId, request);
+    }
+
+    @DeleteMapping("/{clientId}")
+    public ResponseEntity<?> delete(@NotNull(message = I18Codes.I18ClientCodes.ID_MUST_BE_SET)
+                                    @NotEmpty(message = I18Codes.I18ClientCodes.ID_CANNOT_BE_EMPTY)
+                                    @Pattern(regexp = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", message = I18Codes.I18ClientCodes.ID_IS_INVALID)
+                                    @PathVariable String clientId) {
+        applicationClientFacade.delete(UUID.fromString(clientId));
 
         return ResponseEntity.ok().build();
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('Admin')")
     public ApplicationClient registry(@RequestBody @Valid final ApplicationRegistry applicationRegistry) {
         return applicationClientFacade.registry(applicationRegistry);
     }

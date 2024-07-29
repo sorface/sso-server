@@ -30,7 +30,7 @@ public class CorsOptions {
 
         private boolean allowCredentials;
 
-        private Long maxAge;
+        private Long maxAge = 3600L;
     }
 
 }

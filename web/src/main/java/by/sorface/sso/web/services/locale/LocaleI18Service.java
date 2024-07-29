@@ -2,9 +2,13 @@ package by.sorface.sso.web.services.locale;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.StringSubstitutor;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -13,12 +17,22 @@ public class LocaleI18Service implements LocaleService {
 
     private final ResourceBundleMessageSource messageSource;
 
-    public String getMessage(final String code) {
-        return messageSource.getMessage(code, null, LocaleContextHolder.getLocale());
+    @Override
+    public String getI18Message(final String i18Code) {
+        return getMessage(i18Code, Map.of());
     }
 
-    public String getMessage(final String code, final Object... args) {
-        return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
+    public String getI18Message(final String i18Code, final Map<String, String> args) {
+        return getMessage(i18Code, args);
     }
 
+    private String getMessage(final String i18Code, final Map<String, String> args) {
+        if (Objects.isNull(i18Code)) {
+            return null;
+        }
+
+        final String template = messageSource.getMessage(i18Code, null, LocaleContextHolder.getLocale());
+
+        return StringSubstitutor.replace(template, args, "{", "}");
+    }
 }

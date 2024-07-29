@@ -36,7 +36,7 @@ public class AuthenticationClientErrorHandler implements AuthenticationFailureHa
                 return;
             }
 
-            final var message = localeService.getMessage(getLocalMessageByErrorCode(error));
+            final var message = localeService.getI18Message(getLocalMessageByErrorCode(error));
 
             response.sendRedirect(endpointOptions.getUriPageFailure().concat("?message=").concat(message).concat("&description=").concat(error.getDescription()));
 

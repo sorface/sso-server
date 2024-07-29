@@ -4,9 +4,9 @@ import by.sorface.sso.web.dao.models.TokenEntity;
 import by.sorface.sso.web.dao.models.UserEntity;
 import by.sorface.sso.web.exceptions.NotFoundException;
 import by.sorface.sso.web.exceptions.ObjectExpiredException;
-import by.sorface.sso.web.exceptions.ObjectInvalidException;
 import by.sorface.sso.web.exceptions.UserRequestException;
 import by.sorface.sso.web.mappers.UserMapper;
+import by.sorface.sso.web.records.I18Codes;
 import by.sorface.sso.web.records.requests.AccountSignup;
 import by.sorface.sso.web.records.requests.ConfirmEmail;
 import by.sorface.sso.web.records.responses.UserConfirm;
@@ -43,14 +43,14 @@ public class DefaultSignupFacade implements SignupFacade {
         if (Objects.nonNull(foundUserByEmail)) {
             log.warn("A user with [id {}] and [email {}] already exists", foundUserByEmail.getId(), foundUserByEmail.getEmail());
 
-            throw new UserRequestException("The user already exists with this email");
+            throw new UserRequestException(I18Codes.I18UserCodes.NOT_FOUND_BY_EMAIL);
         }
 
         final UserEntity foundUserByLogin = userService.findByUsername(user.username());
 
         if (Objects.nonNull(foundUserByLogin)) {
             log.warn("A user with [id {}] and [login {}] already exists", foundUserByLogin.getId(), foundUserByLogin.getEmail());
-            throw new UserRequestException("The user already exists with this login");
+            throw new UserRequestException(I18Codes.I18UserCodes.NOT_FOUND_BY_LOGIN);
         }
 
         log.debug("Preparing the user for saving to the database");
@@ -86,7 +86,7 @@ public class DefaultSignupFacade implements SignupFacade {
         if (Objects.isNull(token)) {
             log.warn("The token for confirming the account was not found");
 
-            throw new ObjectInvalidException("The token is invalid");
+            throw new NotFoundException(I18Codes.I18TokenCodes.NOT_FOUND);
         }
 
         this.validateTokenExpiredDate(token);
@@ -110,7 +110,7 @@ public class DefaultSignupFacade implements SignupFacade {
         if (Objects.isNull(registryToken)) {
             log.warn("User not found by email {}", email);
 
-            throw new NotFoundException("User not found by email");
+            throw new NotFoundException(I18Codes.I18TokenCodes.NOT_FOUND);
         }
 
         this.validateTokenExpiredDate(registryToken);
@@ -135,7 +135,7 @@ public class DefaultSignupFacade implements SignupFacade {
             log.warn("The token's lifetime has expired. Token expired on  {}. The token belongs to the user with the id {}",
                     expiredDate, registryToken.getUser().getId());
 
-            throw new ObjectExpiredException("The token's lifetime has expired");
+            throw new ObjectExpiredException(I18Codes.I18TokenCodes.EXPIRED);
         }
     }
 

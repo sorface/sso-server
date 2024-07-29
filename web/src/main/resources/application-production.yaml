@@ -6,6 +6,15 @@ sorface:
   cookie:
     session:
       same-site: lax
+  cors:
+    options:
+      - pattern: /**
+        allowed-origins: ${CLIENT_SERVER_DOMAIN}, http://localhost:3000, http://127.0.0.1:3000
+        allowed-headers: "*"
+        allowed-methods: "*"
+        exposed-headers: "*"
+        allow-credentials: true
+        max-age: 3600
 
 spring:
   jpa:
@@ -35,5 +44,5 @@ spring:
 
 logging:
   level:
-    root: debug
-    org.springframework.security.web: debug
+    root: info
+    org.springframework.security.web: info

@@ -1,12 +1,12 @@
-import React, { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from 'react';
+import React, {ChangeEvent, FunctionComponent, useContext, useEffect, useState} from 'react';
 import defaultAvatarImage from './img/anonymus_avatar.png';
-import { Captions, IconNames } from "../../constants";
-import { Icon } from '../../components/Icon/Icon';
-import { AuthContext } from '../../context/AuthContext';
-import { LogoutForm } from '../../components/LogoutForm/LogoutForm';
-import { useApiMethodCsrf } from '../../hooks/useApiMethodCsrf';
-import { EditAccountBody, accountsApiDeclaration } from '../../apiDeclarations';
-import { Loader } from '../../components/Loader/Loader';
+import {Captions, IconNames} from "../../constants";
+import {Icon} from '../../components/Icon/Icon';
+import {AuthContext} from '../../context/AuthContext';
+import {LogoutForm} from '../../components/LogoutForm/LogoutForm';
+import {useApiMethodCsrf} from '../../hooks/useApiMethodCsrf';
+import {accountsApiDeclaration, EditAccountBody} from '../../apiDeclarations';
+import {Loader} from '../../components/Loader/Loader';
 
 import './Account.css';
 
@@ -44,6 +44,15 @@ export const Account: FunctionComponent = () => {
         loadAccount();
     }, [data, loadAccount]);
 
+    useEffect(() => {
+        console.log('pre', apiMethodState.data);
+        if (apiMethodState.data == null) {
+            return;
+        }
+        console.log('post', apiMethodState.data);
+        loadAccount();
+    }, [apiMethodState.data, loadAccount]);
+
     const handleEditedFieldSave = () => {
         if (!account) {
             console.warn('Account is empty')
@@ -70,13 +79,13 @@ export const Account: FunctionComponent = () => {
             editable: false,
         },
         {
-            name: 'firstName',
+            name: 'firstname',
             caption: Captions.FirstName,
             value: account?.firstName,
             editable: true,
         },
         {
-            name: 'lastName',
+            name: 'lastname',
             caption: Captions.LastName,
             value: account?.lastName,
             editable: true,
