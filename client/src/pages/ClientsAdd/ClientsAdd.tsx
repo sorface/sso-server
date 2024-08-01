@@ -24,8 +24,7 @@ export const ClientsAdd: FunctionComponent = () => {
     const {fetchData, apiMethodState} = useApiMethodCsrf<Client, CreateAppBody>(appsApiDeclaration.create);
 
     const {
-        data,
-        process: {loading, error}
+        data
     } = apiMethodState;
 
     const handleSubmit = (formData: FormData) => {
