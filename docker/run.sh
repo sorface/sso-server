@@ -1,0 +1,1 @@
+docker-compose up redis postgresql passport.sorface

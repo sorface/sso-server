@@ -16,10 +16,10 @@ databaseChangeLog:
                   value: 4d1060a2-e148-44cf-9a21-397adcedf6ea
               - column:
                   name: C_CLIENTID
-                  value: charp
+                  value: ZFXYNOMYEJTwGkpbCCTIRrAkMHxKfNcHtUbhGuqBHCaSAVprAtpqmLY@sorface.oauth.client
               - column:
                   name: C_CLIENTSECRET
-                  value: $2a$10$vj2r7xcYGX8aGnVAXYrs3etr54J8wngAGYDv9fyOlBba3mGpJbqa.
+                  value: $2a$10$gWp1PH0uoYs9Y/ycSDIFwO4VP8tOg6fhHyl1/YKUPVfEP0omc2/RK
               - column:
                   name: C_CLIENTNAME
                   value: Клиент C# backend
@@ -32,3 +32,6 @@ databaseChangeLog:
               - column:
                   name: C_CLIENTSECRETEXPIRESAT
                   value: "2072-11-09 20:20:39.000000"
+              - column:
+                  name: C_CREATEDBY
+                  value: 4d1060a8-e148-44cf-9a26-397adcedf6ea

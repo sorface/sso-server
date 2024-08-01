@@ -31,22 +31,22 @@ services:
     env_file:
       - .docker.pgsql.env
 
-  sorface.security:
-    container_name: "sorface.security"
-
+  passport.sorface:
     build:
       context: ../
       dockerfile: docker/sso/Dockerfile
     restart: always
 
+    ports:
+      - "8080:8080"
+
     depends_on:
       - redis
       - postgresql
     env_file:
-      - .docker.sorface.sso.backend.env
+      - .docker.backend.env
 
-  sorface.security.proxy:
-    container_name: "sorface.security.proxy"
+  passport.sorface.frontend:
     restart: always
     build:
       context: ../
@@ -57,6 +57,6 @@ services:
         - NGINX_DOMAIN=localhost
         - NGINX_SECURITY_BACKEND_URL=http://sorface.security:8080
     depends_on:
-      - sorface.security
+      - passport.sorface
     ports:
       - "8080:80"

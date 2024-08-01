@@ -1,4 +1,4 @@
-# production
+# local.docker
 server:
   port: 8080
 
@@ -9,7 +9,7 @@ sorface:
   cors:
     options:
       - pattern: /**
-        allowed-origins: ${CLIENT_SERVER_DOMAIN}
+        allowed-origins: ${CLIENT_SERVER_DOMAIN}, http://localhost:3000, http://127.0.0.1:3000
         allowed-headers: "*"
         allowed-methods: "*"
         exposed-headers: "*"
@@ -40,9 +40,10 @@ spring:
       register-mbeans: true
 
   liquibase:
-    contexts: production
+    contexts: development
 
 logging:
   level:
     root: info
-    org.springframework.security.web: info
+    nl.basjes.parse: error
+    org.springframework.security.web: error
