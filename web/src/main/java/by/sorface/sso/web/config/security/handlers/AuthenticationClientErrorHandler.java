@@ -48,7 +48,7 @@ public class AuthenticationClientErrorHandler implements AuthenticationFailureHa
     }
 
     private String getLocalMessageByErrorCode(final OAuth2Error error) {
-        String errorMessage = Stream.of(
+        return Stream.of(
                         OAuth2ErrorCodes.INVALID_REQUEST,
                         OAuth2ErrorCodes.UNAUTHORIZED_CLIENT,
                         OAuth2ErrorCodes.ACCESS_DENIED,
@@ -65,8 +65,7 @@ public class AuthenticationClientErrorHandler implements AuthenticationFailureHa
                 )
                 .filter(it -> it.equalsIgnoreCase(error.getErrorCode()))
                 .findFirst()
-                .orElse(OAuth2ErrorCodes.SERVER_ERROR);
-
-        return "client.error.".concat(errorMessage);
+                .map("client.error."::concat)
+                .orElse("client.error." + OAuth2ErrorCodes.SERVER_ERROR);
     }
 }
