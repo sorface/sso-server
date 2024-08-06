@@ -67,6 +67,6 @@ public class AuthenticationClientErrorHandler implements AuthenticationFailureHa
                 .findFirst()
                 .orElse(OAuth2ErrorCodes.SERVER_ERROR);
 
-        return "message.client.error.".concat(errorMessage);
+        return "client.error.".concat(errorMessage);
     }
 }
