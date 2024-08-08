@@ -1,12 +1,12 @@
-import React, {ChangeEvent, FunctionComponent, useContext, useEffect, useState} from 'react';
-import defaultAvatarImage from './img/anonymus_avatar.png';
-import {Captions, IconNames} from "../../constants";
-import {Icon} from '../../components/Icon/Icon';
-import {AuthContext} from '../../context/AuthContext';
-import {LogoutForm} from '../../components/LogoutForm/LogoutForm';
-import {useApiMethodCsrf} from '../../hooks/useApiMethodCsrf';
-import {accountsApiDeclaration, EditAccountBody} from '../../apiDeclarations';
-import {Loader} from '../../components/Loader/Loader';
+import React, { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from 'react';
+import { Captions, IconNames } from "../../constants";
+import { Icon } from '../../components/Icon/Icon';
+import { AuthContext } from '../../context/AuthContext';
+import { LogoutForm } from '../../components/LogoutForm/LogoutForm';
+import { useApiMethodCsrf } from '../../hooks/useApiMethodCsrf';
+import { accountsApiDeclaration, EditAccountBody } from '../../apiDeclarations';
+import { Loader } from '../../components/Loader/Loader';
+import { UserAvatar } from '../../components/UserAvatar/UserAvatar';
 
 import './Account.css';
 
@@ -94,9 +94,11 @@ export const Account: FunctionComponent = () => {
 
     return (
         <div className='account-page'>
-            <div className="avatar">
-                <img src={account?.avatar || defaultAvatarImage} alt="avatar" />
-            </div>
+            <UserAvatar
+                nickname={`${account?.firstName} ${account?.lastName}`}
+                caption={`${account?.firstName[0].toUpperCase()} ${account?.lastName[0].toUpperCase()}`}
+                src={account?.avatar}
+            />
             {!!error && (<div>{Captions.Error}: {error}</div>)}
             {!!loading && (<div><Loader /></div>)}
             <table className="user-data-table">
