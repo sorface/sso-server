@@ -1,10 +1,11 @@
-import {useCallback, useReducer} from 'react';
-import {REACT_APP_BACKEND_URL} from '../config';
-import {ApiContract} from '../types/apiContracts';
+import { useCallback, useReducer } from 'react';
+import { REACT_APP_BACKEND_URL } from '../config';
+import { ApiContract } from '../types/apiContracts';
 
 export interface ApiMethodState<ResponseData = any> {
     process: {
         loading: boolean;
+        code: number | null;
         error: string | null;
     };
     data: ResponseData | null;
@@ -13,6 +14,7 @@ export interface ApiMethodState<ResponseData = any> {
 const initialState: ApiMethodState = {
     process: {
         loading: false,
+        code: null,
         error: null,
     },
     data: null,
@@ -26,6 +28,9 @@ type ApiMethodAction = {
 } | {
     name: 'setError';
     payload: string;
+} | {
+    name: 'setCode';
+    payload: number;
 };
 
 const apiMethodReducer = (state: ApiMethodState, action: ApiMethodAction): ApiMethodState => {
@@ -35,6 +40,7 @@ const apiMethodReducer = (state: ApiMethodState, action: ApiMethodAction): ApiMe
                 process: {
                     loading: true,
                     error: null,
+                    code: null,
                 },
                 data: null,
             };
@@ -42,6 +48,7 @@ const apiMethodReducer = (state: ApiMethodState, action: ApiMethodAction): ApiMe
             return {
                 ...state,
                 process: {
+                    ...state.process,
                     loading: false,
                     error: action.payload
                 }
@@ -49,10 +56,19 @@ const apiMethodReducer = (state: ApiMethodState, action: ApiMethodAction): ApiMe
         case 'setData':
             return {
                 process: {
+                    ...state.process,
                     loading: false,
                     error: null,
                 },
                 data: action.payload
+            };
+        case 'setCode':
+            return {
+                ...state,
+                process: {
+                    ...state.process,
+                    code: action.payload,
+                },
             };
         default:
             return state;
@@ -91,7 +107,7 @@ const createFetchRequestInit = (apiContract: ApiContract): RequestInit => {
         return defaultRequestInit;
     }
 
-    const {body} = apiContract;
+    const { body } = apiContract;
 
     const headers = new Headers();
     headers.append("Content-Type", 'application/json;charset=UTF-8')
@@ -131,20 +147,24 @@ export const useApiMethod = <ResponseData, RequestData = AnyObject>(apiContractC
     const [apiMethodState, dispatch] = useReducer(apiMethodReducer, initialState);
 
     const fetchData = useCallback(async (requestData: RequestData, additionalUrlParams?: object) => {
-        dispatch({name: 'startLoad'});
+        dispatch({ name: 'startLoad' });
         const apiContract = apiContractCall(requestData);
         try {
             const response = await fetch(
                 createFetchUrl(apiContract, additionalUrlParams),
                 createFetchRequestInit(apiContract),
             );
+            dispatch({
+                name: 'setCode',
+                payload: response.status,
+            });
 
             const responseData = await getResponseContent(response);
             if (!response.ok) {
                 const errorMessage = getResponseError(response, responseData, apiContract);
                 throw new Error(errorMessage);
             }
-            dispatch({name: 'setData', payload: responseData});
+            dispatch({ name: 'setData', payload: responseData });
         } catch (err: any) {
             dispatch({
                 name: 'setError',

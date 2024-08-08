@@ -43,12 +43,12 @@ export const Clients: FunctionComponent = () => {
     }, [data]);
 
     useEffect(() => {
-        if (!!deleteApiMethodState.data) {
+        if (deleteApiMethodState.process.code !== 200) {
             return;
         }
 
         fetchData(undefined);
-    }, [deleteApiMethodState.data, fetchData]);
+    }, [deleteApiMethodState.process.code, fetchData]);
 
     const handleDelete = (id: string) => () => {
         deleteFetch(id);
