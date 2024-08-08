@@ -12,6 +12,7 @@ export const useApiMethodCsrf = <ResponseData, RequestData = AnyObject>(apiContr
   const apiMethodState: ApiMethodState<ResponseData> = {
     data: apiMethodStateInternal.data,
     process: {
+      code: apiMethodStateInternal.process.code,
       error: apiMethodStateInternal.process.error || csrfConfigError,
       loading: apiMethodStateInternal.process.loading || csrfConfigLoading,
     },
