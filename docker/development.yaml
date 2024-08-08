@@ -1,0 +1,49 @@
+version: '3.9'
+
+networks:
+  a-center:
+    external: true
+
+# docker network create --driver=bridge --subnet=172.28.0.0/16 --ip-range=172.28.5.0/24 --gateway=172.28.5.254 a-center
+
+services:
+  redis:
+    container_name: "redis"
+
+    build:
+      context: .
+      dockerfile: redis/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    env_file:
+      - .docker.redis.env
+    hostname: redis.net
+
+  postgresql:
+    container_name: "postgres"
+
+    build:
+      context: postgresql
+      dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
+    env_file:
+      - .docker.pgsql.env
+
+  passport.sorface:
+    container_name: "passport.sorface"
+
+    build:
+      context: ../
+      dockerfile: docker/sso/Dockerfile
+    restart: always
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - redis
+      - postgresql
+    env_file:
+      - .docker.backend.env
