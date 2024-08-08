@@ -46,4 +46,4 @@ services:
       - redis
       - postgresql
     env_file:
-      - .docker.backend.env
+      - .docker.passport.sorface.backend.development.env

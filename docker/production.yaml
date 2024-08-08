@@ -43,7 +43,7 @@ services:
       - redis
       - postgresql
     env_file:
-      - .docker.backend.env
+      - .docker.passport.sorface.backend.production.env
 
   passport.sorface.frontend:
     container_name: "passport.sorface.frontend"
