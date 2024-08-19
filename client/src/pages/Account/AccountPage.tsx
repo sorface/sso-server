@@ -9,6 +9,7 @@ import { Loader } from '../../components/Loader/Loader';
 import { UserAvatar } from '../../components/UserAvatar/UserAvatar';
 
 import './Account.css';
+import {Account} from "../../types/account";
 
 interface ProfileField {
     name: string;
@@ -17,7 +18,7 @@ interface ProfileField {
     editable: boolean;
 }
 
-export const Account: FunctionComponent = () => {
+export const AccountPage: FunctionComponent = () => {
     const { account, loadAccount } = useContext(AuthContext);
     const { fetchData, apiMethodState } = useApiMethodCsrf<unknown, EditAccountBody>(accountsApiDeclaration.edit);
     const { data, process: { error, loading } } = apiMethodState;
@@ -65,6 +66,15 @@ export const Account: FunctionComponent = () => {
         });
     };
 
+    const getCaptionTextAvatar = (account: Account | null) : string | undefined => {
+        if (account?.firstName && account?.lastName) {
+            return `${account?.firstName[0].toUpperCase()} ${account?.lastName[0].toUpperCase()}`
+        }
+
+        return account?.nickname.charAt(0);
+    }
+
+
     const fields: ProfileField[] = [
         {
             name: 'id',
@@ -95,8 +105,8 @@ export const Account: FunctionComponent = () => {
     return (
         <div className='account-page'>
             <UserAvatar
-                nickname={`${account?.firstName} ${account?.lastName}`}
-                caption={`${account?.firstName[0].toUpperCase()} ${account?.lastName[0].toUpperCase()}`}
+                nickname={`${account?.nickname}`}
+                caption={getCaptionTextAvatar(account)}
                 src={account?.avatar}
             />
             {!!error && (<div>{Captions.Error}: {error}</div>)}

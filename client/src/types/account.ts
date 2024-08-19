@@ -4,6 +4,7 @@ export enum AccountRole {
 
 export interface Account {
   id: string;
+  nickname: string;
   email: string;
   firstName: string;
   lastName: string;

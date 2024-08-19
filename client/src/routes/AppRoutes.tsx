@@ -2,7 +2,7 @@ import React, {FunctionComponent, useContext} from 'react';
 import {Navigate, Route, Routes} from 'react-router-dom';
 import {AuthContext} from '../context/AuthContext';
 import {pathnames} from '../constants';
-import {Account} from '../pages/Account/Account';
+import {AccountPage} from '../pages/Account/AccountPage';
 import {NotFound} from '../pages/NotFound/NotFound';
 import {SignIn} from '../pages/SignIn/SignIn';
 import {Activate} from '../pages/Activate/Activate';
@@ -30,7 +30,7 @@ export const AppRoutes: FunctionComponent = () => {
             <Route path={pathnames.account}
                    element={
                        <ProtectedRoute {...authenticatedRouteProps}>
-                           <Account/>
+                           <AccountPage/>
                        </ProtectedRoute>
                    }
             />
