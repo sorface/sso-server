@@ -6,8 +6,8 @@ export interface Account {
   id: string;
   nickname: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   avatar: string;
   roles: AccountRole[];
 }

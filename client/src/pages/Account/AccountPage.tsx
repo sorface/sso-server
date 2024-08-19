@@ -7,9 +7,9 @@ import { useApiMethodCsrf } from '../../hooks/useApiMethodCsrf';
 import { accountsApiDeclaration, EditAccountBody } from '../../apiDeclarations';
 import { Loader } from '../../components/Loader/Loader';
 import { UserAvatar } from '../../components/UserAvatar/UserAvatar';
+import { getUserAvatarCaption } from '../../utils/getUserAvatarCaption';
 
 import './Account.css';
-import {Account} from "../../types/account";
 
 interface ProfileField {
     name: string;
@@ -66,15 +66,6 @@ export const AccountPage: FunctionComponent = () => {
         });
     };
 
-    const getCaptionTextAvatar = (account: Account | null) : string | undefined => {
-        if (account?.firstName && account?.lastName) {
-            return `${account?.firstName[0].toUpperCase()} ${account?.lastName[0].toUpperCase()}`
-        }
-
-        return account?.nickname.charAt(0);
-    }
-
-
     const fields: ProfileField[] = [
         {
             name: 'id',
@@ -106,7 +97,7 @@ export const AccountPage: FunctionComponent = () => {
         <div className='account-page'>
             <UserAvatar
                 nickname={`${account?.nickname}`}
-                caption={getCaptionTextAvatar(account)}
+                caption={getUserAvatarCaption(account)}
                 src={account?.avatar}
             />
             {!!error && (<div>{Captions.Error}: {error}</div>)}
