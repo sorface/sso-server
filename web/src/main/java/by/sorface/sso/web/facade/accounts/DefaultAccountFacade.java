@@ -35,9 +35,11 @@ public class DefaultAccountFacade implements AccountFacade {
 
         return new ProfileRecord(
                 user.getId(),
+                user.getUsername(),
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
+                user.getMiddleName(),
                 user.getAvatarUrl(),
                 user.getRoles().stream().map(RoleEntity::getValue).toList());
     }

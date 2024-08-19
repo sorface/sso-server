@@ -6,5 +6,12 @@ import java.util.List;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ProfileRecord(UUID id, String email, String firstName, String lastName, String avatar, List<String> roles) {
+public record ProfileRecord(UUID id,
+                            String nickname,
+                            String email,
+                            String firstName,
+                            String lastName,
+                            String middleName,
+                            String avatar,
+                            List<String> roles) {
 }
