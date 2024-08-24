@@ -5,9 +5,11 @@ import by.sorface.sso.web.records.I18Codes;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import by.sorface.sso.web.records.tokens.IntrospectionPrincipal;
 import by.sorface.sso.web.records.tokens.TokenRecord;
+import by.sorface.sso.web.utils.json.Json;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -67,9 +70,13 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
      * @return An object of type tokenrecord
      */
     private TokenRecord getToken(final OAuth2TokenIntrospectionAuthenticationToken authenticationToken) {
+        log.debug("introspect token for user '{}'", Json.lazyStringify(authenticationToken.getPrincipal()));
+
         final var tokenRecordBuilder = TokenRecord.builder().active(false);
 
         if (!authenticationToken.getTokenClaims().isActive()) {
+            log.debug("token is not active for user '{}'", Json.lazyStringify(authenticationToken.getPrincipal()));
+
             return tokenRecordBuilder.build();
         }
 
@@ -88,11 +95,15 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
                 .clientId(claims.getClientId())
                 .tokenType(claims.getTokenType());
 
+        log.debug("introspect active token for user '{}'", Json.lazyStringify(authenticationToken.getPrincipal()));
+
         final String token = authenticationToken.getToken();
 
         final var oAuth2Authorization = oAuth2AuthorizationService.findByToken(token, OAuth2TokenType.ACCESS_TOKEN);
 
         if (Objects.isNull(oAuth2Authorization)) {
+            log.debug("token is not active for user '{}', because oath2 authorization is null.", Json.lazyStringify(authenticationToken.getPrincipal()));
+
             return tokenRecordBuilder.build();
         }
 

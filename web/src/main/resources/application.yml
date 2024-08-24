@@ -106,11 +106,11 @@ sorface:
     domain: ${CLIENT_SERVER_DOMAIN}
     token:
       access-token:
-        time-to-live-cron: days
-        time-to-live-value: 30
+        time-to-live-cron: minutes
+        time-to-live-value: 2
       refresh-token:
         time-to-live-cron: days
-        time-to-live-value: 32
+        time-to-live-value: 5
       authorization-code:
         time-to-live-cron: minutes
         time-to-live-value: 30

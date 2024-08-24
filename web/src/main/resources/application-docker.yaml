@@ -9,7 +9,7 @@ sorface:
   cors:
     options:
       - pattern: /**
-        allowed-origins: ${CLIENT_SERVER_DOMAIN}, http://localhost:3000, http://127.0.0.1:3000
+        allowed-origins: ${CLIENT_SERVER_DOMAIN}, http://localhost:3000, http://127.0.0.1:3000, http://localhost:3001, http://127.0.0.1:3001
         allowed-headers: "*"
         allowed-methods: "*"
         exposed-headers: "*"
@@ -44,6 +44,6 @@ spring:
 
 logging:
   level:
-    root: info
+    root: debug
     nl.basjes.parse: error
-    org.springframework.security.web: error
+    org.springframework.security.web: debug
