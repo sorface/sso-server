@@ -80,7 +80,7 @@ spring:
       mail.smtp.ssl.enable: true
 
   session:
-    timeout: 30d
+    timeout: 5d
     redis:
       flush-mode: on_save
       namespace: sorface:session
@@ -107,7 +107,7 @@ sorface:
     token:
       access-token:
         time-to-live-cron: minutes
-        time-to-live-value: 2
+        time-to-live-value: 30
       refresh-token:
         time-to-live-cron: days
         time-to-live-value: 5
