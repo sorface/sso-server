@@ -6,8 +6,14 @@
     --active: #b9221c;
     --link: #0066CC;
     --text: #1F1F1F;
-    --page-bg: #F0F0F0;
-    --button-border-color: #D9D9D9;
+    --dark: #24243A;
+    --grey3: #838AA4;
+    --grey2: #C3CBDF;
+    --grey1: #F5F6F8;
+    --white: #FFFFFF;
+    --light-active: #DFE4F0;
+    --page-bg: var(--grey1);
+    --button-border-color: var(--grey2);
     --button-hover-color: #4096FF;
     --button-bg: #FFF;
     --list-border-color: #444;
@@ -18,9 +24,9 @@
 
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-        sans-serif;
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-size: 16px;
@@ -62,7 +68,8 @@ button {
     text-decoration: none;
     cursor: pointer;
     transition: 300ms !important;
-    border-radius: var(--border-radius);
+    font-family: 'Manrope';
+    border-radius: 0.75rem;
 }
 
 button:hover,

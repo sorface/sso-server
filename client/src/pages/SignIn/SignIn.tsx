@@ -1,16 +1,17 @@
-import React, {Fragment, FunctionComponent, MouseEvent, useState} from 'react';
-import {Captions} from '../../constants';
-import {Field, Form} from '../../components/Form/Form';
+import React, { Fragment, FunctionComponent, MouseEvent, useState } from 'react';
+import { Captions } from '../../constants';
+import { Field, Form } from '../../components/Form/Form';
 import githubLogo from './img/github.svg';
 import yandexLogo from './img/yandex.svg';
 import twitchLogo from './img/twitch.svg';
 import emailLogo from './img/email-svgrepo-com.svg';
-import {FormWrapper} from '../../components/Form/FormWrapper';
-import {useQueryFromErrors} from '../../hooks/useQueryFromErrors';
-import {ApiEndpoint} from '../../types/apiContracts';
+import { FormWrapper } from '../../components/Form/FormWrapper';
+import { useQueryFromErrors } from '../../hooks/useQueryFromErrors';
+import { ApiEndpoint } from '../../types/apiContracts';
+import { REACT_APP_BACKEND_URL } from "../../config";
+import { PageLogo } from '../../components/PageLogo/PageLogo';
 
 import './SignIn.css';
-import {REACT_APP_BACKEND_URL} from "../../config";
 
 const emailFields: Field[] = [
     {
@@ -63,14 +64,24 @@ export const SignIn: FunctionComponent = () => {
 
     return (
         <div className='page-sign'>
+            <div className='page-sign-header'>
+                <PageLogo />
+                <h1>SORFACE</h1>
+            </div>
             <FormWrapper>
                 <div className="signin-container">
-                    <h1>{Captions.WelcomeToSSO}</h1>
+                    <h2>{Captions.WelcomeToSSO}</h2>
                     {signinItems.map(signinItem => (
                         <Fragment key={signinItem.name}>
+                            {signinItem.name === 'Email' && (
+                                <div className='signin-emailSplit-container'>
+                                    <div className='signin-emailSplit'></div>
+                                    <div className='signin-emailSplitCaption'>Or</div>
+                                    <div className='signin-emailSplit'></div>
+                                </div>
+                            )}
                             {signinItem.fields ? (
                                 <>
-                                    <hr/>
                                     <Form
                                         htmlMethod='POST'
                                         htmlAction={ApiEndpoint.AccountsSignin}
