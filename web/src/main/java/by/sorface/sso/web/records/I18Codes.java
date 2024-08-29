@@ -28,6 +28,8 @@ public class I18Codes {
 
         public static final String ALREADY_AUTHENTICATED = "user.already_authenticated";
 
+        public static final String EMAIL_NOT_VALID = "user.email.not_valid";
+
     }
 
     public static class I18ClientCodes {
@@ -55,6 +57,8 @@ public class I18Codes {
         public static final String EXPIRED = "token.expired";
 
         public static final String NOT_FOUND = "token.not_found";
+
+        public static final String INVALID_OPERATION_TYPE = "token.invalid_operation_type";
 
     }
 

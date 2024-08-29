@@ -19,7 +19,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,12 +51,8 @@ public class AccountController {
         return accountFacade.getCurrent(principal.getId());
     }
 
-    @PostMapping(
-            value = "/signup",
-            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public AccountSignupResponse signupWithSignIn(final AccountSignup accountSignup,
+    @PostMapping(value = "/signup")
+    public AccountSignupResponse signupWithSignIn(@RequestBody final AccountSignup accountSignup,
                                                   final HttpServletRequest request,
                                                   final HttpServletResponse response) throws IOException, ServletException {
         signupEmailFacade.signup(accountSignup);

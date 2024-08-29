@@ -2,8 +2,8 @@ package by.sorface.sso.web.facade.signup;
 
 import by.sorface.sso.web.dao.models.TokenEntity;
 import by.sorface.sso.web.dao.models.UserEntity;
+import by.sorface.sso.web.dao.models.enums.TokenOperationType;
 import by.sorface.sso.web.exceptions.NotFoundException;
-import by.sorface.sso.web.exceptions.ObjectExpiredException;
 import by.sorface.sso.web.exceptions.UserRequestException;
 import by.sorface.sso.web.mappers.UserMapper;
 import by.sorface.sso.web.records.I18Codes;
@@ -11,6 +11,7 @@ import by.sorface.sso.web.records.requests.AccountSignup;
 import by.sorface.sso.web.records.requests.ConfirmEmail;
 import by.sorface.sso.web.records.responses.UserConfirm;
 import by.sorface.sso.web.records.responses.UserRegisteredHash;
+import by.sorface.sso.web.services.tokens.DefaultTokenValidator;
 import by.sorface.sso.web.services.tokens.TokenService;
 import by.sorface.sso.web.services.users.UserService;
 import by.sorface.sso.web.utils.json.mask.MaskerFields;
@@ -19,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Slf4j
@@ -33,6 +33,8 @@ public class DefaultSignupFacade implements SignupFacade {
 
     private final UserMapper userMapper;
 
+    private final DefaultTokenValidator defaultTokenValidator;
+
     @Override
     @Transactional
     public UserRegisteredHash signup(final AccountSignup user) throws UserRequestException {
@@ -43,7 +45,7 @@ public class DefaultSignupFacade implements SignupFacade {
         if (Objects.nonNull(foundUserByEmail)) {
             log.warn("A user with [id {}] and [email {}] already exists", foundUserByEmail.getId(), foundUserByEmail.getEmail());
 
-            throw new UserRequestException(I18Codes.I18UserCodes.NOT_FOUND_BY_EMAIL);
+            throw new UserRequestException(I18Codes.I18UserCodes.ALREADY_EXISTS_WITH_THIS_EMAIL);
         }
 
         final UserEntity foundUserByLogin = userService.findByUsername(user.username());
@@ -63,7 +65,7 @@ public class DefaultSignupFacade implements SignupFacade {
 
         log.info("Preparing a hash token for user");
 
-        final TokenEntity registryToken = tokenService.saveForUser(savedUser);
+        final TokenEntity registryToken = tokenService.saveForUser(savedUser, TokenOperationType.CONFIRM_EMAIL);
 
         log.info("The hash token {} created for account", registryToken.getHash().substring(0, 5).concat("..."));
 
@@ -83,13 +85,8 @@ public class DefaultSignupFacade implements SignupFacade {
 
         final var token = tokenService.findByHash(confirmEmail.token());
 
-        if (Objects.isNull(token)) {
-            log.warn("The token for confirming the account was not found");
-
-            throw new NotFoundException(I18Codes.I18TokenCodes.NOT_FOUND);
-        }
-
-        this.validateTokenExpiredDate(token);
+        defaultTokenValidator.validateOperation(token, TokenOperationType.CONFIRM_EMAIL);
+        defaultTokenValidator.validateExpiredDate(token);
 
         final UserEntity user = token.getUser();
 
@@ -113,7 +110,8 @@ public class DefaultSignupFacade implements SignupFacade {
             throw new NotFoundException(I18Codes.I18TokenCodes.NOT_FOUND);
         }
 
-        this.validateTokenExpiredDate(registryToken);
+        defaultTokenValidator.validateOperation(registryToken, TokenOperationType.CONFIRM_EMAIL);
+        defaultTokenValidator.validateExpiredDate(registryToken);
 
         final UserEntity user = registryToken.getUser();
 
@@ -124,19 +122,6 @@ public class DefaultSignupFacade implements SignupFacade {
                 user.getFirstName(),
                 user.getLastName()
         );
-    }
-
-    private void validateTokenExpiredDate(TokenEntity registryToken) {
-        log.info("The token received {}", MaskerFields.TOKEN.mask(registryToken.getHash()));
-
-        final LocalDateTime expiredDate = registryToken.getModifiedDate().plusDays(30);
-
-        if (expiredDate.isBefore(LocalDateTime.now())) {
-            log.warn("The token's lifetime has expired. Token expired on  {}. The token belongs to the user with the id {}",
-                    expiredDate, registryToken.getUser().getId());
-
-            throw new ObjectExpiredException(I18Codes.I18TokenCodes.EXPIRED);
-        }
     }
 
 }

@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2023_10_22_15_05_ADD_TABLE_REGISTRYTOKEN
+      comment: Добавление столбца в таблицу T_REGISTRYTOKEN
+      author: Pavel Talaika
+
+      context: "development, production"
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            columnExists:
+              tableName: T_REGISTRYTOKEN
+              columnName: C_OPERATION_TYPE
+
+      changes:
+        - addColumn:
+            tableName: T_REGISTRYTOKEN
+            columns:
+              - column:
+                  name: C_OPERATION_TYPE
+                  type: VARCHAR(155)
+                  value: CONFIRM_EMAIL

@@ -1,5 +1,6 @@
 package by.sorface.sso.web.dao.models;
 
+import by.sorface.sso.web.dao.models.enums.TokenOperationType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +17,9 @@ public class TokenEntity extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "C_USERID", referencedColumnName = "C_ID")
     private UserEntity user;
+
+    @Column(name = "C_OPERATION_TYPE")
+    @Enumerated(EnumType.STRING)
+    private TokenOperationType operationType;
 
 }

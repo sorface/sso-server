@@ -44,6 +44,4 @@ spring:
 
 logging:
   level:
-    root: debug
-    nl.basjes.parse: error
-    org.springframework.security.web: debug
+    root: info

@@ -2,6 +2,7 @@ package by.sorface.sso.web.services.tokens;
 
 import by.sorface.sso.web.dao.models.TokenEntity;
 import by.sorface.sso.web.dao.models.UserEntity;
+import by.sorface.sso.web.dao.models.enums.TokenOperationType;
 import by.sorface.sso.web.dao.repository.RegistryTokenRepository;
 import by.sorface.sso.web.utils.HashUtils;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +22,14 @@ public class DefaultTokenService implements TokenService {
     }
 
     @Transactional
-    public TokenEntity saveForUser(final UserEntity user) {
+    public TokenEntity saveForUser(final UserEntity user, final TokenOperationType operationType) {
         final String hash = HashUtils.generateRegistryHash(50);
 
         final var registryTokenEntity = new TokenEntity();
         {
             registryTokenEntity.setHash(hash);
             registryTokenEntity.setUser(user);
+            registryTokenEntity.setOperationType(operationType);
         }
 
         return registryTokenRepository.save(registryTokenEntity);
