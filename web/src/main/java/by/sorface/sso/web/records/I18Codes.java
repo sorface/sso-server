@@ -68,6 +68,10 @@ public class I18Codes {
 
         public static final String CONFIRMATION_REGISTRATION = "email.confirmation_registration";
 
+        public static final String SUBJECT_TITLE_RESET_PASSWORD = "email.title_reset_password";
+
+        public static final String TEMPLATE_RENEW_PASSWORD = "email.template_renew_password";
+
     }
 
 }

@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -24,8 +23,6 @@ import java.util.Optional;
 public class DefaultEmailService implements EmailService {
 
     public static final String CLASSPATH_STATIC_IMAGES = "/static/images/";
-
-    private final ResourceLoader imageResourceLoader;
 
     private final TemplateEngine templateEngine;
 

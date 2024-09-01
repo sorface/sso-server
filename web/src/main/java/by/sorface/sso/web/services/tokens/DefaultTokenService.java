@@ -36,8 +36,15 @@ public class DefaultTokenService implements TokenService {
     }
 
     @Override
-    public TokenEntity findTokenByEmail(final String email) {
+    @Transactional(readOnly = true)
+    public TokenEntity findByEmail(final String email) {
         return registryTokenRepository.findByUser_Email(email);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByHash(final String hash) {
+        registryTokenRepository.deleteByHashIgnoreCase(hash);
     }
 
 }

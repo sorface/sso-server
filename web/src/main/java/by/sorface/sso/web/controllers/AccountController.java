@@ -19,6 +19,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -81,6 +83,13 @@ public class AccountController {
     @PostMapping("/confirm")
     public UserConfirm confirm(@RequestBody final ConfirmEmail token) {
         return signupFacade.confirm(token);
+    }
+
+    @PostMapping("/locale")
+    public ResponseEntity<?> changeLocale(@RequestParam String lang) {
+        return ResponseEntity.ok(
+                Map.of("language", LocaleContextHolder.getLocale())
+        );
     }
 
     @PostMapping("/confirm/resend")

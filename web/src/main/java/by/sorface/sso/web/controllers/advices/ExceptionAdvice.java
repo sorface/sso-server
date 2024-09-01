@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestControllerAdvice(
         basePackageClasses = {
@@ -61,7 +62,14 @@ public class ExceptionAdvice {
                     final var validateError = new ValidateOperationError.ValidateError();
                     {
                         validateError.setField(((FieldError) error).getField());
-                        validateError.setMessage(error.getDefaultMessage());
+
+                        String message = localeI18Service.getI18Message(error.getDefaultMessage());
+
+                        if (Objects.isNull(message)) {
+                            message = error.getDefaultMessage();
+                        }
+
+                        validateError.setMessage(message);
                     }
 
                     return validateError;

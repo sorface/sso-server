@@ -23,9 +23,11 @@ public class CsrfConfiguration {
 
         cookieCsrfTokenRepository.setCookiePath(csrfCookieOptions.getPath());
         cookieCsrfTokenRepository.setCookieName(csrfCookieOptions.getName());
-        cookieCsrfTokenRepository.setCookieHttpOnly(csrfCookieOptions.isHttpOnly());
-        cookieCsrfTokenRepository.setCookieDomain(csrfCookieOptions.getDomain());
-        cookieCsrfTokenRepository.setSecure(true);
+        cookieCsrfTokenRepository.setCookieCustomizer(cookieBuilder -> {
+            cookieBuilder.httpOnly(csrfCookieOptions.isHttpOnly());
+            cookieBuilder.domain(csrfCookieOptions.getDomain());
+            cookieBuilder.secure(true);
+        });
 
         log.debug("configured CookieCsrfTokenRepository with settings {}{}", System.lineSeparator(), Json.lazyStringify(csrfCookieOptions));
 

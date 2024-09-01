@@ -31,7 +31,13 @@ public class LocaleI18Service implements LocaleService {
             return null;
         }
 
-        final String template = messageSource.getMessage(i18Code, null, LocaleContextHolder.getLocale());
+        final var currentLocale = LocaleContextHolder.getLocale();
+
+        final String template = messageSource.getMessage(i18Code, null, currentLocale);
+
+        if (Objects.isNull(args) || args.isEmpty()) {
+            return template;
+        }
 
         return StringSubstitutor.replace(template, args, "{", "}");
     }

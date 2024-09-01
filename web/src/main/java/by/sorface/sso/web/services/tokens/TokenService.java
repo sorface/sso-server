@@ -10,6 +10,8 @@ public interface TokenService {
 
     TokenEntity saveForUser(final UserEntity user, final TokenOperationType operationType);
 
-    TokenEntity findTokenByEmail(final String email);
+    TokenEntity findByEmail(final String email);
+
+    void deleteByHash(final String hash);
 
 }

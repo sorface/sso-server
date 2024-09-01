@@ -86,7 +86,6 @@ spring:
       namespace: sorface:session
       save-mode: on_set_attribute
       repository-type: indexed
-
   data:
     redis:
       client-type: lettuce
@@ -107,7 +106,7 @@ sorface:
     token:
       access-token:
         time-to-live-cron: minutes
-        time-to-live-value: 30
+        time-to-live-value: 2
       refresh-token:
         time-to-live-cron: days
         time-to-live-value: 5
@@ -149,4 +148,3 @@ logging:
     nl.basjes.parse: error
   pattern:
     console: '%d{dd.MM.yyyy HH:mm:ss.SSS} %highlight(%-5level) [%blue(%X{traceId:-})|%green(%X{spanId})] [%thread] %magenta([%file:%line]) : %msg%n'
-

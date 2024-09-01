@@ -1,27 +1,22 @@
 package by.sorface.sso.web.facade.accounts;
 
-import by.sorface.sso.web.config.options.OAuth2Options;
 import by.sorface.sso.web.dao.models.UserEntity;
 import by.sorface.sso.web.dao.models.enums.TokenOperationType;
 import by.sorface.sso.web.exceptions.UserRequestException;
+import by.sorface.sso.web.facade.emails.EmailLocaleMessageFacade;
 import by.sorface.sso.web.records.I18Codes;
-import by.sorface.sso.web.records.mails.MailImage;
-import by.sorface.sso.web.records.mails.MailTemplate;
 import by.sorface.sso.web.records.tokens.ApplyNewPasswordRequest;
-import by.sorface.sso.web.services.emails.EmailService;
-import by.sorface.sso.web.services.locale.LocaleI18Service;
 import by.sorface.sso.web.services.tokens.TokenService;
 import by.sorface.sso.web.services.tokens.TokenValidator;
 import by.sorface.sso.web.services.users.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.context.Context;
 
-import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -35,11 +30,7 @@ public class DefaultRenewPasswordFacade implements RenewPasswordFacade {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final EmailService emailService;
-
-    private final OAuth2Options oAuth2Options;
-
-    private final LocaleI18Service localeI18Service;
+    private final EmailLocaleMessageFacade emailLocaleMessageFacade;
 
     @Override
     public void forgetPassword(final String email) {
@@ -51,22 +42,9 @@ public class DefaultRenewPasswordFacade implements RenewPasswordFacade {
 
         final var token = tokenService.saveForUser(user, TokenOperationType.PASSWORD_RENEW);
 
-        CompletableFuture.runAsync(() -> {
-            final var context = new Context();
-            {
-                context.setVariable("token", token.getHash());
-                context.setVariable("issuer", oAuth2Options.getIssuerUrl());
-            }
+        final Locale locale = LocaleContextHolder.getLocale();
 
-            final var emailTemplate = localeI18Service.getI18Message(I18Codes.I18EmailCodes.TEMPLATE);
-            final var subject = localeI18Service.getI18Message(I18Codes.I18EmailCodes.CONFIRMATION_REGISTRATION);
-
-            final var images = List.of(new MailImage("isorface.png"));
-
-            final var mailTemplate = new MailTemplate(user.getEmail(), subject, emailTemplate, context, images);
-
-            emailService.sendHtml(mailTemplate);
-        });
+        emailLocaleMessageFacade.sendRenewPasswordEmail(locale, user.getEmail(), token.getHash(), user.getUsername());
     }
 
     @Override
@@ -84,6 +62,8 @@ public class DefaultRenewPasswordFacade implements RenewPasswordFacade {
         user.setPassword(encodedPassword);
 
         userService.save(user);
+
+        tokenService.deleteByHash(token.getHash());
     }
 
     @Override

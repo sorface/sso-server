@@ -10,4 +10,6 @@ public interface RegistryTokenRepository extends BaseRepository<TokenEntity> {
 
     TokenEntity findByUser_Email(final String email);
 
+    void deleteByHashIgnoreCase(final String hash);
+
 }

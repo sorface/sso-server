@@ -25,7 +25,7 @@ public class DefaultTokenValidator implements TokenValidator {
             throw new NotFoundException(I18Codes.I18TokenCodes.NOT_FOUND);
         }
 
-        if (operationType.equals(token.getOperationType())) {
+        if (!operationType.equals(token.getOperationType())) {
             throw new UserRequestException(I18Codes.I18TokenCodes.INVALID_OPERATION_TYPE);
         }
     }

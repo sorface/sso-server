@@ -102,7 +102,7 @@ public class DefaultSignupFacade implements SignupFacade {
     @Override
     @Transactional
     public UserRegisteredHash findTokenByEmail(final String email) {
-        final var registryToken = tokenService.findTokenByEmail(email);
+        final var registryToken = tokenService.findByEmail(email);
 
         if (Objects.isNull(registryToken)) {
             log.warn("User not found by email {}", email);
