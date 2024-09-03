@@ -106,7 +106,7 @@ sorface:
     token:
       access-token:
         time-to-live-cron: minutes
-        time-to-live-value: 2
+        time-to-live-value: 1
       refresh-token:
         time-to-live-cron: days
         time-to-live-value: 5
