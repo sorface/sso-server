@@ -41,6 +41,10 @@ public abstract class AbstractSocialOAuth2UserService<T extends SocialOAuth2User
     }
 
     protected UserEntity findAndUpdateByEmail(final T socialOAuth2User) {
+        if (Objects.isNull(socialOAuth2User.getEmail())) {
+            return null;
+        }
+
         final UserEntity user = userService.findByEmail(socialOAuth2User.getEmail());
 
         if (Objects.nonNull(user)) {

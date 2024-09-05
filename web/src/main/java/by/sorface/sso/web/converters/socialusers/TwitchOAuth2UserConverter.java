@@ -20,10 +20,10 @@ public class TwitchOAuth2UserConverter implements OAuth2UserConverter<TwitchOAut
                 .findFirst()
                 .orElseThrow(() -> new ObjectInvalidException("twitch claims invalid"));
 
-        final var id = String.valueOf(user.get(TwitchClaims.CLAIM_ID));
-        final var login = String.valueOf(user.get(TwitchClaims.CLAIM_LOGIN));
-        final var email = String.valueOf(user.get(TwitchClaims.CLAIM_EMAIL));
-        final var avatarUrl = String.valueOf(user.get(TwitchClaims.CLAIM_PROFILE_IMAGE_URL));
+        final var id = getStringAttributeOrNull(user, TwitchClaims.CLAIM_ID);
+        final var login = getStringAttributeOrNull(user, TwitchClaims.CLAIM_LOGIN);
+        final var email = getStringAttributeOrNull(user, TwitchClaims.CLAIM_EMAIL);
+        final var avatarUrl = getStringAttributeOrNull(user, TwitchClaims.CLAIM_PROFILE_IMAGE_URL);
 
         return TwitchOAuth2User.builder()
                 .id(id)
