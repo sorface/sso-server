@@ -1,10 +1,10 @@
-package by.sorface.sso.web.services.providers.socials;
+package by.sorface.sso.web.services.users.providers.socials;
 
 import by.sorface.sso.web.converters.OAuth2TwitchUserRequestEntityConverter;
 import by.sorface.sso.web.converters.PrincipalConverter;
 import by.sorface.sso.web.converters.socialusers.TwitchOAuth2UserConverter;
 import by.sorface.sso.web.records.socialusers.TwitchOAuth2User;
-import by.sorface.sso.web.services.providers.AbstractOAuth2UserDatabaseProvider;
+import by.sorface.sso.web.services.users.providers.AbstractOAuth2UserDatabaseProvider;
 import by.sorface.sso.web.services.users.social.TwitchOAuth2UserService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;

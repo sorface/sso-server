@@ -1,6 +1,7 @@
 package by.sorface.sso.web.services.users;
 
 import by.sorface.sso.web.dao.models.UserEntity;
+import by.sorface.sso.web.dao.models.enums.ProviderType;
 
 import java.util.UUID;
 
@@ -32,6 +33,15 @@ public interface UserService {
      * @return user
      */
     UserEntity findByUsernameOrEmail(final String username, final String email);
+
+    /**
+     * Receiving a user by provider or external id
+     *
+     * @param provider   provider type
+     * @param externalId id external system
+     * @return user
+     */
+    UserEntity findByProviderAndExternalId(final ProviderType provider, final String externalId);
 
     /**
      * Creating a new user

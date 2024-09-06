@@ -1,4 +1,4 @@
-package by.sorface.sso.web.services.providers;
+package by.sorface.sso.web.services.users.providers;
 
 import by.sorface.sso.web.converters.socialusers.OAuth2UserConverter;
 import by.sorface.sso.web.dao.models.UserEntity;

@@ -1,6 +1,7 @@
 package by.sorface.sso.web.dao.repository;
 
 import by.sorface.sso.web.dao.models.UserEntity;
+import by.sorface.sso.web.dao.models.enums.ProviderType;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -30,5 +31,14 @@ public interface UserRepository extends BaseRepository<UserEntity> {
      * @return пользователь
      */
     UserEntity findFirstByUsernameIgnoreCaseOrEmailIgnoreCase(final String username, final String email);
+
+    /**
+     * Поиск пользователя по провайдеру и идентификатору внешней системы
+     *
+     * @param providerType тип провайдера
+     * @param externalId   внешний идентификатор клиента
+     * @return пользователь
+     */
+    UserEntity findByProviderTypeAndExternalId(final ProviderType providerType, final String externalId);
 
 }

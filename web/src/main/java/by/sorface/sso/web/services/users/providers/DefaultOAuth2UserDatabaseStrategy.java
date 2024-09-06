@@ -1,4 +1,4 @@
-package by.sorface.sso.web.services.providers;
+package by.sorface.sso.web.services.users.providers;
 
 import by.sorface.sso.web.constants.OAuthProvider;
 import org.springframework.beans.factory.annotation.Qualifier;

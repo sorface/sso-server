@@ -2,6 +2,7 @@ package by.sorface.sso.web.services.users.social;
 
 import by.sorface.sso.web.dao.models.RoleEntity;
 import by.sorface.sso.web.dao.models.UserEntity;
+import by.sorface.sso.web.dao.models.enums.ProviderType;
 import by.sorface.sso.web.records.socialusers.SocialOAuth2User;
 import by.sorface.sso.web.services.users.RoleService;
 import by.sorface.sso.web.services.users.UserService;
@@ -14,11 +15,16 @@ public abstract class AbstractSocialOAuth2UserService<T extends SocialOAuth2User
 
     private static final String DEFAULT_ROLE_USER = "User";
 
+    private final ProviderType providerType;
+
     private final UserService userService;
 
     private final RoleService roleService;
 
-    protected AbstractSocialOAuth2UserService(final UserService userService, RoleService roleService) {
+    protected AbstractSocialOAuth2UserService(final ProviderType providerType,
+                                              final UserService userService,
+                                              final RoleService roleService) {
+        this.providerType = providerType;
         this.userService = userService;
         this.roleService = roleService;
     }
@@ -26,10 +32,10 @@ public abstract class AbstractSocialOAuth2UserService<T extends SocialOAuth2User
     @Override
     @Transactional
     public UserEntity findOrCreate(final T socialOAuth2User) {
-        final UserEntity userByEmail = this.findAndUpdateByEmail(socialOAuth2User);
+        final UserEntity user = userService.findByProviderAndExternalId(providerType, socialOAuth2User.getId());
 
-        if (Objects.nonNull(userByEmail)) {
-            return userByEmail;
+        if (Objects.nonNull(user)) {
+            return user;
         }
 
         final UserEntity newUser = this.createNewUser(socialOAuth2User);
@@ -40,38 +46,24 @@ public abstract class AbstractSocialOAuth2UserService<T extends SocialOAuth2User
         return userService.save(newUser);
     }
 
-    protected UserEntity findAndUpdateByEmail(final T socialOAuth2User) {
-        if (Objects.isNull(socialOAuth2User.getEmail())) {
-            return null;
-        }
-
-        final UserEntity user = userService.findByEmail(socialOAuth2User.getEmail());
-
-        if (Objects.nonNull(user)) {
-            if (Objects.isNull(user.getUsername())) {
-                user.setUsername(socialOAuth2User.getUsername());
-            }
-
-            if (Objects.isNull(user.getAvatarUrl())) {
-                user.setAvatarUrl(socialOAuth2User.getAvatarUrl());
-            }
-        }
-
-        return user;
-    }
-
     protected UserEntity createNewUser(final T socialOAuth2User) {
         final var newUser = new UserEntity();
         {
-            newUser.setEmail(socialOAuth2User.getEmail());
-            newUser.setUsername(socialOAuth2User.getUsername());
+            newUser.setUsername(buildUserName(socialOAuth2User.getUsername(), socialOAuth2User.getId()));
             newUser.setAvatarUrl(socialOAuth2User.getAvatarUrl());
             newUser.setLastName(socialOAuth2User.getLastName());
             newUser.setFirstName(socialOAuth2User.getFirstName());
             newUser.setMiddleName(socialOAuth2User.getMiddleName());
+            newUser.setExternalId(socialOAuth2User.getId());
+            newUser.setProviderType(providerType);
+            newUser.setAvatarUrl(socialOAuth2User.getAvatarUrl());
         }
 
         return newUser;
+    }
+
+    private String buildUserName(final String username, final String id) {
+        return username + "_" + id.replaceAll("-", "").substring(4);
     }
 
 }

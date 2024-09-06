@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2023_10_22_15_05_ADD_TABLE_REGISTRYTOKEN
+      comment: Добавление столбцов в таблицу T_USERSTORE
+      author: Pavel Talaika
+
+      context: "development, production"
+
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            columnExists:
+              tableName: T_USERSTORE
+              columnName: C_PROVIDER_ID
+
+      changes:
+        - addColumn:
+            tableName: T_USERSTORE
+            columns:
+              - column:
+                  name: C_PROVIDER_ID
+                  type: VARCHAR(155)
+                  defaultValue: INTERNAL
+              - column:
+                  name: C_EXTERNAL_ID
+                  type: VARCHAR(155)
+        - addUniqueConstraint:
+            tableName: T_USERSTORE
+            columnNames: C_PROVIDER_ID, C_EXTERNAL_ID

@@ -1,4 +1,4 @@
-package by.sorface.sso.web.services.providers;
+package by.sorface.sso.web.services.users.providers;
 
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;

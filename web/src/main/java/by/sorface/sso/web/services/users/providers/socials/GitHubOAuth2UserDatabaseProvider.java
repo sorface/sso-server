@@ -1,9 +1,9 @@
-package by.sorface.sso.web.services.providers.socials;
+package by.sorface.sso.web.services.users.providers.socials;
 
 import by.sorface.sso.web.converters.PrincipalConverter;
 import by.sorface.sso.web.converters.socialusers.GitHubOAuth2UserConverter;
 import by.sorface.sso.web.records.socialusers.GitHubOAuth2User;
-import by.sorface.sso.web.services.providers.AbstractOAuth2UserDatabaseProvider;
+import by.sorface.sso.web.services.users.providers.AbstractOAuth2UserDatabaseProvider;
 import by.sorface.sso.web.services.users.social.GitHubOAuth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

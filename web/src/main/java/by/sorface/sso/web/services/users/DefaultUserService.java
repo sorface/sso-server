@@ -1,6 +1,7 @@
 package by.sorface.sso.web.services.users;
 
 import by.sorface.sso.web.dao.models.UserEntity;
+import by.sorface.sso.web.dao.models.enums.ProviderType;
 import by.sorface.sso.web.dao.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,12 @@ public class DefaultUserService implements UserService {
     @Transactional(readOnly = true)
     public UserEntity findByUsernameOrEmail(final String username, final String email) {
         return userRepository.findFirstByUsernameIgnoreCaseOrEmailIgnoreCase(username, email);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserEntity findByProviderAndExternalId(ProviderType provider, String externalId) {
+        return userRepository.findByProviderTypeAndExternalId(provider, externalId);
     }
 
     @Override

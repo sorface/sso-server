@@ -1,5 +1,6 @@
 package by.sorface.sso.web.dao.models;
 
+import by.sorface.sso.web.dao.models.enums.ProviderType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,5 +52,12 @@ public class UserEntity extends BaseEntity {
 
     @Column(name = "C_CONFIRMED", nullable = false)
     private boolean confirm;
+
+    @Column(name = "C_PROVIDER_ID")
+    @Enumerated(EnumType.STRING)
+    private ProviderType providerType;
+
+    @Column(name = "C_EXTERNAL_ID")
+    private String externalId;
 
 }

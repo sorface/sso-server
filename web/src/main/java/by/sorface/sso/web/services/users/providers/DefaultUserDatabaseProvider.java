@@ -1,4 +1,4 @@
-package by.sorface.sso.web.services.providers;
+package by.sorface.sso.web.services.users.providers;
 
 import by.sorface.sso.web.dao.models.UserEntity;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;

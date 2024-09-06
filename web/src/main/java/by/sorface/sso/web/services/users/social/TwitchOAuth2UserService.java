@@ -1,5 +1,6 @@
 package by.sorface.sso.web.services.users.social;
 
+import by.sorface.sso.web.dao.models.enums.ProviderType;
 import by.sorface.sso.web.records.socialusers.TwitchOAuth2User;
 import by.sorface.sso.web.services.users.RoleService;
 import by.sorface.sso.web.services.users.UserService;
@@ -13,7 +14,7 @@ public class TwitchOAuth2UserService extends AbstractSocialOAuth2UserService<Twi
     @Autowired
     public TwitchOAuth2UserService(final UserService userService,
                                    final RoleService roleService) {
-        super(userService, roleService);
+        super(ProviderType.TWITCH, userService, roleService);
     }
 
 }

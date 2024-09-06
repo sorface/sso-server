@@ -1,5 +1,6 @@
 package by.sorface.sso.web.services.users.social;
 
+import by.sorface.sso.web.dao.models.enums.ProviderType;
 import by.sorface.sso.web.records.socialusers.GitHubOAuth2User;
 import by.sorface.sso.web.services.users.RoleService;
 import by.sorface.sso.web.services.users.UserService;
@@ -13,7 +14,7 @@ public class GitHubOAuth2UserService extends AbstractSocialOAuth2UserService<Git
     @Autowired
     public GitHubOAuth2UserService(final UserService userService,
                                    final RoleService roleService) {
-        super(userService, roleService);
+        super(ProviderType.GITHUB, userService, roleService);
     }
 
 }

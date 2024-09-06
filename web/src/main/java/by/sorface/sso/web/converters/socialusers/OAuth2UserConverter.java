@@ -24,6 +24,6 @@ public interface OAuth2UserConverter<T extends SocialOAuth2User> extends Convert
             return valueString;
         }
 
-        return null;
+        return String.valueOf(value);
     }
 }
