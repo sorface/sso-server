@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public final class RedisOAuth2AuthorizationConsentService implements OAuth2AuthorizationConsentService {
-    private final static String KEY_PREFIX = "oauth2_authorization_consent:";
 
     private final RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplate;
 
@@ -42,7 +41,7 @@ public final class RedisOAuth2AuthorizationConsentService implements OAuth2Autho
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");
         String id = getId(authorizationConsent);
 
-        this.authorizationConsents.set(KEY_PREFIX + id, authorizationConsent, oAuth2Options.getRedis().getTtl(), TimeUnit.HOURS);
+        this.authorizationConsents.set(buildKey(id), authorizationConsent, oAuth2Options.getRedis().getConsent().getTtl(), oAuth2Options.getRedis().getConsent().getUnit());
     }
 
     @Override
@@ -50,7 +49,7 @@ public final class RedisOAuth2AuthorizationConsentService implements OAuth2Autho
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");
         String id = getId(authorizationConsent);
 
-        this.redisTemplate.delete(KEY_PREFIX + id);
+        this.redisTemplate.delete(buildKey(id));
     }
 
     @Override
@@ -60,6 +59,13 @@ public final class RedisOAuth2AuthorizationConsentService implements OAuth2Autho
         Assert.hasText(principalName, "principalName cannot be empty");
         String id = getId(registeredClientId, principalName);
 
-        return this.authorizationConsents.get(id);
+        final long ttl = oAuth2Options.getRedis().getConsent().getTtl();
+        final TimeUnit unit = oAuth2Options.getRedis().getConsent().getUnit();
+
+        return this.authorizationConsents.getAndExpire(id, ttl, unit);
+    }
+
+    private String buildKey(final String id) {
+        return oAuth2Options.getRedis().getConsent().getPrefix() + id;
     }
 }

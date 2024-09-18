@@ -63,7 +63,11 @@ public abstract class AbstractSocialOAuth2UserService<T extends SocialOAuth2User
     }
 
     private String buildUserName(final String username, final String id) {
-        return username + "_" + id.replaceAll("-", "").substring(4);
+        boolean existUsername = userService.isExistUsername(username);
+
+        return existUsername
+                ? username + "_" + id.replaceAll("-", "").substring(4)
+                : username;
     }
 
 }

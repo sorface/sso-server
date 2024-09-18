@@ -5,8 +5,6 @@ import by.sorface.sso.web.dao.models.UserEntity;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import by.sorface.sso.web.records.socialusers.SocialOAuth2User;
 import by.sorface.sso.web.services.users.social.SocialOAuth2UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -19,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public abstract class AbstractOAuth2UserDatabaseProvider<T extends SocialOAuth2User> extends DefaultOAuth2UserService {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractOAuth2UserDatabaseProvider.class);
     private final SocialOAuth2UserService<T> oAuth2UserSocialOAuth2UserService;
 
     private final Converter<UserEntity, DefaultPrincipal> principalConverter;

@@ -1,17 +1,20 @@
 package by.sorface.sso.web.config.security.redis;
 
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
+import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.session.RedisSessionProperties;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -21,6 +24,8 @@ public class RedisSessionLogoutHandler implements LogoutHandler {
     private final RedisIndexedSessionRepository redisIndexedSessionRepository;
 
     private final RedisSessionProperties redisSessionProperties;
+
+    private final RedisOAuth2AuthorizationService redisOAuth2AuthorizationService;
 
     /**
      * The logout function is responsible for deleting the session from Redis.
@@ -37,6 +42,15 @@ public class RedisSessionLogoutHandler implements LogoutHandler {
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         if (Objects.isNull(authentication)) {
             return;
+        }
+
+        if (authentication instanceof OAuth2AuthenticationToken auth2AuthenticationToken) {
+            if (auth2AuthenticationToken.getPrincipal() instanceof DefaultPrincipal defaultPrincipal) {
+                UUID id = defaultPrincipal.getId();
+                String clientId = auth2AuthenticationToken.getAuthorizedClientRegistrationId();
+
+                redisOAuth2AuthorizationService.remove(id, clientId);
+            }
         }
 
         final var authorizedId = ((DefaultPrincipal) authentication.getPrincipal()).getId();

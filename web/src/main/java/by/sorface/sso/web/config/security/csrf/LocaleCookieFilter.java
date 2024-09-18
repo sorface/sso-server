@@ -26,9 +26,8 @@ public class LocaleCookieFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final var locale = LocaleContextHolder.getLocale();
 
-        response.addCookie(new Cookie(
-                "lang", locale.toLanguageTag()
-        ));
+        response.addCookie(new Cookie("lang", locale.toString()));
+
         filterChain.doFilter(request, response);
     }
 

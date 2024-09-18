@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.concurrent.TimeUnit;
+
 @Data
 @Configuration
 @ConfigurationProperties("sorface.oauth2")
@@ -16,11 +18,25 @@ public class OAuth2Options {
     @Data
     public static class RedisOptions {
 
-        private String completePrefix;
+        private RedisDescriptionOptions init;
 
-        private String initPrefix;
+        private RedisDescriptionOptions complete;
+
+        private RedisDescriptionOptions consent;
+
+        private RedisDescriptionOptions info;
+
+    }
+
+    @Data
+    public static class RedisDescriptionOptions {
+
+        private String prefix;
 
         private long ttl;
 
+        private TimeUnit unit;
+
     }
+
 }

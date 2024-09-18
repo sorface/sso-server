@@ -1,5 +1,6 @@
 package by.sorface.sso.web.config.security.redis;
 
+import by.sorface.sso.web.records.principals.OAuth2Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,11 @@ public class OAuth2RedisConfiguration {
 
     @Bean
     public RedisTemplate<String, OAuth2AuthorizationConsent> redisTemplateOAuth2AuthorizationConsent(final RedisConnectionFactory redisConnectionFactory) {
+        return redisTemplate(redisConnectionFactory);
+    }
+
+    @Bean
+    public RedisTemplate<String, OAuth2Session> redisTemplateOAuth2Session(final RedisConnectionFactory redisConnectionFactory) {
         return redisTemplate(redisConnectionFactory);
     }
 

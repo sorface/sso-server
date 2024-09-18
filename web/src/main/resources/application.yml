@@ -89,15 +89,15 @@ spring:
   data:
     redis:
       client-type: lettuce
-      database: 0
+      database: 1
       host: ${REDIS_HOST}
       port: 6379
       username: ${REDIS_USERNAME}
       password: ${REDIS_PASSWORD}
       lettuce:
         pool:
-          max-active: 16
-          max-idle: 8
+          max-active: 32
+          max-idle: 16
 management:
   endpoint:
     health:
@@ -111,7 +111,7 @@ sorface:
     token:
       access-token:
         time-to-live-cron: minutes
-        time-to-live-value: 30
+        time-to-live-value: 1
       refresh-token:
         time-to-live-cron: days
         time-to-live-value: 5
@@ -143,9 +143,22 @@ sorface:
   oauth2:
     issuer-url: ${OAUTH_SERVER_ISSUER_URL}
     redis:
-      complete-prefix: 'oauth2_auth_complete:'
-      init-prefix: 'oauth2_auth_init:'
-      ttl: 72000
+      init:
+        prefix: 'oauth2_auth_init:'
+        unit: minutes
+        ttl: 5
+      consent:
+        prefix: 'oauth2_authorization_consent:'
+        ttl: 120
+        unit: minutes
+      complete:
+        prefix: 'oauth2_auth_complete:'
+        ttl: 5
+        unit: days
+      info:
+        prefix: 'oauth2_auth_principal'
+        ttl: 5
+        unit: days
 
 logging:
   level:

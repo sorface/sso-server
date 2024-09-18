@@ -1,10 +1,17 @@
 package by.sorface.sso.web.services.redis;
 
 import by.sorface.sso.web.config.options.OAuth2Options;
+import by.sorface.sso.web.records.principals.DefaultPrincipal;
+import by.sorface.sso.web.records.principals.OAuth2Session;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.lang.Nullable;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
@@ -17,14 +24,15 @@ import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Slf4j
 @Service
 public final class RedisOAuth2AuthorizationService implements OAuth2AuthorizationService {
+
+    private final static String PRINCIPAL_ATTRIBUTE_KEY = "java.security.Principal";
 
     private final RedisTemplate<String, OAuth2Authorization> redisTemplate;
 
@@ -32,11 +40,18 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
 
     private final OAuth2Options oAuth2Options;
 
+    private final RedisTemplate<String, OAuth2Session> redisTemplateOAuth2Session;
+
+    private final ValueOperations<String, OAuth2Session> oauth2Session;
+
     public RedisOAuth2AuthorizationService(final RedisTemplate<String, OAuth2Authorization> redisTemplate,
-                                           final OAuth2Options oAuth2Options) {
+                                           final OAuth2Options oAuth2Options,
+                                           final RedisTemplate<String, OAuth2Session> redisTemplateOAuth2Session) {
         this.redisTemplate = redisTemplate;
         this.authorizations = redisTemplate.opsForValue();
         this.oAuth2Options = oAuth2Options;
+        this.redisTemplateOAuth2Session = redisTemplateOAuth2Session;
+        this.oauth2Session = redisTemplateOAuth2Session.opsForValue();
     }
 
     private static boolean isComplete(OAuth2Authorization authorization) {
@@ -67,31 +82,27 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
         return false;
     }
 
-    private static boolean matchesState(OAuth2Authorization authorization, String token) {
+    private static boolean matchesState(final OAuth2Authorization authorization, final String token) {
         return token.equals(authorization.getAttribute(OAuth2ParameterNames.STATE));
     }
 
     private static boolean matchesAuthorizationCode(OAuth2Authorization authorization, String token) {
-        OAuth2Authorization.Token<OAuth2AuthorizationCode> authorizationCode =
-                authorization.getToken(OAuth2AuthorizationCode.class);
+        final OAuth2Authorization.Token<OAuth2AuthorizationCode> authorizationCode = authorization.getToken(OAuth2AuthorizationCode.class);
         return authorizationCode != null && authorizationCode.getToken().getTokenValue().equals(token);
     }
 
     private static boolean matchesAccessToken(OAuth2Authorization authorization, String token) {
-        OAuth2Authorization.Token<OAuth2AccessToken> accessToken =
-                authorization.getToken(OAuth2AccessToken.class);
+        OAuth2Authorization.Token<OAuth2AccessToken> accessToken = authorization.getToken(OAuth2AccessToken.class);
         return accessToken != null && accessToken.getToken().getTokenValue().equals(token);
     }
 
     private static boolean matchesRefreshToken(OAuth2Authorization authorization, String token) {
-        OAuth2Authorization.Token<OAuth2RefreshToken> refreshToken =
-                authorization.getToken(OAuth2RefreshToken.class);
+        final OAuth2Authorization.Token<OAuth2RefreshToken> refreshToken = authorization.getToken(OAuth2RefreshToken.class);
         return refreshToken != null && refreshToken.getToken().getTokenValue().equals(token);
     }
 
     private static boolean matchesIdToken(OAuth2Authorization authorization, String token) {
-        OAuth2Authorization.Token<OidcIdToken> idToken =
-                authorization.getToken(OidcIdToken.class);
+        OAuth2Authorization.Token<OidcIdToken> idToken = authorization.getToken(OidcIdToken.class);
         return idToken != null && idToken.getToken().getTokenValue().equals(token);
     }
 
@@ -106,6 +117,8 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
         if (isComplete(authorization)) {
             key = toComplete(authorization.getId());
 
+            this.saveInformation(authorization);
+
             final String initKey = toInit(authorization.getId());
 
             if (Boolean.TRUE.equals(this.redisTemplate.hasKey(initKey))) {
@@ -117,14 +130,11 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
 
         log.info("saved user's authorization object with id {}", authorization.getId());
 
-        this.authorizations.set(key, authorization, oAuth2Options.getRedis().getTtl(), TimeUnit.HOURS);
+        this.authorizations.set(key, authorization, oAuth2Options.getRedis().getComplete().getTtl(), oAuth2Options.getRedis().getComplete().getUnit());
     }
 
-    /**
-     * Удаление
-     */
     @Override
-    public void remove(OAuth2Authorization authorization) {
+    public void remove(final OAuth2Authorization authorization) {
         Assert.notNull(authorization, "authorization cannot be null");
 
         final String key = isComplete(authorization)
@@ -136,26 +146,91 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
         this.redisTemplate.delete(key);
     }
 
-    /**
-     * Поиск по идентификатору авторизации
-     */
     @Nullable
     @Override
     public OAuth2Authorization findById(String id) {
         Assert.hasText(id, "id cannot be empty");
 
-        final var oAuth2Authorization = this.findById(id, oAuth2Options.getRedis().getCompletePrefix());
+        final var oAuth2Authorization = this.findById(id, oAuth2Options.getRedis().getComplete());
 
         return Optional.ofNullable(oAuth2Authorization)
-                .orElseGet(() -> this.findById(id, oAuth2Options.getRedis().getInitPrefix()));
+                .orElseGet(() -> this.findById(id, oAuth2Options.getRedis().getInit()));
     }
 
-    private OAuth2Authorization findById(final String id, final String prefix) {
-        final var finalId = prefix + id;
+    public void saveInformation(final OAuth2Authorization authorization) {
+        final PrincipalInformation principalInformation = getPrincipalInformation(authorization);
+
+        if (Objects.isNull(principalInformation.getPrincipalId()) || Objects.isNull(principalInformation.getClientName())) {
+            return;
+        }
+
+        final String key = toInfo(principalInformation.getPrincipalId(), principalInformation.getClientName());
+
+        final var oAuth2Session = OAuth2Session.builder()
+                .authorizationId(authorization.getId())
+                .build();
+
+        oauth2Session.set(key, oAuth2Session, oAuth2Options.getRedis().getInfo().getTtl(), oAuth2Options.getRedis().getInit().getUnit());
+    }
+
+    private PrincipalInformation getPrincipalInformation(final OAuth2Authorization authorization) {
+        Optional<OAuth2AuthenticationToken> oAuth2AuthenticationToken = Optional.ofNullable(authorization.getAttribute(PRINCIPAL_ATTRIBUTE_KEY));
+
+        final String principalId = oAuth2AuthenticationToken
+                .map(OAuth2AuthenticationToken::getPrincipal)
+                .filter(oAuth2User -> oAuth2User instanceof DefaultPrincipal)
+                .map(oAuth2User -> (DefaultPrincipal) oAuth2User)
+                .map(DefaultPrincipal::getId)
+                .map(UUID::toString)
+                .orElse(null);
+
+        final String clientName =
+                oAuth2AuthenticationToken.map(OAuth2AuthenticationToken::getAuthorizedClientRegistrationId).orElse(null);
+
+        return PrincipalInformation.builder()
+                .principalId(principalId)
+                .clientName(clientName)
+                .build();
+    }
+
+    public void remove(final UUID principalId, final String clientName) {
+        final String keyInfo = toInfo(principalId.toString(), clientName);
+
+        final Boolean hasKey = redisTemplateOAuth2Session.hasKey(keyInfo);
+
+        if (Objects.isNull(hasKey) || Boolean.FALSE.equals(hasKey)) {
+            return;
+        }
+
+        final OAuth2Session oAuth2Session = oauth2Session.get(keyInfo);
+
+        if (Objects.isNull(oAuth2Session)) {
+            return;
+        }
+
+        final String authorizationId = oAuth2Session.getAuthorizationId();
+
+        if (Objects.isNull(authorizationId) || authorizationId.trim().isEmpty()) {
+            return;
+        }
+
+        final String completeKey = toComplete(authorizationId);
+
+        Boolean hasCompleteKey = redisTemplate.hasKey(completeKey);
+
+        if (Objects.isNull(hasCompleteKey) || Boolean.FALSE.equals(hasCompleteKey)) {
+            return;
+        }
+
+        redisTemplate.delete(List.of(completeKey, keyInfo));
+    }
+
+    private OAuth2Authorization findById(final String id, final OAuth2Options.RedisDescriptionOptions redisDescriptionOptions) {
+        final var finalId = redisDescriptionOptions.getPrefix() + id;
 
         log.info("find authorization object with key {}", finalId);
 
-        OAuth2Authorization authorization = this.authorizations.get(finalId);
+        OAuth2Authorization authorization = this.authorizations.getAndExpire(finalId, redisDescriptionOptions.getTtl(), redisDescriptionOptions.getUnit());
 
         if (Objects.isNull(authorization)) {
             log.info("not found authorization object with key {}", finalId);
@@ -171,30 +246,86 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
     public OAuth2Authorization findByToken(String token, @Nullable OAuth2TokenType tokenType) {
         Assert.hasText(token, "token cannot be empty");
 
-        final var oAuth2Authorization = this.findByToken(token, tokenType, oAuth2Options.getRedis().getCompletePrefix());
+        final var oAuth2Authorization = this.findByToken(token, tokenType, oAuth2Options.getRedis().getComplete());
+
+        if (Objects.nonNull(oAuth2Authorization)) {
+            updateExpiration(oAuth2Authorization);
+        }
 
         return Optional.ofNullable(oAuth2Authorization)
-                .orElseGet(() -> this.findByToken(token, tokenType, oAuth2Options.getRedis().getInitPrefix()));
+                .orElseGet(() -> this.findByToken(token, tokenType, oAuth2Options.getRedis().getInit()));
     }
 
-    private OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType, final String prefixKey) {
-        final var keys = redisTemplate.keys(prefixKey + "*");
+    private OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType, final OAuth2Options.RedisDescriptionOptions redisDescriptionOptions) {
+        final var keys = redisTemplate.keys(redisDescriptionOptions.getPrefix() + "*");
 
-        final var initKeys = Optional.ofNullable(keys).orElse(Set.of());
+        final var optionKeys = Optional.ofNullable(keys).orElse(Set.of());
 
-        return initKeys.stream()
+        return optionKeys.stream()
                 .map(this.authorizations::get)
-                .filter(oAuth2Authorization -> hasToken(oAuth2Authorization, token, tokenType))
+                .filter(authorization -> hasToken(authorization, token, tokenType))
                 .findFirst()
                 .orElse(null);
     }
 
     private String toComplete(final String id) {
-        return oAuth2Options.getRedis().getCompletePrefix() + id;
+        return oAuth2Options.getRedis().getComplete().getPrefix() + id;
     }
 
     private String toInit(final String id) {
-        return oAuth2Options.getRedis().getInitPrefix() + id;
+        return oAuth2Options.getRedis().getInit().getPrefix() + id;
+    }
+
+    private String toInfo(final String principalId, final String clientId) {
+        return oAuth2Options.getRedis().getInfo().getPrefix() + "_" + principalId + "_" + clientId;
+    }
+
+    private void updateExpiration(final OAuth2Authorization authorization) {
+        if (!(isNeedUpdateExpiration(oAuth2Options.getRedis().getComplete()) && isNeedUpdateExpiration(oAuth2Options.getRedis().getInfo()))) {
+            return;
+        }
+
+        final PrincipalInformation principalInformation = getPrincipalInformation(authorization);
+
+        final String principalKey = toInfo(principalInformation.getPrincipalId(), principalInformation.getClientName());
+
+        final Boolean hasKey = redisTemplateOAuth2Session.hasKey(principalKey);
+
+        if (Objects.isNull(hasKey) || Boolean.FALSE.equals(hasKey)) {
+            return;
+        }
+
+        String completeKey = toComplete(authorization.getId());
+
+        final Boolean hasComplete = redisTemplate.hasKey(completeKey);
+
+        if (Objects.isNull(hasComplete) || Boolean.FALSE.equals(hasComplete)) {
+            return;
+        }
+
+        redisTemplateOAuth2Session.expire(principalKey, oAuth2Options.getRedis().getInfo().getTtl(), oAuth2Options.getRedis().getInfo().getUnit());
+        redisTemplate.expire(completeKey, oAuth2Options.getRedis().getComplete().getTtl(), oAuth2Options.getRedis().getComplete().getUnit());
+    }
+
+    private boolean isNeedUpdateExpiration(OAuth2Options.RedisDescriptionOptions redisDescriptionOptions) {
+        final Instant expireTime = Instant.now().minus(redisDescriptionOptions.getTtl(), redisDescriptionOptions.getUnit().toChronoUnit());
+
+        final var now = Instant.now();
+        final var criticalBoundTime = now.minus(30, ChronoUnit.SECONDS);
+
+        return expireTime.isAfter(criticalBoundTime) && expireTime.isBefore(now);
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class PrincipalInformation {
+
+        private String principalId;
+
+        private String clientName;
+
     }
 
 }

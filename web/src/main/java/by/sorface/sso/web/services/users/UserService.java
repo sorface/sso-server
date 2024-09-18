@@ -50,4 +50,12 @@ public interface UserService {
      * @return user
      */
     UserEntity save(final UserEntity user);
+
+    /**
+     * Проверка существования такого никнейма пользователя
+     *
+     * @param username проверяемый никнейм
+     * @return true - существует, false - нет
+     */
+    boolean isExistUsername(final String username);
 }

@@ -3,7 +3,6 @@ package by.sorface.sso.web.config.security;
 import by.sorface.sso.web.config.options.EndpointOptions;
 import by.sorface.sso.web.config.security.handlers.AuthenticationClientErrorHandler;
 import by.sorface.sso.web.config.security.handlers.TokenAuthenticationSuccessHandler;
-import by.sorface.sso.web.constants.UrlPatternEnum;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
@@ -52,12 +50,7 @@ public class OAuth2SecurityConfiguration {
 
         httpSecurity
                 .securityMatcher(endpointsMatcher)
-                .authorizeHttpRequests(configure -> {
-                    configure.requestMatchers(HttpMethod.OPTIONS, UrlPatternEnum.toArray(UrlPatternEnum.OPTION_REQUEST)).permitAll();
-                    configure.requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.CSRF)).permitAll();
-                    configure.requestMatchers(HttpMethod.GET, UrlPatternEnum.toArray(UrlPatternEnum.API_ACCOUNT)).permitAll();
-                    configure.anyRequest().authenticated();
-                })
+                .authorizeHttpRequests(configure -> configure.anyRequest().authenticated())
                 .exceptionHandling(configurer -> configurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(endpointOptions.getUriPageSignIn())))
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
@@ -75,7 +68,6 @@ public class OAuth2SecurityConfiguration {
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
     }
-
 
     /**
      * The oAuth2AuthorizationServerConfigurer function is a helper function that creates an OAuth2AuthorizationServerConfigurer

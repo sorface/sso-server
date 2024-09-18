@@ -41,4 +41,12 @@ public interface UserRepository extends BaseRepository<UserEntity> {
      */
     UserEntity findByProviderTypeAndExternalId(final ProviderType providerType, final String externalId);
 
+    /**
+     * Проверка существования пользователя с таким никнеймом
+     *
+     * @param username никнейм
+     * @return true - уже существует, false - не существует
+     */
+    boolean existsByUsernameIgnoreCase(final String username);
+
 }

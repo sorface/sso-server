@@ -51,4 +51,10 @@ public class DefaultUserService implements UserService {
         return userRepository.save(user);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isExistUsername(final String username) {
+        return userRepository.existsByUsernameIgnoreCase(username);
+    }
+
 }
