@@ -1,8 +1,11 @@
 package by.sorface.sso.web.services.redis;
 
 import by.sorface.sso.web.config.options.OAuth2Options;
+import by.sorface.sso.web.dao.models.OAuth2Client;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import by.sorface.sso.web.records.principals.OAuth2Session;
+import by.sorface.sso.web.services.clients.OAuth2ClientService;
+import by.sorface.sso.web.utils.OAuth2AuthorizationUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.lang.Nullable;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
@@ -44,14 +46,18 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
 
     private final ValueOperations<String, OAuth2Session> oauth2Session;
 
+    private final OAuth2ClientService clientService;
+
     public RedisOAuth2AuthorizationService(final RedisTemplate<String, OAuth2Authorization> redisTemplate,
                                            final OAuth2Options oAuth2Options,
-                                           final RedisTemplate<String, OAuth2Session> redisTemplateOAuth2Session) {
+                                           final RedisTemplate<String, OAuth2Session> redisTemplateOAuth2Session,
+                                           OAuth2ClientService clientService) {
         this.redisTemplate = redisTemplate;
         this.authorizations = redisTemplate.opsForValue();
         this.oAuth2Options = oAuth2Options;
         this.redisTemplateOAuth2Session = redisTemplateOAuth2Session;
         this.oauth2Session = redisTemplateOAuth2Session.opsForValue();
+        this.clientService = clientService;
     }
 
     private static boolean isComplete(OAuth2Authorization authorization) {
@@ -160,41 +166,37 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
     public void saveInformation(final OAuth2Authorization authorization) {
         final PrincipalInformation principalInformation = getPrincipalInformation(authorization);
 
-        if (Objects.isNull(principalInformation.getPrincipalId()) || Objects.isNull(principalInformation.getClientName())) {
+        if (Objects.isNull(principalInformation.getPrincipalId())) {
             return;
         }
 
-        final String key = toInfo(principalInformation.getPrincipalId(), principalInformation.getClientName());
+        final String key = toInfo(principalInformation.getPrincipalId());
+
+        final OAuth2Client client = clientService.findById(UUID.fromString(authorization.getRegisteredClientId()));
 
         final var oAuth2Session = OAuth2Session.builder()
                 .authorizationId(authorization.getId())
+                .principleId(principalInformation.getPrincipalId())
+                .initiatorSystem(client.getClientName())
                 .build();
 
         oauth2Session.set(key, oAuth2Session, oAuth2Options.getRedis().getInfo().getTtl(), oAuth2Options.getRedis().getInit().getUnit());
     }
 
-    private PrincipalInformation getPrincipalInformation(final OAuth2Authorization authorization) {
-        Optional<OAuth2AuthenticationToken> oAuth2AuthenticationToken = Optional.ofNullable(authorization.getAttribute(PRINCIPAL_ATTRIBUTE_KEY));
+    private PrincipalInformation getPrincipalInformation(final OAuth2Authorization oAuth2Authorization) {
+        final DefaultPrincipal principal = OAuth2AuthorizationUtils.getPrincipal(oAuth2Authorization);
 
-        final String principalId = oAuth2AuthenticationToken
-                .map(OAuth2AuthenticationToken::getPrincipal)
-                .filter(oAuth2User -> oAuth2User instanceof DefaultPrincipal)
-                .map(oAuth2User -> (DefaultPrincipal) oAuth2User)
-                .map(DefaultPrincipal::getId)
-                .map(UUID::toString)
-                .orElse(null);
-
-        final String clientName =
-                oAuth2AuthenticationToken.map(OAuth2AuthenticationToken::getAuthorizedClientRegistrationId).orElse(null);
+        if (Objects.isNull(principal)) {
+            return PrincipalInformation.builder().build();
+        }
 
         return PrincipalInformation.builder()
-                .principalId(principalId)
-                .clientName(clientName)
+                .principalId(principal.getId())
                 .build();
     }
 
-    public void remove(final UUID principalId, final String clientName) {
-        final String keyInfo = toInfo(principalId.toString(), clientName);
+    public void remove(final UUID principalId) {
+        final String keyInfo = toInfo(principalId);
 
         final Boolean hasKey = redisTemplateOAuth2Session.hasKey(keyInfo);
 
@@ -276,8 +278,8 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
         return oAuth2Options.getRedis().getInit().getPrefix() + id;
     }
 
-    private String toInfo(final String principalId, final String clientId) {
-        return oAuth2Options.getRedis().getInfo().getPrefix() + "_" + principalId + "_" + clientId;
+    private String toInfo(final UUID principalId) {
+        return oAuth2Options.getRedis().getInfo().getPrefix() + "_" + principalId;
     }
 
     private void updateExpiration(final OAuth2Authorization authorization) {
@@ -287,7 +289,7 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
 
         final PrincipalInformation principalInformation = getPrincipalInformation(authorization);
 
-        final String principalKey = toInfo(principalInformation.getPrincipalId(), principalInformation.getClientName());
+        final String principalKey = toInfo(principalInformation.getPrincipalId());
 
         final Boolean hasKey = redisTemplateOAuth2Session.hasKey(principalKey);
 
@@ -322,9 +324,9 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
     @AllArgsConstructor
     private static class PrincipalInformation {
 
-        private String principalId;
+        private UUID principalId;
 
-        private String clientName;
+        private String authorizationId;
 
     }
 

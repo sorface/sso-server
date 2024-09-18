@@ -5,6 +5,7 @@ import by.sorface.sso.web.records.I18Codes;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
 import by.sorface.sso.web.records.tokens.IntrospectionPrincipal;
 import by.sorface.sso.web.records.tokens.TokenRecord;
+import by.sorface.sso.web.utils.OAuth2AuthorizationUtils;
 import by.sorface.sso.web.utils.json.Json;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,8 +30,6 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
-    private final static String principalAttributeKey = "java.security.Principal";
 
     private final OAuth2AuthorizationService oAuth2AuthorizationService;
 
@@ -107,21 +106,15 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
             return tokenRecordBuilder.build();
         }
 
-        final Authentication attributeAuth = oAuth2Authorization.getAttribute(principalAttributeKey);
+        final DefaultPrincipal principal = OAuth2AuthorizationUtils.getPrincipal(oAuth2Authorization);
 
-        if (Objects.isNull(attributeAuth)) {
-            return tokenRecordBuilder.build();
+        if (Objects.isNull(principal)) {
+            throw new ObjectInvalidException(I18Codes.I18GlobalCodes.ACCESS_DENIED, Map.of("objectClass", DefaultPrincipal.class.getName()));
         }
 
-        if (attributeAuth.getPrincipal() instanceof DefaultPrincipal principal) {
-            final var introspectionPrincipal = IntrospectionPrincipal.from(principal);
+        final var introspectionPrincipal = IntrospectionPrincipal.from(principal);
 
-            tokenRecordBuilder.principal(introspectionPrincipal);
-        } else {
-            throw new ObjectInvalidException(I18Codes.I18GlobalCodes.OBJECT_IS_NOT_SUPPORTED, Map.of("objectClass", attributeAuth.getPrincipal().getClass().getSimpleName()));
-        }
-
-        return tokenRecordBuilder.build();
+        return tokenRecordBuilder.principal(introspectionPrincipal).build();
     }
 
 }

@@ -8,13 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.session.RedisSessionProperties;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -44,14 +42,13 @@ public class RedisSessionLogoutHandler implements LogoutHandler {
             return;
         }
 
-        if (authentication instanceof OAuth2AuthenticationToken auth2AuthenticationToken) {
-            if (auth2AuthenticationToken.getPrincipal() instanceof DefaultPrincipal defaultPrincipal) {
-                UUID id = defaultPrincipal.getId();
-                String clientId = auth2AuthenticationToken.getAuthorizedClientRegistrationId();
-
-                redisOAuth2AuthorizationService.remove(id, clientId);
-            }
-        }
+//        if (authentication instanceof OAuth2AuthenticationToken auth2AuthenticationToken) {
+//            if (auth2AuthenticationToken.getPrincipal() instanceof DefaultPrincipal defaultPrincipal) {
+//                UUID id = defaultPrincipal.getId();
+//
+//                redisOAuth2AuthorizationService.remove(id);
+//            }
+//        }
 
         final var authorizedId = ((DefaultPrincipal) authentication.getPrincipal()).getId();
 
