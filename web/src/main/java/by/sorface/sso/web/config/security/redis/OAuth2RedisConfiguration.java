@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 
 @RequiredArgsConstructor
-@Configuration(proxyBeanMethods = false)
+@Configuration
 public class OAuth2RedisConfiguration {
 
     @Bean
@@ -38,4 +38,13 @@ public class OAuth2RedisConfiguration {
         return redisTemplate;
     }
 
+    @Bean
+    public RedisTemplate<String, Object> oauth2redisTemplate(final RedisConnectionFactory redisConnectionFactory) {
+        final RedisTemplate<String, Object> template = new RedisTemplate<>();
+
+        template.setConnectionFactory(redisConnectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+
+        return template;
+    }
 }

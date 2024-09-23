@@ -3,6 +3,7 @@ package by.sorface.sso.web.config.security;
 import by.sorface.sso.web.config.options.EndpointOptions;
 import by.sorface.sso.web.config.security.handlers.AuthenticationClientErrorHandler;
 import by.sorface.sso.web.config.security.handlers.TokenAuthenticationSuccessHandler;
+import by.sorface.sso.web.config.security.handlers.TokenRevocationSuccessHandler;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationConsentService;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,8 @@ public class OAuth2SecurityConfiguration {
 
     private final EndpointOptions endpointOptions;
 
+    private final TokenRevocationSuccessHandler tokenRevocationSuccessHandler;
+
     /**
      * Configuration OAuth2 Spring Security
      *
@@ -45,6 +48,8 @@ public class OAuth2SecurityConfiguration {
         final var authorizationServerConfigurer = oAuth2AuthorizationServerConfigurer(httpSecurity);
 
         authorizationServerConfigurer.authorizationEndpoint(configurer -> configurer.errorResponseHandler(authenticationClientErrorHandler));
+        authorizationServerConfigurer.tokenRevocationEndpoint(oAuth2TokenRevocationEndpointConfigurer ->
+                oAuth2TokenRevocationEndpointConfigurer.revocationResponseHandler(tokenRevocationSuccessHandler));
 
         final RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
@@ -66,7 +71,9 @@ public class OAuth2SecurityConfiguration {
      */
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder()
+                .setting("settings.authorization-server.authorization-logout", "/oauth2/logout")
+                .build();
     }
 
     /**

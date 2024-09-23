@@ -1,7 +1,7 @@
 package by.sorface.sso.web.services.users;
 
 import by.sorface.sso.web.dao.models.RoleEntity;
-import by.sorface.sso.web.dao.repository.RoleRepository;
+import by.sorface.sso.web.dao.sql.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

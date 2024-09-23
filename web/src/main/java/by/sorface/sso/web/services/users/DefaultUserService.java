@@ -2,7 +2,7 @@ package by.sorface.sso.web.services.users;
 
 import by.sorface.sso.web.dao.models.UserEntity;
 import by.sorface.sso.web.dao.models.enums.ProviderType;
-import by.sorface.sso.web.dao.repository.UserRepository;
+import by.sorface.sso.web.dao.sql.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

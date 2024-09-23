@@ -3,7 +3,7 @@ package by.sorface.sso.web.services.tokens;
 import by.sorface.sso.web.dao.models.TokenEntity;
 import by.sorface.sso.web.dao.models.UserEntity;
 import by.sorface.sso.web.dao.models.enums.TokenOperationType;
-import by.sorface.sso.web.dao.repository.RegistryTokenRepository;
+import by.sorface.sso.web.dao.sql.RegistryTokenRepository;
 import by.sorface.sso.web.utils.HashUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

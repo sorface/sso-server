@@ -36,7 +36,7 @@ services:
 
     build:
       context: ../
-      dockerfile: docker/sso/Dockerfile
+      dockerfile: docker/passport/Dockerfile
     restart: always
 
     depends_on:

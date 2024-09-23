@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
 import java.nio.charset.StandardCharsets;
 
@@ -15,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties
+@EnableRedisRepositories(basePackages = "by.sorface.sso.web.dao.nosql.redis")
 public class SorfaceConfiguration {
 
     public static final String I18_BUNDLE_LOCATION = "language/messages";

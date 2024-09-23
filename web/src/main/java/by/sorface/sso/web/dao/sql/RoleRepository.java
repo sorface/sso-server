@@ -1,4 +1,4 @@
-package by.sorface.sso.web.dao.repository;
+package by.sorface.sso.web.dao.sql;
 
 import by.sorface.sso.web.dao.models.RoleEntity;
 import org.springframework.stereotype.Repository;

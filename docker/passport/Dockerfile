@@ -2,7 +2,7 @@ FROM maven:3.8.7-eclipse-temurin-19 as build
 
 COPY . .
 
-ARG ACTIVE_PROFILE=production
+ARG ACTIVE_PROFILE=docker
 
 RUN mvn clean package -P run.context.$ACTIVE_PROFILE
 

@@ -86,6 +86,8 @@ spring:
       namespace: sorface:session
       save-mode: on_set_attribute
       repository-type: indexed
+      cleanup-cron: 0 * * * * *
+
   data:
     redis:
       client-type: lettuce
@@ -110,8 +112,8 @@ sorface:
     domain: ${CLIENT_SERVER_DOMAIN}
     token:
       access-token:
-        time-to-live-cron: minutes
-        time-to-live-value: 1
+        time-to-live-cron: hours
+        time-to-live-value: 5
       refresh-token:
         time-to-live-cron: days
         time-to-live-value: 5
@@ -153,10 +155,6 @@ sorface:
         unit: minutes
       complete:
         prefix: 'oauth2_auth_complete:'
-        ttl: 5
-        unit: days
-      info:
-        prefix: 'oauth2_auth_principal'
         ttl: 5
         unit: days
 

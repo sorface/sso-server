@@ -1,6 +1,8 @@
 package by.sorface.sso.web.config.security.redis;
 
+import by.sorface.sso.web.dao.nosql.redis.models.RedisOAuth2Authorization;
 import by.sorface.sso.web.records.principals.DefaultPrincipal;
+import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationDetailsService;
 import by.sorface.sso.web.services.redis.RedisOAuth2AuthorizationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,7 +14,10 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
+
+import static by.sorface.sso.web.utils.LogicUtils.not;
 
 @Slf4j
 @Component
@@ -23,7 +28,9 @@ public class RedisSessionLogoutHandler implements LogoutHandler {
 
     private final RedisSessionProperties redisSessionProperties;
 
-    private final RedisOAuth2AuthorizationService redisOAuth2AuthorizationService;
+    private final RedisOAuth2AuthorizationService authorizationService;
+
+    private final RedisOAuth2AuthorizationDetailsService authorizationDetailsService;
 
     /**
      * The logout function is responsible for deleting the session from Redis.
@@ -42,31 +49,31 @@ public class RedisSessionLogoutHandler implements LogoutHandler {
             return;
         }
 
-//        if (authentication instanceof OAuth2AuthenticationToken auth2AuthenticationToken) {
-//            if (auth2AuthenticationToken.getPrincipal() instanceof DefaultPrincipal defaultPrincipal) {
-//                UUID id = defaultPrincipal.getId();
-//
-//                redisOAuth2AuthorizationService.remove(id);
-//            }
-//        }
+        if (Objects.isNull(authentication.getPrincipal())) {
+            return;
+        }
+
+        if (not(authentication.getPrincipal() instanceof DefaultPrincipal)) {
+            return;
+        }
 
         final var authorizedId = ((DefaultPrincipal) authentication.getPrincipal()).getId();
 
-        final String expiresKey = redisSessionProperties.getNamespace() + ":expires:" + request.getRequestedSessionId();
+        if (Objects.isNull(authorizedId)) {
+            return;
+        }
 
-        redisIndexedSessionRepository.getSessionRedisOperations().delete(expiresKey);
+        final List<RedisOAuth2Authorization> principalAuthorizations = authorizationDetailsService.findByPrincipleId(authorizedId.toString());
 
-        log.info("deleted [session :expires key -> {}] for user [id -> {}]", expiresKey, authorizedId);
+        for (var principalAuthorization : principalAuthorizations) {
+            final var authorization = authorizationService.findById(principalAuthorization.getId());
 
-        redisIndexedSessionRepository.deleteById(request.getRequestedSessionId());
+            if (Objects.isNull(authorization)) {
+                continue;
+            }
 
-        log.info("deleted [session :index key -> {}] for user [id -> {}]", request.getRequestedSessionId(), authorizedId);
-
-        final String key = redisSessionProperties.getNamespace() + ":sessions:" + request.getRequestedSessionId();
-
-        redisIndexedSessionRepository.getSessionRedisOperations().delete(key);
-
-        log.info("deleted [session :key -> {}] for user [id -> {}]", key, authorizedId);
+            authorizationService.remove(authorization);
+        }
     }
 
 }

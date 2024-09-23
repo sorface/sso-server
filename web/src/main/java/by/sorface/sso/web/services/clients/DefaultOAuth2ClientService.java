@@ -1,7 +1,7 @@
 package by.sorface.sso.web.services.clients;
 
 import by.sorface.sso.web.dao.models.OAuth2Client;
-import by.sorface.sso.web.dao.repository.OAuth2ClientRepository;
+import by.sorface.sso.web.dao.sql.OAuth2ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

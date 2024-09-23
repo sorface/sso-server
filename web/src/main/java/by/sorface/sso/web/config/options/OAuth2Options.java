@@ -24,8 +24,6 @@ public class OAuth2Options {
 
         private RedisDescriptionOptions consent;
 
-        private RedisDescriptionOptions info;
-
     }
 
     @Data

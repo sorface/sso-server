@@ -1,6 +1,7 @@
 package by.sorface.sso.web.controllers;
 
 import by.sorface.sso.web.config.security.handlers.SavedRequestRedisSuccessHandler;
+import by.sorface.sso.web.dao.nosql.redis.RedisOAuth2AuthorizationRepository;
 import by.sorface.sso.web.exceptions.UserRequestException;
 import by.sorface.sso.web.facade.accounts.AccountFacade;
 import by.sorface.sso.web.facade.signup.SignupEmailFacade;
@@ -15,6 +16,7 @@ import by.sorface.sso.web.records.responses.AccountSignupResponse;
 import by.sorface.sso.web.records.responses.ProfileRecord;
 import by.sorface.sso.web.records.responses.UserConfirm;
 import by.sorface.sso.web.records.responses.UserRegistered;
+import by.sorface.sso.web.services.users.providers.ApplicationClientProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,6 +47,10 @@ public class AccountController {
     private final AccountFacade accountFacade;
 
     private final SavedRequestRedisSuccessHandler savedRequestRedisSuccessHandler;
+
+    private final RedisOAuth2AuthorizationRepository repository;
+
+    private final ApplicationClientProvider applicationClientProvider;
 
     @GetMapping("/current")
     public ProfileRecord getSelf() {
