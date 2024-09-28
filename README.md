@@ -1,48 +1,126 @@
-# Sorface auth server
+# Sorface Password
 
 [![Java CI with Maven](https://github.com/sorface/sso-server/actions/workflows/maven.yml/badge.svg)](https://github.com/sorface/sso-server/actions/workflows/maven.yml)
-![jacoco.svg](https://github.com/sorface/sso-server/blob/master/.github/badges/jacoco.svg)
+![jacoco.svg](.github/badges/jacoco.svg)
 
-Система единого входа для платформы sorface.
+Single Sign-On (SSO) и Single Logout (SLO) платформы.
 
-С проектом можно ознакомится на странице https://sorface.com
+## Установка
 
-## Docker запуск
+### Конфигурация
 
-Запусти команду из корневой папки проекта:
+Для управления конфигурацией проекта в docker:
 
-```shell
-docker-compose -f docker/docker-compose.yaml up -d
+- [.docker.passport.sorface.backend.development.env](docker/.docker.passport.sorface.backend.development.env) # конфигурация development (без клиента)
+- [.docker.passport.sorface.backend.production.env](docker/.docker.passport.sorface.backend.production.env) # конфигурация production (с клиентом)
+- [.docker.redis.env](docker/.docker.redis.env) # конфигурация redis
+- [.docker.pgsql.env](docker/.docker.pgsql.env) # конфигурация PostgreSQL
+
+Измените на свои значения:
+
+```properties
+# spring envs
+#- профиль spring 
+SPRING_PROFILES_ACTIVE=docker
+# database envs. 
+# Указываются такие же значения как и в файле конфигурации docker/.docker.pgsql.env
+DATABASE_URL=jdbc:postgresql://postgresql:5432/sso
+DATABASE_USERNAME=user
+DATABASE_PASSWORD=user
+# mail envs.
+# mail:
+#  username: ${MAIL_NOTIFICATOR_USERNAME}
+#  password: ${MAIL_NOTIFICATOR_PASSWORD}
+#  port: 465
+#  host: smtp.yandex.ru 
+#  properties:
+#   mail.transport.protocol: smtp
+#   mail.smtp.auth: true
+#   mail.smtp.starttls.enable: true
+#   mail.smtp.ssl.enable: true
+# по умолчанию используется smtp.yandex.ru, но вы можете это изменить в (src/main/resources/application.yml)
+MAIL_NOTIFICATOR_USERNAME=***************
+MAIL_NOTIFICATOR_PASSWORD=***************
+# github envs
+# ознакомиться и создать токены доступа можно по ссылке https://github.com/settings/developers
+OAUTH_CLIENT_GITHUB_ID=***************
+OAUTH_CLIENT_GITHUB_SECRET=***************
+# google envs. Не поддерживается платформой в России.
+OAUTH_CLIENT_GOOGLE_ID=****************
+OAUTH_CLIENT_GOOGLE_SECRET=****************
+# yandex envs
+# ознакомиться с документацией и создать токены доступа можно по ссылке https://yandex.ru/dev/id/doc/ru/register-client
+OAUTH_CLIENT_YANDEX_ID=****************
+OAUTH_CLIENT_YANDEX_SECRET=****************
+OAUTH_CLIENT_YANDEX_REDIRECT_URL=http://localhost:8080/login/oauth2/code/yandex
+# twitch envs
+# ознакомиться с документацией и создать токены доступа можно по ссылке https://dev.twitch.tv/console/apps
+OAUTH_CLIENT_TWITCH_ID=****************
+OAUTH_CLIENT_TWITCH_SECRET=****************
+OAUTH_CLIENT_TWITCH_REDIRECT_URL=http://localhost:8080/login/oauth2/code/twitch
+# oauth2 envs
+OAUTH_SERVER_ISSUER_URL=http://localhost:8080
+# client frontend url
+CLIENT_SERVER_DOMAIN=http://localhost:8080
+# redis envs
+# Указываются такие же значения как и в файле конфигурации docker/.docker.pgsql.env
+REDIS_HOST=redis
+REDIS_USERNAME=default
+REDIS_PASSWORD=testpassword
 ```
 
-```text
-sh-3.2$ docker-compose -f docker/docker-compose.yaml up -d
+### Запуск
+
+Перейдите в корневую папки проекта [/docker](docker)
+
+Для запуска БЕЗ клиента:
+
+```shell
+docker-compose -f development.yaml up -d
+```
+
+Вывод в консоль:
+
+```shell
+sh-3.2$ docker-compose -f development.yaml up -d
+
 [+] Running 4/5
  ⠧ Network docker_default            Created                                                                                                                                                                                                                                                              0.7s 
  ✔ Container redis                   Started                                                                                                                                                                                                                                                              0.4s 
  ✔ Container postgres                Started                                                                                                                                                                                                                                                              0.4s 
- ✔ Container sorface.security        Started                                                                                                                                                                                                                                                              0.5s 
- ✔ Container sorface.security.proxy  Started   
+ ✔ Container passport.sorface        Started 
+```
+
+Для запуска с клиентом:
+
+```shell
+docker-compose -f production.yaml up -d
+```
+
+Вывод в консоль:
+
+```shell
+sh-3.2$ docker-compose -f production.yaml up -d
+[+] Running 4/5
+ ⠧ Network docker_default               Created                                                                                                                                                                                                                                                              0.7s 
+ ✔ Container redis                      Started                                                                                                                                                                                                                                                              0.4s 
+ ✔ Container postgres                   Started                                                                                                                                                                                                                                                              0.4s 
+ ✔ Container passport.sorface           Started                                                                                                                                                                                                                                                              0.5s 
+ ✔ Container passport.sorface.frontend  Started   
 ```
 
 Перейди по ссылке из браузера:
 
 ```url
-http://localhost:8080
+http://localhost:8080/account
 ```
 
-Для управления конфигурацией проекта в docker:
+### Возможные схемы входа OAuth 2.0
 
-- [.docker.backend.env](docker%2F.docker.backend.env) # конфигурация сервера аутентификации
-- [.docker.redis.env](docker%2F.docker.redis.env) # конфигурация redis
-- [.docker.pgsql.env](docker%2F.docker.pgsql.env) # конфигурация PostgreSQL
-
-### Интеграции OAuth 2.0
-
-- google
 - yandex
 - github
 - twitch
+- email
 
 Ознакомиться с конфигурацией можно в файле [application.yml](web%2Fsrc%2Fmain%2Fresources%2Fapplication.yml)
 
@@ -119,7 +197,7 @@ Content-Type: application/json
 
 ## OAuth2 создание приложений-клиентов пользователя
 
-Пользователю доступно создание приложение-клинтов с сервером авторизации [sorface](https://sso.sorface.com)
+Пользователю доступно создание приложение-клинтов (доступно только для пользователей с ролью ADMIN)
 
 Для создания клиента необходимо быть авторизированных пользователем.
 
@@ -161,22 +239,3 @@ Content-Type: application/json
 
 * Русский
 * Английский
-
-**По умолчанию используется английский язык (en-US)**
-
-Язык определяется на основе переданного в Http Header Accept-Language:
-
-```http request
-GET ....
-Accept-Language: ru-RU # русский
-Accept-Language: en-US # английский
-```
-
-Влияет язык на:
-
-* Возвращаемые ошибки (ru/en)
-* На отправляемые email (ru/en)
-
-На отдаваемые контент язык НЕ влияет
-
-Заполняемые пользователем данные отдается в оригинальном виде
