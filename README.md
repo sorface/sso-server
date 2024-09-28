@@ -1,4 +1,4 @@
-# Sorface Password
+# server-oauth2 (Platform SSO)
 
 [![Java CI with Maven](https://github.com/sorface/sso-server/actions/workflows/maven.yml/badge.svg)](https://github.com/sorface/sso-server/actions/workflows/maven.yml)
 ![jacoco.svg](.github/badges/jacoco.svg)
