@@ -13,11 +13,10 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -61,18 +60,6 @@ public class RedisOAuth2AuthorizationDetailsService {
             redisOAuth2Authorization.setAccessValueToken(getTokenValue(authorization.getAccessToken()));
             redisOAuth2Authorization.setRefreshValueToken(getTokenValue(authorization.getRefreshToken()));
             redisOAuth2Authorization.setPrincipalUsername(principal.getUsername());
-
-            final var oAuth2Token = getToken(authorization.getRefreshToken());
-
-            final Instant instant = oAuth2Token.getExpiresAt();
-
-            if (Objects.nonNull(instant)) {
-                long millis = instant.toEpochMilli() - Instant.now().toEpochMilli();
-
-                long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-
-                redisOAuth2Authorization.setMaxInactiveInterval(minutes);
-            }
         }
 
         redisOAuth2AuthorizationRepository.save(redisOAuth2Authorization);
@@ -80,7 +67,7 @@ public class RedisOAuth2AuthorizationDetailsService {
         return true;
     }
 
-    public RedisOAuth2Authorization findByToken(final String token, final OAuth2TokenType type) {
+    public List<RedisOAuth2Authorization> findByToken(final String token, final OAuth2TokenType type) {
         final var probe = RedisOAuth2Authorization.builder();
 
         final var matcher = ExampleMatcher.matching();
@@ -99,11 +86,15 @@ public class RedisOAuth2AuthorizationDetailsService {
 
         final var example = Example.of(probe.build(), matcher);
 
-        Iterable<RedisOAuth2Authorization> iterable = redisOAuth2AuthorizationRepository.findAll(example);
+        final Iterable<RedisOAuth2Authorization> iterable = redisOAuth2AuthorizationRepository.findAll(example);
 
         final List<RedisOAuth2Authorization> redisOAuth2Authorizations = IteratorUtils.toList(iterable.iterator());
 
-        return redisOAuth2Authorizations.stream().findFirst().orElse(null);
+        if (redisOAuth2Authorizations.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return redisOAuth2Authorizations;
     }
 
     private AbstractOAuth2Token getToken(final OAuth2Authorization.Token<? extends AbstractOAuth2Token> token) {

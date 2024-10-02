@@ -46,25 +46,27 @@ public class TokenRevocationSuccessHandler implements AuthenticationSuccessHandl
             return;
         }
 
-        // получаем список всех текущих авторизаций пользователя
-        List<RedisOAuth2Authorization> principalAuthorizations = authorizationDetailsService.findByPrincipleId(currentPrincipalAuthorization.getId());
+        for (var authorization : currentPrincipalAuthorization) {
+            // получаем список всех текущих авторизаций пользователя
+            List<RedisOAuth2Authorization> principalAuthorizations = authorizationDetailsService.findByPrincipleId(authorization.getId());
 
-        // проходим по всем авторизациям и пытаемся удалить
-        for (var joinAuthorization : principalAuthorizations) {
-            final OAuth2Authorization oAuth2Authorization = authorizationService.findById(joinAuthorization.getId());
+            // проходим по всем авторизациям и пытаемся удалить
+            for (var joinAuthorization : principalAuthorizations) {
+                final OAuth2Authorization oAuth2Authorization = authorizationService.findById(joinAuthorization.getId());
 
-            if (Objects.isNull(oAuth2Authorization)) {
-                continue;
+                if (Objects.isNull(oAuth2Authorization)) {
+                    continue;
+                }
+
+                authorizationService.remove(oAuth2Authorization);
             }
 
-            authorizationService.remove(oAuth2Authorization);
+            // находим все сессии пользователя и удаляем
+            final List<Session> sessions = defaultAccountSessionService.findByUsername(authorization.getPrincipalUsername());
+            final List<String> sessionIds = sessions.stream().map(Session::getId).toList();
+
+            defaultAccountSessionService.batchDelete(sessionIds);
         }
-
-        // находим все сессии пользователя и удаляем
-        final List<Session> sessions = defaultAccountSessionService.findByUsername(currentPrincipalAuthorization.getPrincipalUsername());
-        final List<String> sessionIds = sessions.stream().map(Session::getId).toList();
-
-        defaultAccountSessionService.batchDelete(sessionIds);
 
         response.setStatus(HttpStatus.OK.value());
     }

@@ -6,9 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.TimeToLive;
-
-import java.util.concurrent.TimeUnit;
 
 @Data
 @AllArgsConstructor
@@ -27,8 +24,5 @@ public class RedisOAuth2Authorization {
     private String refreshValueToken;
 
     private String principalUsername;
-
-    @TimeToLive(unit = TimeUnit.MINUTES)
-    private long maxInactiveInterval;
 
 }

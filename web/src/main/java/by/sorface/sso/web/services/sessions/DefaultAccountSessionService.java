@@ -2,10 +2,11 @@ package by.sorface.sso.web.services.sessions;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DefaultAccountSessionService implements AccountSessionService {
 
-    private final FindByIndexNameSessionRepository<? extends Session> sessionRepository;
+    private final RedisIndexedSessionRepository sessionRepository;
 
     @Override
     public List<Session> findByUsername(final String username) {
@@ -29,6 +30,14 @@ public class DefaultAccountSessionService implements AccountSessionService {
     @Override
     public void batchDelete(final List<String> sessionIds) {
         sessionIds.forEach(sessionRepository::deleteById);
+    }
+
+    public void changeLastAccessedTime(final String username) {
+        Map<String, ? extends Session> sessions = sessionRepository.findByPrincipalName(username);
+
+        for (Session session : sessions.values()) {
+            session.setLastAccessedTime(Instant.now().plus(session.getMaxInactiveInterval()));
+        }
     }
 
 }

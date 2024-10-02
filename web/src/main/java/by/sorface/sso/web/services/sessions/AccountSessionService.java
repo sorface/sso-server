@@ -10,4 +10,6 @@ public interface AccountSessionService {
 
     void batchDelete(final List<String> sessionIds);
 
+    void changeLastAccessedTime(final String username);
+
 }

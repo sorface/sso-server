@@ -63,13 +63,16 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
             if (Boolean.TRUE.equals(this.redisTemplate.hasKey(initKey))) {
                 redisTemplate.delete(initKey);
             }
+
+            this.authorizations.set(key, authorization, oAuth2Options.getRedis().getComplete().getTtl(), oAuth2Options.getRedis().getComplete().getUnit());
         } else {
             key = toInit(authorization.getId());
+
+            this.authorizations.set(key, authorization, oAuth2Options.getRedis().getInit().getTtl(), oAuth2Options.getRedis().getInit().getUnit());
         }
 
         log.info("saved user's authorization object with id {}", authorization.getId());
 
-        this.authorizations.set(key, authorization, oAuth2Options.getRedis().getComplete().getTtl(), oAuth2Options.getRedis().getComplete().getUnit());
     }
 
     @Override
@@ -110,7 +113,7 @@ public final class RedisOAuth2AuthorizationService implements OAuth2Authorizatio
 
         log.info("find authorization object with key {}", finalId);
 
-        OAuth2Authorization authorization = this.authorizations.getAndExpire(finalId, redisDescriptionOptions.getTtl(), redisDescriptionOptions.getUnit());
+        OAuth2Authorization authorization = this.authorizations.get(finalId);
 
         if (Objects.isNull(authorization)) {
             log.info("not found authorization object with key {}", finalId);

@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
@@ -24,7 +23,11 @@ public class HttpSessionEventPublisher extends org.springframework.security.web.
 
     private final RedisOAuth2AuthorizationService authorizationService;
 
-    @EventListener
+    @Override
+    public void sessionCreated(final HttpSessionEvent event) {
+
+    }
+
     public void sessionDestroyed(final HttpSessionEvent sessionEvent) {
         final HttpSession session = sessionEvent.getSession();
 
