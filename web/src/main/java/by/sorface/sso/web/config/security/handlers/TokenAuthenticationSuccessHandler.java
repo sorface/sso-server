@@ -69,12 +69,14 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
      * @return An object of type tokenrecord
      */
     private TokenRecord getToken(final OAuth2TokenIntrospectionAuthenticationToken authenticationToken) {
-        log.info("introspect token for user '{}'", Json.lazyStringify(authenticationToken.getPrincipal()));
+        final String token = authenticationToken.getToken();
+
+        log.info("introspect. receive token with value '{}'", Json.lazyStringify(Map.of("token", token)));
 
         final var tokenRecordBuilder = TokenRecord.builder().active(false);
 
         if (!authenticationToken.getTokenClaims().isActive()) {
-            log.info("token is not active for user '{}'", Json.lazyStringify(authenticationToken.getPrincipal()));
+            log.info("token is not active for with token {}", Json.lazyStringify(Map.of("token", token)));
 
             return tokenRecordBuilder.build();
         }
@@ -94,23 +96,26 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
                 .clientId(claims.getClientId())
                 .tokenType(claims.getTokenType());
 
-        log.debug("introspect active token for user '{}'", Json.lazyStringify(authenticationToken.getPrincipal()));
-
-        final String token = authenticationToken.getToken();
+        log.info("introspect. get oauth2 authorization by token {}", Map.of("token", token));
 
         final var oAuth2Authorization = oAuth2AuthorizationService.findByToken(token, OAuth2TokenType.ACCESS_TOKEN);
 
         if (Objects.isNull(oAuth2Authorization)) {
-            log.info("token is not active for user '{}', because oath2 authorization is null.", Json.lazyStringify(authenticationToken.getPrincipal()));
+            log.info("introspect. token [value -> {}] is not active, because oath2 authorization is null", Json.lazyStringify(Map.of("token", token)));
 
             return tokenRecordBuilder.build();
         }
+
+        log.info("introspect. receive oauth2 authorization has been completed successfully for user {}", oAuth2Authorization.getPrincipalName());
 
         final DefaultPrincipal principal = OAuth2AuthorizationUtils.getPrincipal(oAuth2Authorization);
 
         if (Objects.isNull(principal)) {
             throw new ObjectInvalidException(I18Codes.I18GlobalCodes.ACCESS_DENIED, Map.of("objectClass", DefaultPrincipal.class.getName()));
         }
+
+        log.info("introspect of the token [value -> {}] for the user [id -> {}, username -> {}] has been completed successfully",
+                Json.lazyStringify(Map.of("token", token)), principal.getId(), principal.getUsername());
 
         final var introspectionPrincipal = IntrospectionPrincipal.from(principal);
 
