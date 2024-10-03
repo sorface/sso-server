@@ -80,7 +80,7 @@ spring:
       mail.smtp.ssl.enable: true
 
   session:
-    timeout: 5d
+    timeout: 60s
     redis:
       flush-mode: on_save
       namespace: sorface:session
