@@ -69,12 +69,12 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
      * @return An object of type tokenrecord
      */
     private TokenRecord getToken(final OAuth2TokenIntrospectionAuthenticationToken authenticationToken) {
-        log.debug("introspect token for user '{}'", Json.lazyStringify(authenticationToken.getPrincipal()));
+        log.info("introspect token for user '{}'", Json.lazyStringify(authenticationToken.getPrincipal()));
 
         final var tokenRecordBuilder = TokenRecord.builder().active(false);
 
         if (!authenticationToken.getTokenClaims().isActive()) {
-            log.debug("token is not active for user '{}'", Json.lazyStringify(authenticationToken.getPrincipal()));
+            log.info("token is not active for user '{}'", Json.lazyStringify(authenticationToken.getPrincipal()));
 
             return tokenRecordBuilder.build();
         }
@@ -101,7 +101,7 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
         final var oAuth2Authorization = oAuth2AuthorizationService.findByToken(token, OAuth2TokenType.ACCESS_TOKEN);
 
         if (Objects.isNull(oAuth2Authorization)) {
-            log.debug("token is not active for user '{}', because oath2 authorization is null.", Json.lazyStringify(authenticationToken.getPrincipal()));
+            log.info("token is not active for user '{}', because oath2 authorization is null.", Json.lazyStringify(authenticationToken.getPrincipal()));
 
             return tokenRecordBuilder.build();
         }

@@ -42,11 +42,11 @@ spring:
     hikari:
       connection-timeout: 30000
       connection-test-query: select 1
-      maximum-pool-size: 10
+      maximum-pool-size: 35
       minimum-idle: 10
       initialization-fail-timeout: 1
       leak-detection-threshold: 0
-      pool-name: "HikariPool-sso"
+      pool-name: "HikariPool-Default"
       register-mbeans: true
 
   liquibase:

@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TokenRevocationSuccessHandler implements AuthenticationSuccessHandler {
@@ -36,15 +38,21 @@ public class TokenRevocationSuccessHandler implements AuthenticationSuccessHandl
         final String token = request.getParameter(OAuth2ParameterNames.TOKEN);
 
         if (Objects.isNull(token)) {
+            log.error("Revoke. Token is null");
             return;
         }
+
+        log.info("revoked token revocation success");
 
         // находим текущую авторизацию пользователя
         final var currentPrincipalAuthorization = authorizationDetailsService.findByToken(token, OAuth2TokenType.ACCESS_TOKEN);
 
         if (Objects.isNull(currentPrincipalAuthorization)) {
+            log.warn("Current principal authorization is null for token {}", token);
             return;
         }
+
+        log.warn("Drop current user authorizations {}", token);
 
         for (var authorization : currentPrincipalAuthorization) {
             // получаем список всех текущих авторизаций пользователя
@@ -60,6 +68,8 @@ public class TokenRevocationSuccessHandler implements AuthenticationSuccessHandl
 
                 authorizationService.remove(oAuth2Authorization);
             }
+
+            log.warn("Drop current user sessions [username -> {}]", authorization.getPrincipalUsername());
 
             // находим все сессии пользователя и удаляем
             final List<Session> sessions = defaultAccountSessionService.findByUsername(authorization.getPrincipalUsername());
