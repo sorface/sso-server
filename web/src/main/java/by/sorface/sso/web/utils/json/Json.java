@@ -63,7 +63,7 @@ public class Json {
      * @return A lazyobjectserializable object
      */
     public LazyObjectSerializable lazyStringifyWithMasking(final Object object) {
-        return new LazyObjectSerializable(() -> Json.stringifyWithMasking(object));
+        return new LazyObjectSerializable(() -> System.lineSeparator() + Json.stringifyWithMasking(object));
     }
 
     /**

@@ -22,10 +22,28 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class AuthenticationClientErrorHandler implements AuthenticationFailureHandler {
 
+    /**
+     * The {@link EndpointOptions} object that contains the URI of the failure page.
+     */
     private final EndpointOptions endpointOptions;
 
+    /**
+     * The {@link LocaleService} object that provides the current locale.
+     */
     private final LocaleService localeService;
 
+    /**
+     * This method is called when an authentication failure occurs. It checks if the exception is an instance of
+     * {@link OAuth2AuthorizationCodeRequestAuthenticationException}. If it is, it retrieves the error from the exception,
+     * gets the localized message for the error code, and redirects the user to the failure page with the message and description.
+     * If the exception is not an instance of {@link OAuth2AuthorizationCodeRequestAuthenticationException}, it logs the error
+     * and redirects the user to the failure page with the exception message.
+     *
+     * @param request   the {@link HttpServletRequest} object containing the client request
+     * @param response  the {@link HttpServletResponse} object that contains the server response
+     * @param exception the {@link AuthenticationException} object that contains the authentication failure
+     * @throws IOException if an I/O exception occurred
+     */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
         if (exception instanceof OAuth2AuthorizationCodeRequestAuthenticationException) {
@@ -36,7 +54,9 @@ public class AuthenticationClientErrorHandler implements AuthenticationFailureHa
                 return;
             }
 
-            final var message = localeService.getI18Message(getLocalMessageByErrorCode(error));
+            final String localMessageByErrorCode = getLocalMessageByErrorCode(error);
+
+            final var message = localeService.getI18Message(localMessageByErrorCode);
 
             response.sendRedirect(endpointOptions.getUriPageFailure().concat("?message=").concat(message).concat("&description=").concat(error.getDescription()));
 
@@ -47,6 +67,12 @@ public class AuthenticationClientErrorHandler implements AuthenticationFailureHa
         response.sendRedirect(endpointOptions.getUriPageFailure().concat("?error=").concat(exception.getMessage()));
     }
 
+    /**
+     * This method returns the localized message for the given error code.
+     *
+     * @param error the {@link OAuth2Error} object that contains the error code
+     * @return the localized message for the error code
+     */
     private String getLocalMessageByErrorCode(final OAuth2Error error) {
         return Stream.of(
                         OAuth2ErrorCodes.INVALID_REQUEST,

@@ -9,17 +9,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * This class represents a filter for handling Cross-Site Request Forgery (CSRF) protection.
+ * It extends the {@link OncePerRequestFilter} class from Spring Security.
+ */
 public class CsrfCookieFilter extends OncePerRequestFilter {
 
     /**
-     * The doFilterInternal function is the function that actually does the work of filtering.
-     * It takes in a request, response, and filter chain as parameters.
-     * The filter chain represents all the filters that are applied to this particular request.
-     * This function will be called for every single HTTP request made to your application (unless you explicitly exclude it).
+     * This method is called for each request to the application after all filters have been applied but before the controller
+     * is invoked. It retrieves the CSRF token from the request and ensures it is loaded.
+     * Then it passes the request and response to the next filter in the chain.
      *
-     * @param request     Get the csrf token from the request
-     * @param response    Set the cookie
-     * @param filterChain Invoke the next filter in the chain
+     * @param request the {@link HttpServletRequest} object containing the client request
+     * @param response the {@link HttpServletResponse} object that contains the server response
+     * @param filterChain the {@link FilterChain} object that contains the next filter in the chain
+     * @throws ServletException if an input or output exception occurred
+     * @throws IOException if an I/O exception occurred
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

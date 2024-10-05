@@ -36,6 +36,11 @@ public final class RedisOAuth2AuthorizationConsentService implements OAuth2Autho
         return getId(authorizationConsent.getRegisteredClientId(), authorizationConsent.getPrincipalName());
     }
 
+    /**
+     * Save {@link OAuth2AuthorizationConsent} in Redis.
+     *
+     * @param authorizationConsent the {@link OAuth2AuthorizationConsent}
+     */
     @Override
     public void save(OAuth2AuthorizationConsent authorizationConsent) {
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");

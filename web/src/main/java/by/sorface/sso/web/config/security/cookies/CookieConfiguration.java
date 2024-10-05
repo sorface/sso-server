@@ -8,10 +8,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
+/**
+ * Configuration class for setting up the cookie serializer.
+ */
 @Slf4j
 @Configuration
 public class CookieConfiguration {
 
+    /**
+     * Bean method to configure the cookie serializer.
+     *
+     * @param cookieOptions The cookie options to be used for configuration.
+     * @return The configured cookie serializer.
+     */
     @Bean
     public CookieSerializer cookieSerializer(final CookieOptions cookieOptions) {
         log.debug("config default session cookie");
