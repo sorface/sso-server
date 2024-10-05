@@ -1,0 +1,49 @@
+@startuml
+skinparam sequenceMassageAllAlign left
+
+actor User as user
+participant Server
+participant UserRegistryService
+participant OTPService
+participant SQLUserService
+participant NoSQLUserService
+participant EmailService
+database NoSQL
+
+user -> Server: **POST /api/accounts/registry**\nПользователь инициирует запрос\nна смену пароля
+Server -> UserRegistryService: Заявка на регистрацию нового пользователя
+UserRegistryService -> OTPService: Создание OTP (одноразового пароля) TTL (300 sec)
+OTPService -> NoSQL: Сохранение (одноразового пароля)
+NoSQL -> OTPService: Идентификатор OTP записи
+OTPService -> UserRegistryService: OTP данные (идентификатор записи)
+UserRegistryService -> NoSQLUserService: Сохранение пользовательских данных (указанных при регистрации и идентификатор OTP) TTL (300 sec)
+NoSQLUserService -> NoSQL: Сохранение данных в базу данных
+NoSQL -> NoSQLUserService: Идентификатор записи с данными о регистрации
+NoSQLUserService -> UserRegistryService: Данные успешно сохранены
+UserRegistryService -> EmailService: Формирования данных для отправки через канал связи с пользователем
+EmailService -> smtp: Отправка OTP пароля на email (Async)
+EmailService -> UserRegistryService: Сообщение успешно отправлено
+
+UserRegistryService -> Server: Данные о регистрации пользователя\n(идентификатор записи пользовательских данных\nидентификатор OTP)
+Server -> user: **200 OK**\nУстанавливается в cookie \nидентификатор OTP записи
+
+user -> user:  \n\nПолучает из почты **OTP** (вводит в форму подтверждения)
+user -> Server: \n\n**POST /api/accounts/apply**\n{\n "otp": "123456"\n}\n...\nCookie: otp_id: 051447ab-5cb6-4824-8728-cf962b32c97e
+Server -> UserRegistryService: Подтверждение регистриации (apply)\nПередаются данные из\n\ncookie -> otp_id = 051447ab-5cb6-4824-8728-cf962b32c97e\notp_value -> 123456
+UserRegistryService -> OTPService: Получение otp значени по идентификатору 051447ab-5cb6-4824-8728-cf962b32c97e\n
+OTPService -> UserRegistryService: Данные записи { "otp": "123456", "id": "051447ab-5cb6-4824-8728-cf962b32c97e" }
+UserRegistryService -> UserRegistryService: \n\nСопоставление найденного пароля с паролем из запроса
+UserRegistryService -> NoSQLUserService: \n\nПолучение данных пользователя при регистрации по идентификатору OTP
+NoSQLUserService -> UserRegistryService: \n\nВозвращаются данные пользователя при регистрации
+UserRegistryService -> SQLUserService: Сохранение данных пользователя в базу данных (проставляется confirm -> true)
+SQLUserService -> UserRegistryService: Успешно сохранены данные о пользователе
+UserRegistryService -> EmailService: Передача данных в канал отправки (email)
+EmailService -> smtp: Отправка HTML сообщения об успешной\nрегистрации в сервисе (Async)
+EmailService -> UserRegistryService: Отправка осуществлена успешно
+UserRegistryService -> Server: Подтверждение прошло успешно
+Server -> user:  Автоматический вход в сервис\nrequest.login(username, password)\n**200 OK**
+box "Async operation"
+queue SMTP as smtp
+end box
+
+@enduml

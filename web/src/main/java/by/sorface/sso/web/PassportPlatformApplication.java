@@ -8,10 +8,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 @EnableAspectJAutoProxy
 @SpringBootApplication
-public class OAuthServerApplication {
+public class PassportPlatformApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(OAuthServerApplication.class, args);
+        SpringApplication.run(PassportPlatformApplication.class, args);
     }
 
 }

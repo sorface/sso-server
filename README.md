@@ -1,7 +1,7 @@
 # server-oauth2 (Platform SSO)
 
 [![Java CI with Maven](https://github.com/sorface/sso-server/actions/workflows/maven.yml/badge.svg)](https://github.com/sorface/sso-server/actions/workflows/maven.yml)
-![jacoco.svg](https://github.com/sorface/sso-server/blob/master/.github/badges/jacoco.svg)
+![jacoco](.github/badges/jacoco.svg)
 
 Single Sign-On (SSO) и Single Logout (SLO) платформы.
 
@@ -232,6 +232,12 @@ Content-Type: application/json
   ]
 }
 ```
+
+# Диаграммы
+
+### Регистрация пользователя через OTP
+
+![alt text](/diagrams/registry_user.png)
 
 ## Locale i18
 
