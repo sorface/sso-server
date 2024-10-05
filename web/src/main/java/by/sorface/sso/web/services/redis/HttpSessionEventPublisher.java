@@ -14,6 +14,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This class extends the {@link org.springframework.security.web.session.HttpSessionEventPublisher} class and provides
+ * additional functionality for handling session events.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -23,11 +27,13 @@ public class HttpSessionEventPublisher extends org.springframework.security.web.
 
     private final RedisOAuth2AuthorizationService authorizationService;
 
-    @Override
-    public void sessionCreated(final HttpSessionEvent event) {
-
-    }
-
+    /**
+     * This method is called when a session is destroyed. It retrieves the security context from the session,
+     * retrieves the authentication from the security context, and retrieves the principal from the authentication.
+     * It then retrieves all authorizations for the principal and removes them.
+     *
+     * @param sessionEvent The HttpSessionEvent object.
+     */
     public void sessionDestroyed(final HttpSessionEvent sessionEvent) {
         final HttpSession session = sessionEvent.getSession();
 

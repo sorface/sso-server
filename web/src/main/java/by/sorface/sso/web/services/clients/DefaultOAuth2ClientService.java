@@ -3,12 +3,14 @@ package by.sorface.sso.web.services.clients;
 import by.sorface.sso.web.dao.models.OAuth2Client;
 import by.sorface.sso.web.dao.sql.OAuth2ClientRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DefaultOAuth2ClientService implements OAuth2ClientService {

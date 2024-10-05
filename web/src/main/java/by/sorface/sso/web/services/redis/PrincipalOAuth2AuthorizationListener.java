@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+/**
+ * The RedisOAuth2AuthorizationDetailsService instance used to save and delete authorization details.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -14,6 +17,12 @@ public class PrincipalOAuth2AuthorizationListener implements OAuth2Authorization
 
     private final RedisOAuth2AuthorizationDetailsService redisOAuth2AuthorizationDetailsService;
 
+    /**
+     * Listens for OAuth2AuthorizationCompleteEvent and saves the authorization details.
+     * If the save operation is successful, it logs a success message. If not, it logs a warning message.
+     *
+     * @param event The OAuth2AuthorizationCompleteEvent to handle.
+     */
     @Override
     @EventListener(OAuth2AuthorizationCompleteEvent.class)
     public void complete(OAuth2AuthorizationCompleteEvent event) {
@@ -26,6 +35,11 @@ public class PrincipalOAuth2AuthorizationListener implements OAuth2Authorization
         }
     }
 
+    /**
+     * Listens for OAuth2AuthorizationDeleteEvent and deletes the authorization details.
+     *
+     * @param event The OAuth2AuthorizationDeleteEvent to handle.
+     */
     @Override
     @EventListener(OAuth2AuthorizationDeleteEvent.class)
     public void delete(OAuth2AuthorizationDeleteEvent event) {
